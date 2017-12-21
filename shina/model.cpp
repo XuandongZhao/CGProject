@@ -269,6 +269,8 @@ void object::show() {
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
 }
+
+
 void scene::shadow()
 {
 	for (auto & i : objCollection)

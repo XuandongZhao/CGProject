@@ -11,13 +11,14 @@ smMouse* mouse;
 smKeyBoard* keyBoard;
 
 smRender render;
-world myworld;
+world myworld("myworld");
 
 int SCR_WIDTH;
 int SCR_HEIGHT;
 smShader *elementShader;
 smShader *texShader;
 smShader *shadowShader;
+object* test;
 
 static void smInit()
 {
@@ -33,21 +34,40 @@ static void smInit()
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
 unsigned int cnt = 0;
+
+static void smTimer(int id)
+{
+	cout << "1" << endl;
+	if (keyBoard->getKey((keyMap)'w') == true)
+	{
+		cout << "2" << endl;
+		myworld.sceneCollection[0].objCollection[0].rotate(20,glm::vec3(0,1,0));
+	}
+	glutTimerFunc(100, smTimer, id);
+	glutPostRedisplay();
+}
+
 static void smDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	render.render(myworld,*camera);
 
 
+	
+	
+	render.render(myworld, *camera);
 	glutSwapBuffers();
 }
 static void smReshape(int w, int h) {
 	SCR_WIDTH = w;
 	SCR_HEIGHT = h;
 }
+//object sss;
 void build() {
 	static scene tmp;
+	//test = new object();
+	
 	tmp.push_back(object().load("source//castle.obj"));
+
 	tmp.push_back(object().load("source//ground.obj"));
 	tmp.push_back(texture().load("source//pic.obj"));
 	myworld.push_back(tmp);
@@ -125,6 +145,8 @@ int main(int argc,char*argv[])
 	
 	glutKeyboardFunc(smKeyDown);
 	glutKeyboardUpFunc(smKeyUp);
+
+	glutTimerFunc(100,smTimer,1);
 	//glutSpecialFunc(smSpecialDown);
 	//glutSpecialUpFunc(smSpecialUp);
 

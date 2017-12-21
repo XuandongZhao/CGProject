@@ -26,6 +26,7 @@ class object {
 private:
 	using vec3 = glm::vec3;
 	std::vector<GLfloat> pos, color, normals;
+	std::string name;
 	class Material {
 	public:
 		std::string name;
@@ -35,6 +36,7 @@ private:
 	int active = -1;
 	glm::vec3 kd, ka;
 	float ks;
+	glm::mat4 model;
 public:
 	bool diy = false;
 	GLuint vao, svao;
@@ -42,7 +44,7 @@ public:
 		positionBufferHandle, colorBufferHandle, normalBufferHandle;
 	GLuint spositionBufferHandle;
 
-	glm::mat4 model;
+	
 
 	object(bool _diy = false, vec3 _ka=vec3(0,0,0), float _ks=0, vec3 _kd=vec3(0,0,0))
 		:diy(_diy),ka(_ka),ks(_ks),kd(_kd)
@@ -276,12 +278,29 @@ public:
 
 	void shadow();
 	void show();
+	inline void loadIdentity()
+	{
+		this->model = glm::mat4();
+	}
+	inline void translate(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::translate(this->model, vec3(x, y, z));
+	}
+	inline void scale(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::scale(this->model, vec3(x, y, z));
+	}
+	inline void rotate(GLfloat angel, vec3 axis)
+	{
+		this->model = glm::rotate(this->model, angel, axis);
+	}
 
 
 };
 
 class texture {
 private:
+	using vec3 = glm::vec3;
 	vector<float> pos;
 	vector<float> coord;
 	vector<float> normal;
@@ -348,6 +367,24 @@ public:
 	void show();
 
 	void pic(const char *fileName);
+	
+	inline void loadIdentity()
+	{
+		this->model = glm::mat4();
+	}
+	
+	inline void translate(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::translate(this->model, vec3(x, y, z));
+	}
+	inline void scale(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::scale(this->model, vec3(x, y, z));
+	}
+	inline void rotate(GLfloat angel, vec3 axis)
+	{
+		this->model = glm::rotate(this->model, angel, axis);
+	}
 };
 
 
@@ -359,10 +396,11 @@ private:
 	std::string name;
 	bool active;
 
-	objVector objCollection;
-	textureVector texCollection;
+	
 	
 public:
+	objVector objCollection;
+	textureVector texCollection;
 	scene() :active(true)
 	{
 
@@ -385,10 +423,12 @@ class world {
 private:
 	using sceneVector = std::vector<scene>;
 	using lightVector = std::vector<smLight>;
+	
+	std::string name;
+public:
 	sceneVector sceneCollection;
 	lightVector lightCollection;
-public:
-	world(){}
+	world(std::string tname):name(tname){}
 	virtual ~world(){}
 	void push_back(scene& e)
 	{
