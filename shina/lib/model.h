@@ -275,7 +275,9 @@ public:
 			}
 		}
 		return *this;
-	}*/
+	}
+	*/
+
 	GLfloat unitize()
 	{
 		GLuint  i;
@@ -352,9 +354,10 @@ public:
 		FILE* file = fopen(filename, "r");
 		if (file == NULL)
 		{
-			cout << "obj name err!" << endl;
+			cout << "obj name error!" << endl;
 			return *this;
 		}
+
 		int v_num = 0;
 		int vn_num = 0;
 		char buf[256];
@@ -366,11 +369,11 @@ public:
 
 		vector<string> texName;
 		vector<string> texDir;
-		int line = 1;
+		int line = 0;
 		while (fscanf(file, "%s", buf) != EOF)
 		{
-			//line++;
-			//cout << line <<endl;
+			line++;
+			
 			switch (buf[0])
 			{
 			case 'v':
@@ -383,8 +386,6 @@ public:
 					pos.push_back(num3);
 					pos.push_back(num2);
 					v_num++;
-					
-					//cout << "v " << num1 << num2 << num3<<endl;
 					break;
 				case 'n':
 					fscanf(file, "%f %f %f", &num1, &num2, &num3);
@@ -392,7 +393,9 @@ public:
 					normal.push_back(num2);
 					normal.push_back(num3);
 					vn_num++;
-					//cout << "vn " << num1 << num2 << num3<<endl;
+					break;
+				default:
+					fgets(buf, sizeof(buf), file);
 					break;
 				}
 				break;
@@ -405,14 +408,12 @@ public:
 				n0 = n1 = n2 = 0;
 				t0 = t1 = t2 = 0;
 				fscanf(file, "%s", buf);
-
+				
 				// type: v//vn
-				if (strstr(buf, "//"))
+				if (sscanf(buf, "%d//%d", &v0, &n0) == 2)
 				{
-					sscanf(buf, "%d//%d", &v0, &n0);
 					fscanf(file, "%d//%d", &v1, &n1);
 					fscanf(file, "%d//%d", &v2, &n2);
-
 					//v
 					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -440,7 +441,7 @@ public:
 					n1 = n2;
 					t1 = t2;
 					
-					while (fscanf(file, "%d//%d", &v2, &n2) > 0)
+					while (fscanf(file, "%d//%d", &v2, &n2) == 2)
 					{
 						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -499,7 +500,7 @@ public:
 					v1 = v2;
 					n1 = n2;
 					t1 = t2;
-					while (fscanf(file, "%d/%d/%d", &v2, &t2, &n2) > 0)
+					while (fscanf(file, "%d/%d/%d", &v2, &t2, &n2) == 3)
 					{
 						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -530,8 +531,10 @@ public:
 				// type: v/vt
 				else if (sscanf(buf, "%d/%d", &v0, &t0) == 2)
 				{
+					cout << line << endl;
 					fscanf(file, "%d/%d", &v1, &t1);
 					fscanf(file, "%d/%d", &v2, &t1);
+					cout << v0 << " " << v1 << " " << v2 << endl;
 
 					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -553,7 +556,7 @@ public:
 					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
 						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
-					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
 						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
 						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
 					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
@@ -568,7 +571,7 @@ public:
 					v1 = v2;
 					n1 = n2;
 					t1 = t2;
-					while (fscanf(file, "%d/%d", &v2, &t2) > 0)
+					while (fscanf(file, "%d/%d", &v2, &t2) == 2)
 					{
 						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -590,7 +593,7 @@ public:
 						glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 							pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
 							pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
-						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
 							pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
 							pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
 						glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
@@ -607,9 +610,8 @@ public:
 					}
 				}
 				// type: v
-				else
+				else if(sscanf(buf, "%d", &v0) == 1)
 				{
-					sscanf(buf, "%d", &v0);
 					fscanf(file, "%d", &v1);
 					fscanf(file, "%d", &v2);
 
@@ -633,7 +635,7 @@ public:
 					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
 						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
-					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
 						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
 						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
 					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
@@ -670,7 +672,7 @@ public:
 						glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 							pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
 							pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
-						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
 							pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
 							pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
 						glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
@@ -691,7 +693,6 @@ public:
 			
 			case 'm':
 			{
-				//cout << "new mtl\n";
 				std::ifstream min;
 				string path = string(filename);
 				unsigned int tmp = path.find_last_of('/');
@@ -747,7 +748,7 @@ public:
 			}
 			}
 		}
-
+		cout << line << endl;
 		cout << filename << " load finished!\n";
 		return *this;
 	}
