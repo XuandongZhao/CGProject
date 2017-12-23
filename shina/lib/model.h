@@ -123,6 +123,7 @@ public:
 
 		return e;
 	}
+	/*
 	object& load(const char *filename)
 	{
 		std::ifstream fin;
@@ -274,8 +275,483 @@ public:
 			}
 		}
 		return *this;
-	}
+	}*/
+	GLfloat unitize()
+	{
+		GLuint  i;
+		GLfloat maxx, minx, maxy, miny, maxz, minz;
+		GLfloat cx, cy, cz, w, h, d;
+		GLfloat scale;
 
+		/* get the max/mins */
+		maxx = minx = pos[0];
+		maxy = miny = pos[1];
+		maxz = minz = pos[2];
+		for (i = 0; i < pos.size(); i += 3) {
+			if (maxx < pos[i + 0])
+				maxx = pos[i + 0];
+			if (minx > pos[i + 0])
+				minx = pos[i + 0];
+
+			if (maxy < pos[i + 1])
+				maxy = pos[i + 1];
+			if (miny > pos[i + 1])
+				miny = pos[i + 1];
+
+			if (maxz < pos[i + 2])
+				maxz = pos[i + 2];
+			if (minz > pos[i + 2])
+				minz = pos[i + 2];
+		}
+
+		/* calculate model width, height, and depth */
+		w = maxx - minx;
+		h = maxy - miny;
+		d = maxz - minz;
+
+		/* calculate center of the model */
+		cx = (maxx + minx) / 2.0;
+		cy = (maxy + miny) / 2.0;
+		cz = (maxz + minz) / 2.0;
+
+		GLfloat max;
+		if (w > h)
+		{
+			if (w > d)
+				max = w;
+			else
+				max = d;
+		}
+		else
+		{
+			if (h > d)
+				max = h;
+			else
+				max = d;
+		}
+		/* calculate unitizing scale factor */
+		scale = 2.0 / max;
+
+		/* translate around center then scale */
+		for (i = 0; i < pos.size(); i += 3) {
+			//transform
+			pos[i + 0] -= cx;
+			pos[i + 1] -= cy;
+			pos[i + 2] -= cz;
+			//scale
+			pos[i + 0] *= scale;
+			pos[i + 1] *= scale;
+			pos[i + 2] *= scale;
+		}
+
+		return scale;
+	}
+	
+	object& load(const char *filename)
+	{
+		FILE* file = fopen(filename, "r");
+		if (file == NULL)
+		{
+			cout << "obj name err!" << endl;
+			return *this;
+		}
+		int v_num = 0;
+		int vn_num = 0;
+		char buf[256];
+		float num1, num2, num3;
+
+		vector<float>pos;
+		vector<float>color;
+		vector<float>normal;
+
+		vector<string> texName;
+		vector<string> texDir;
+		int line = 1;
+		while (fscanf(file, "%s", buf) != EOF)
+		{
+			//line++;
+			//cout << line <<endl;
+			switch (buf[0])
+			{
+			case 'v':
+			{
+				switch (buf[1])
+				{
+				case '\0':
+					fscanf(file, "%f %f %f", &num1, &num2, &num3);
+					pos.push_back(num1);
+					pos.push_back(num3);
+					pos.push_back(num2);
+					v_num++;
+					
+					//cout << "v " << num1 << num2 << num3<<endl;
+					break;
+				case 'n':
+					fscanf(file, "%f %f %f", &num1, &num2, &num3);
+					normal.push_back(num1);
+					normal.push_back(num2);
+					normal.push_back(num3);
+					vn_num++;
+					//cout << "vn " << num1 << num2 << num3<<endl;
+					break;
+				}
+				break;
+			}
+			case 'f':
+			{
+				
+				int v0, t0, n0, v1, t1, n1, v2, t2, n2;
+				v0 = v1 = v2 = 0;
+				n0 = n1 = n2 = 0;
+				t0 = t1 = t2 = 0;
+				fscanf(file, "%s", buf);
+
+				// type: v//vn
+				if (strstr(buf, "//"))
+				{
+					sscanf(buf, "%d//%d", &v0, &n0);
+					fscanf(file, "%d//%d", &v1, &n1);
+					fscanf(file, "%d//%d", &v2, &n2);
+
+					//v
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+					//vt
+					if (active != -1)
+					{
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+					}
+					else
+					{
+						this->pushColor();
+						this->pushColor();
+						this->pushColor();
+					}
+					//vn
+					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+					//if the face is not a triangle, regard it as the combination of several triangles
+					//assign old vertex to new and add one more vertex
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+					
+					while (fscanf(file, "%d//%d", &v2, &n2) > 0)
+					{
+						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]); 
+
+						if (active != -1)
+						{
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						}
+						else
+						{
+							this->pushColor();
+							this->pushColor();
+							this->pushColor();
+						}
+
+						this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+						this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+						this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+						v1 = v2;
+						n1 = n2;
+						t1 = t2;
+					}
+				}
+				// type: v/vt/vn
+				else if (sscanf(buf, "%d/%d/%d", &v0, &t0, &n0) == 3)
+				{
+					fscanf(file, "%d/%d/%d", &v1, &t1, &n1);
+					fscanf(file, "%d/%d/%d", &v2, &t2, &n2);
+
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					if (active != -1)
+					{
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+					}
+					else
+					{
+						this->pushColor();
+						this->pushColor();
+						this->pushColor();
+					}
+
+					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+					//add more
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+					while (fscanf(file, "%d/%d/%d", &v2, &t2, &n2) > 0)
+					{
+						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+						if (active != -1)
+						{
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						}
+						else
+						{
+							this->pushColor();
+							this->pushColor();
+							this->pushColor();
+						}
+
+						this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+						this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+						this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+						v1 = v2;
+						n1 = n2;
+						t1 = t2;
+					}
+				}
+				// type: v/vt
+				else if (sscanf(buf, "%d/%d", &v0, &t0) == 2)
+				{
+					fscanf(file, "%d/%d", &v1, &t1);
+					fscanf(file, "%d/%d", &v2, &t1);
+
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					if (active != -1)
+					{
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+					}
+					else
+					{
+						this->pushColor();
+						this->pushColor();
+						this->pushColor();
+					}
+
+					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+						edge2.z*edge1.x - edge1.z*edge2.x,
+						edge2.x*edge1.y - edge1.x*edge2.y);
+
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+
+					//add more
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+					while (fscanf(file, "%d/%d", &v2, &t2) > 0)
+					{
+						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+						if (active != -1)
+						{
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						}
+						else
+						{
+							this->pushColor();
+							this->pushColor();
+							this->pushColor();
+						}
+
+						glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+							pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+							pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+							pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+							pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+						glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+							edge2.z*edge1.x - edge1.z*edge2.x,
+							edge2.x*edge1.y - edge1.x*edge2.y);
+
+						this->pushNormal(norm.x, norm.y, norm.z);
+						this->pushNormal(norm.x, norm.y, norm.z);
+						this->pushNormal(norm.x, norm.y, norm.z);
+
+						v1 = v2;
+						n1 = n2;
+						t1 = t2;
+					}
+				}
+				// type: v
+				else
+				{
+					sscanf(buf, "%d", &v0);
+					fscanf(file, "%d", &v1);
+					fscanf(file, "%d", &v2);
+
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					if (active != -1)
+					{
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+					}
+					else
+					{
+						this->pushColor();
+						this->pushColor();
+						this->pushColor();
+					}
+
+					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+						edge2.z*edge1.x - edge1.z*edge2.x,
+						edge2.x*edge1.y - edge1.x*edge2.y);
+
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+
+					//add more
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+					while (fscanf(file, "%d", &v2) > 0)
+					{
+						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+						if (active != -1)
+						{
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+							this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
+						}
+						else
+						{
+							this->pushColor();
+							this->pushColor();
+							this->pushColor();
+						}
+
+						glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+							pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+							pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+						glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v2 * 3 - 3],
+							pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+							pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+						glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+							edge2.z*edge1.x - edge1.z*edge2.x,
+							edge2.x*edge1.y - edge1.x*edge2.y);
+
+						this->pushNormal(norm.x, norm.y, norm.z);
+						this->pushNormal(norm.x, norm.y, norm.z);
+						this->pushNormal(norm.x, norm.y, norm.z);
+
+						v1 = v2;
+						n1 = n2;
+						t1 = t2;
+					}
+				}
+				break;
+			}
+			
+			case 'm':
+			{
+				//cout << "new mtl\n";
+				std::ifstream min;
+				string path = string(filename);
+				unsigned int tmp = path.find_last_of('/');
+				for (unsigned int i = path.length() - 1; i > tmp; i--)
+					path.pop_back();
+				fscanf(file, "%s", buf);
+				string s(buf);
+				path += buf;
+
+				min.open(path);
+				if (min.is_open() == false)continue;
+				while (min >> s) {
+					if (s == "newmtl") {
+						surface.push_back(Material());
+						min >> s;
+						surface[surface.size() - 1].name = s;
+					}
+					else if (s == "Kd") {
+						min >> num1 >> num2 >> num3;
+						surface[surface.size() - 1].kd = glm::vec3(num1, num2, num3);
+					}
+					else if (s == "Ka") {
+						min >> num1 >> num2 >> num3;
+						surface[surface.size() - 1].ka = glm::vec3(num1, num2, num3);
+					}
+					else if (s == "Ks") {
+						min >> num1 >> num2 >> num3;
+						surface[surface.size() - 1].ks = glm::vec3(num1, num2, num3);
+					}
+					else {
+						min.getline(buf, 256);
+					}
+				}
+				break;
+			}
+			case 'u':
+			{
+				fscanf(file, "%s", buf);
+				active = -1;
+				string s(buf);
+				for (unsigned int i = 0; i < surface.size(); i++) {
+					if (surface[i].name == s) {
+						active = i;
+						break;
+					}
+				}
+				break;
+			}
+			default:
+			{
+				fgets(buf, sizeof(buf), file);
+				break;
+			}
+			}
+		}
+
+		cout << filename << " load finished!\n";
+		return *this;
+	}
+	
 	void shadow();
 	void show();
 	inline void loadIdentity()
