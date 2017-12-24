@@ -8,6 +8,7 @@ extern smShader *shadowShader;
 void texture::pic(const char *fileName) {
 	// load picture to bitmap
 	CImage *img = new CImage;
+	cout << "fff:" << fileName << endl;
 	if (!fileName) 
 	{
 		return;
@@ -17,6 +18,7 @@ void texture::pic(const char *fileName) {
 	{
 		return;
 	}
+	cout << "success: " << fileName << endl;
 	src.sizeX = img->GetWidth();
 	src.sizeY = img->GetHeight();
 	if (img->GetPitch() < 0)
@@ -100,6 +102,7 @@ texture& texture::load(const char*filename)
 	vector<string> texDir;
 
 	while (fin >> op) {
+		//cout << "*****" << endl;
 		if (op == "v") {
 			fin >> num1 >> num2 >> num3;
 			pos.push_back(num1);

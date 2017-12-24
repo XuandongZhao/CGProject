@@ -38,11 +38,11 @@ unsigned int cnt = 0;
 static void smTimer(int id)
 {
 	cout << "1" << endl;
-	if (keyBoard->getKey((keyMap)'w') == true)
+	/*if (keyBoard->getKey((keyMap)'w') == true)
 	{
 		cout << "2" << endl;
 		myworld.sceneCollection[0].objCollection[0].rotate(20,glm::vec3(0,1,0));
-	}
+	}*/
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
 }
@@ -66,10 +66,10 @@ void build() {
 	static scene tmp;
 	//test = new object();
 	
-	tmp.push_back(object().load("source//castle.obj"));
+	//tmp.push_back(object().load("source//castle.obj"));
 
-	tmp.push_back(object().load("source//ground.obj"));
-	tmp.push_back(texture().load("source//pic.obj"));
+	//tmp.push_back(object().load("source//ground.obj"));
+	tmp.push_back(texture().load("city//test1.obj"));
 	myworld.push_back(tmp);
 	myworld.push_back(smLight(0, glm::vec3 (24.f, 32.f, 18.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.1f, .1f, .1f), 1.f));
 	//myworld.push_back(smLight(0, glm::vec3(-24.f, 32.f, 18.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.1f, .1f, .1f), 1.f));
