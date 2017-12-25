@@ -9,7 +9,7 @@
 
 
 class smShader {
-private:
+public:
 	smShader();
 	unsigned int shaderID;
 	void checkCompileErrors(GLuint normalShader, std::string type) {

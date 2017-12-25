@@ -6,6 +6,7 @@
 #define GLM_FORCE_RADIANS
 #define FREEGLUT_STATIC
 
+#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <algorithm>

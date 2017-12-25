@@ -23,7 +23,7 @@
     <ProjectGuid>{2CC65AC3-6160-433A-B3E9-188F5060496A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>shina</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -144,6 +144,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="render.cpp" />
+    <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\camera.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="lib\mouse.h" />
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />
+    <ClInclude Include="lib\sphere.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -227,6 +227,7 @@ texture& texture::load(const char*filename)
 }
 void object::shadow()
 {
+	//cout << "shadow" << endl;
 	if (pos.size() == 0)return;
 
 	shadowShader->use();
@@ -303,5 +304,10 @@ void scene::show(smLight & light)
 			elementShader->setVec3("u_lightAmb", light.ambient);
 			elementShader->setFloat("u_lightSpec", light.specular);
 		}
+	}
+
+	for (auto & t : cloudCollection)
+	{
+		t.show();
 	}
 }

@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "light.h"
+#include "sphere.h"
 #include <atlimage.h>
 
 
@@ -287,12 +288,12 @@ public:
 	}
 	*/
 
-	GLfloat unitize()
+	object& unitize(GLfloat scale)
 	{
 		GLuint  i;
 		GLfloat maxx, minx, maxy, miny, maxz, minz;
 		GLfloat cx, cy, cz, w, h, d;
-		GLfloat scale;
+		//GLfloat scale;
 
 		/* get the max/mins */
 		maxx = minx = pos[0];
@@ -314,6 +315,10 @@ public:
 			if (minz > pos[i + 2])
 				minz = pos[i + 2];
 		}
+		cout << "******* unitize()  ********" << endl;
+		cout << "x: " << maxx << " " << minx << endl;
+		cout << "y: " << maxy << " " << miny << endl;
+		cout << "z: " << maxz << " " << minz << endl;
 
 		/* calculate model width, height, and depth */
 		w = maxx - minx;
@@ -341,7 +346,7 @@ public:
 				max = d;
 		}
 		/* calculate unitizing scale factor */
-		scale = 2.0 / max;
+		//scale = 0.98;
 
 		/* translate around center then scale */
 		for (i = 0; i < pos.size(); i += 3) {
@@ -355,7 +360,7 @@ public:
 			pos[i + 2] *= scale;
 		}
 
-		return scale;
+		return *this;
 	}
 	
 	object& load(const char *filename)
@@ -392,8 +397,8 @@ public:
 				case '\0':
 					fscanf(file, "%f %f %f", &num1, &num2, &num3);
 					pos.push_back(num1);
-					pos.push_back(num3);
 					pos.push_back(num2);
+					pos.push_back(num3);
 					v_num++;
 					break;
 				case 'n':
@@ -540,10 +545,10 @@ public:
 				// type: v/vt
 				else if (sscanf(buf, "%d/%d", &v0, &t0) == 2)
 				{
-					cout << line << endl;
+					//cout << line << endl;
 					fscanf(file, "%d/%d", &v1, &t1);
 					fscanf(file, "%d/%d", &v2, &t1);
-					cout << v0 << " " << v1 << " " << v2 << endl;
+					//cout << v0 << " " << v1 << " " << v2 << endl;
 
 					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -757,7 +762,7 @@ public:
 			}
 			}
 		}
-		cout << line << endl;
+		//cout << line << endl;
 		cout << filename << " load finished!\n";
 		return *this;
 	}
@@ -768,17 +773,20 @@ public:
 	{
 		this->model = glm::mat4();
 	}
-	inline void translate(GLfloat x, GLfloat y, GLfloat z)
+	inline object& translate(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::translate(this->model, vec3(x, y, z));
+		return *this;
 	}
-	inline void scale(GLfloat x, GLfloat y, GLfloat z)
+	inline object& scale(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::scale(this->model, vec3(x, y, z));
+		return *this;
 	}
-	inline void rotate(GLfloat angel, vec3 axis)
+	inline object& rotate(GLfloat angel, vec3 axis)
 	{
 		this->model = glm::rotate(this->model, angel, axis);
+		return *this;
 	}
 
 
@@ -874,11 +882,38 @@ public:
 };
 
 
+class cloud
+{
+private:
+	using sphereVec = std::vector<Sphere>;
+
+public:
+	sphereVec sphereCollection;
+
+	cloud(){}
+	~cloud(){}
+	inline cloud& push_back(Sphere & e)
+	{
+		sphereCollection.push_back(e);
+		return *this;
+	}
+	void show()
+	{
+		for (auto & i : sphereCollection)
+		{
+			i.show();
+		}
+	}
+
+
+};
+
+
 class scene {
 private:
 	using objVector = std::vector<object>;
 	using textureVector = std::vector<texture>;
-	
+	using cloudVector = std::vector<cloud>;
 	std::string name;
 	bool active;
 
@@ -887,23 +922,34 @@ private:
 public:
 	objVector objCollection;
 	textureVector texCollection;
+	cloudVector cloudCollection;
+	
 	scene() :active(true)
 	{
 
 	}
 	virtual ~scene() {}
-	void push_back(object& e)
+	inline scene& push_back(object& e)
 	{
 		objCollection.push_back(e);
+		return *this;
 	}
-	void push_back(texture& e)
+	inline scene& push_back(texture& e)
 	{
 		texCollection.push_back(e);
+		return *this;
+	}
+	inline scene& push_back(cloud& e)
+	{
+		cloudCollection.push_back(e);
+		return *this;
 	}
 	void shadow();
 	void show(smLight& light);
 
 };
+
+
 
 class world {
 private:

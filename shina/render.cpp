@@ -1,7 +1,10 @@
 #include "lib\render.h"
+#include "lib\sphere.h"
 extern smShader *elementShader;
 extern smShader *texShader;
 extern smShader *shadowShader;
+extern smShader *paticleShader;
+extern Sphere *sphere;
 
 void smRender::render(world & myworld,smCamera& camera)
 {

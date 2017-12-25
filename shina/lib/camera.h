@@ -12,10 +12,18 @@ public:
 	GLfloat factor;
 public:
 	vec3 eye, dir, uper;
-	smCamera(vec3 pos = vec3(0, 0, 3)) :eye(pos), dir(-pos), uper(vec3(0, 1, 0)),
+	smCamera(vec3 & pos = vec3(0, 0, 3),vec3& dirp=vec3(0,0,-3)) :eye(pos), dir(dirp), uper(vec3(0, 1, 0)),
 		theta(PI/2),phi(PI/2),factor(8.0f)
 	{
 
+	}
+	inline vec3& getEye()
+	{
+		return eye;
+	}
+	inline vec3& getDir()
+	{
+		return dir;
 	}
 	mat4 getView()
 	{
@@ -49,9 +57,10 @@ public:
 	{
 		//set limit to zoom 
 		GLfloat preValue = factor;
-		factor = inner<float>(0.1, 255.9, factor*dx);
+		factor = inner<float>(0.001, 2147483647, factor*dx);
 		GLfloat c =factor/preValue;
 		eye = eye + dir*(1-c);
+		cout << factor << endl;
 		dir = dir*c;
 	}
 
