@@ -26,6 +26,7 @@ class object {
 private:
 	using vec3 = glm::vec3;
 	std::vector<GLfloat> pos, color, normals;
+	std::vector<glm::vec3> posRe;
 	std::string name;
 	class Material {
 	public:
@@ -67,6 +68,14 @@ public:
 		glDeleteVertexArrays(1, &svao);
 		glDeleteBuffers(3, vboHandles);
 		glDeleteBuffers(1, &spositionBufferHandle);
+	}
+	
+	vector<glm::vec3> returnPos(int k) {
+		
+		for (int i = 0; i < pos.size(); i++)
+			posRe.push_back((glm::vec3)(pos[i] - 0));
+			
+		return posRe;
 	}
 	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
 		pos.push_back(pos1);

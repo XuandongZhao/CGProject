@@ -69,7 +69,10 @@ using std::queue;
 using std::list;
 
 
-const double PI = 3.1415926536;
+#ifndef  M_PI
+#define M_PI
+const float PI = 3.14159;
+#endif // ! M_PI
 
 #define SHADOW_WIDTH 8192
 #define SHADOW_HEIGHT 8192
