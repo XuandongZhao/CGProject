@@ -50,25 +50,36 @@ static void smTimer(int id)
 {
 	cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
 	//cout << "1" << endl;
-	if (keyBoard->getKey((keyMap)'w') == true)
+	if (keyBoard->getKey((keyMap)'d') == true)
 	{
 		//myworld.getScenes()[0].cloudCollection[0].sphereCollection[0].translate(-0.1,0,0);
 		camera->moveCamera(-50, 0);
 		//sphere->translate(-0.1, 0, 0);
 		//(camera->getEye()).z -= 5;
 	}
-	if (keyBoard->getKey((keyMap)'s') == true)
+	if (keyBoard->getKey((keyMap)'a') == true)
 	{
 		camera->moveCamera(50, 0);
 	}
-	if (keyBoard->getKey((keyMap)'a') == true)
+	if (keyBoard->getKey((keyMap)'s') == true)
 	{
 		camera->moveCamera(0, -50);
 	}
-	if (keyBoard->getKey((keyMap)'d') == true)
+	if (keyBoard->getKey((keyMap)'w') == true)
 	{
 		camera->moveCamera(0, 50);
 	}
+
+	if (keyBoard->getKey((keyMap)'q') == true)
+	{
+		camera->moveHCamera(10);
+	}
+	if (keyBoard->getKey((keyMap)'e') == true)
+	{
+		camera->moveHCamera(-10);
+	}
+
+
 	if (keyBoard->getKey((keyMap)'j') == true)
 	{
 		camera->rotateCamera(-0.1, 0);
@@ -141,18 +152,23 @@ static void smDrag(int x, int y) {
 	if (mouse->state[GLUT_RIGHT_BUTTON] == GLUT_DOWN)
 	camera->moveCamera(float(x - mouse->pre.x) / 20, float(y - mouse->pre.y) / 20);
 	*/
+	float getx;
+	float gety;
+	if(abs(-mouse->pre.x + float(x))<100&& abs(-mouse->pre.y + float(y))<100)
+		camera->rotateCamera((-mouse->pre.x+float(x))/40, (-mouse->pre.y+float(y))/40);
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
+	
 	//glutPostRedisplay();
 }
 static void smClick(int button, int state, int x, int y) {
 	mouse->state[button] = state;
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
-	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN) {
-		mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
-	}
-
+	//if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN) {
+	//	mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
+	//}
+	
 	//glutPostRedisplay();
 }
 static void smWheel(int wheel, int dir, int x, int y) {
@@ -165,7 +181,7 @@ static void smWheel(int wheel, int dir, int x, int y) {
 static void smKeyDown(unsigned char cAscii, int x, int y)
 {
 	static keyMap mykeys;
-	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
+	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
 	{
 		keyBoard->getKey((keyMap)cAscii) = true;
 	}
@@ -173,7 +189,7 @@ static void smKeyDown(unsigned char cAscii, int x, int y)
 }
 static void smKeyUp(unsigned char cAscii, int x, int y)
 {
-	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
+	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
 	{
 		keyBoard->getKey((keyMap)cAscii) = false;
 	}

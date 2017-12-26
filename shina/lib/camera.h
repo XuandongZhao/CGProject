@@ -38,6 +38,11 @@ public:
 		//glm::vec2 normal = glm::vec2(1, 0);
 		//theta = acos(eye.x/sqrt(eye.x*eye.x+eye.z*eye.z));
 	}
+	//move the height of camera
+	void moveHCamera(GLfloat Z) {
+		eye.y += Z;
+	}
+
 	//rotate camera
 	void rotateCamera(GLfloat rX, GLfloat ry)
 	{
