@@ -4,7 +4,7 @@
 extern smShader *elementShader;
 extern smShader *texShader;
 extern smShader *shadowShader;
-
+/*
 void texture::pic(const char *fileName) {
 	// load picture to bitmap
 	CImage *img = new CImage;
@@ -29,7 +29,7 @@ void texture::pic(const char *fileName) {
 	{
 		src.data = (unsigned char *)img->GetBits();
 	}
-}
+}*/
 void texture::shadow() {
 	if (pos.size() == 0)return;
 
@@ -46,6 +46,7 @@ void texture::shadow() {
 	glBindVertexArray(svao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
 }
+/*
 void texture::show() {
 	if (pos.size() == 0)return;
 
@@ -82,8 +83,8 @@ void texture::show() {
 	texShader->setInt("u_textureMap", 1);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-}
-
+}*/
+/*
 texture& texture::load(const char*filename)
 {
 	std::ifstream fin;
@@ -225,6 +226,411 @@ texture& texture::load(const char*filename)
 
 	return *this;
 }
+*/
+texture& texture::load(const char*filename)
+{
+	FILE* file = fopen(filename, "r");
+	if (file == NULL)
+	{
+		cout << "obj name error!" << endl;
+		return *this;
+	}
+
+	int v_num = 0;
+	int vn_num = 0;
+	int vt_num = 0;
+	char buf[256];
+	float num1, num2, num3;
+
+	vector<float>pos;
+	vector<float>coord;
+	vector<float>normal;
+
+	int line = 0;
+	while (fscanf(file, "%s", buf) != EOF)
+	{
+		line++;
+		switch (buf[0])
+		{
+		case 'v':
+		{
+			//cout << "This is v and line is " << line << endl;
+			switch (buf[1])
+			{
+			case '\0':
+				fscanf(file, "%f %f %f", &num1, &num2, &num3);
+				pos.push_back(num1);
+				pos.push_back(num3);
+				pos.push_back(num2);
+				v_num++;
+				break;
+			case 'n':
+				fscanf(file, "%f %f %f", &num1, &num2, &num3);
+				normal.push_back(num1);
+				normal.push_back(num2);
+				normal.push_back(num3);
+				vn_num++;
+				break;
+			case 't':
+				fscanf(file, "%f %f %f", &num1, &num2, &num3);
+				coord.push_back(num1);
+				coord.push_back(num2);
+				coord.push_back(num3);
+				vt_num++;
+				break;
+			default:
+				fgets(buf, sizeof(buf), file);
+				break;
+			}
+			break;
+		}
+		case 'f':
+		{
+			//cout << "This is f and line is " << line << endl;
+			int v0, t0, n0, v1, t1, n1, v2, t2, n2;
+			v0 = v1 = v2 = 0;
+			n0 = n1 = n2 = 0;
+			t0 = t1 = t2 = 0;
+			fscanf(file, "%s", buf);
+
+			// type: v//vn
+			if (sscanf(buf, "%d//%d", &v0, &n0) == 2)
+			{
+				fscanf(file, "%d//%d", &v1, &n1);
+				fscanf(file, "%d//%d", &v2, &n2);
+				//v
+				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+				//vt
+				this->pushCoord();
+				this->pushCoord();
+				this->pushCoord();
+				//vn
+				this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+				this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+				this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+				//material index
+				mtl.push_back(active);
+				//if the face is not a triangle, regard it as the combination of several triangles
+				//assign old vertex to new and add one more vertex
+				v1 = v2;
+				n1 = n2;
+				t1 = t2;
+
+				while (fscanf(file, "%d//%d", &v2, &n2) == 2)
+				{
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					this->pushCoord();
+					this->pushCoord();
+					this->pushCoord();
+
+					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+					mtl.push_back(active);
+
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+				}
+			}
+			// type: v/vt/vn
+			else if (sscanf(buf, "%d/%d/%d", &v0, &t0, &n0) == 3)
+			{
+				fscanf(file, "%d/%d/%d", &v1, &t1, &n1);
+				fscanf(file, "%d/%d/%d", &v2, &t2, &n2);
+
+				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+				if (active != -1)
+				{
+					this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+					this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+					this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
+				}
+				else
+				{
+					this->pushCoord();
+					this->pushCoord();
+					this->pushCoord();
+				}
+
+				this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+				this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+				this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+				mtl.push_back(active);
+
+				//add more
+				v1 = v2;
+				n1 = n2;
+				t1 = t2;
+				while (fscanf(file, "%d/%d/%d", &v2, &t2, &n2) == 3)
+				{
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					if (active != -1)
+					{
+						this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+						this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+						this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
+					}
+					else
+					{
+						this->pushCoord();
+						this->pushCoord();
+						this->pushCoord();
+					}
+
+					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
+					mtl.push_back(active);
+
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+				}
+			}
+			// type: v/vt
+			else if (sscanf(buf, "%d/%d", &v0, &t0) == 2)
+			{
+				cout << line << endl;
+				fscanf(file, "%d/%d", &v1, &t1);
+				fscanf(file, "%d/%d", &v2, &t1);
+				cout << v0 << " " << v1 << " " << v2 << endl;
+
+				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+				if (active != -1)
+				{
+					this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+					this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+					this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
+				}
+				else
+				{
+					this->pushCoord();
+					this->pushCoord();
+					this->pushCoord();
+				}
+
+				glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+					pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+					pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+				glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
+					pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+					pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+				glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+					edge2.z*edge1.x - edge1.z*edge2.x,
+					edge2.x*edge1.y - edge1.x*edge2.y);
+
+				this->pushNormal(norm.x, norm.y, norm.z);
+				this->pushNormal(norm.x, norm.y, norm.z);
+				this->pushNormal(norm.x, norm.y, norm.z);
+
+				mtl.push_back(active);
+
+				//add more
+				v1 = v2;
+				n1 = n2;
+				t1 = t2;
+				while (fscanf(file, "%d/%d", &v2, &t2) == 2)
+				{
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					if (active != -1)
+					{
+						this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+						this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+						this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
+					}
+					else
+					{
+						this->pushCoord();
+						this->pushCoord();
+						this->pushCoord();
+					}
+
+					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
+						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+						edge2.z*edge1.x - edge1.z*edge2.x,
+						edge2.x*edge1.y - edge1.x*edge2.y);
+
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+
+					mtl.push_back(active);
+
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+				}
+			}
+			// type: v
+			else if (sscanf(buf, "%d", &v0) == 1)
+			{
+				fscanf(file, "%d", &v1);
+				fscanf(file, "%d", &v2);
+
+				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+				this->pushCoord();
+				this->pushCoord();
+				this->pushCoord();
+
+				glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+					pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+					pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+				glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
+					pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+					pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+				glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+					edge2.z*edge1.x - edge1.z*edge2.x,
+					edge2.x*edge1.y - edge1.x*edge2.y);
+
+				this->pushNormal(norm.x, norm.y, norm.z);
+				this->pushNormal(norm.x, norm.y, norm.z);
+				this->pushNormal(norm.x, norm.y, norm.z);
+
+				mtl.push_back(active);
+
+				//add more
+				v1 = v2;
+				n1 = n2;
+				t1 = t2;
+				while (fscanf(file, "%d", &v2) > 0)
+				{
+					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
+					this->pushCoord();
+					this->pushCoord();
+					this->pushCoord();
+
+					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
+						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
+						pos[v1 * 3 - 1] - pos[v0 * 3 - 1]);
+					glm::vec3 edge2(pos[v2 * 3 - 3] - pos[v1 * 3 - 3],
+						pos[v2 * 3 - 2] - pos[v1 * 3 - 2],
+						pos[v2 * 3 - 1] - pos[v1 * 3 - 1]);
+					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
+						edge2.z*edge1.x - edge1.z*edge2.x,
+						edge2.x*edge1.y - edge1.x*edge2.y);
+
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+					this->pushNormal(norm.x, norm.y, norm.z);
+
+					mtl.push_back(active);
+
+					v1 = v2;
+					n1 = n2;
+					t1 = t2;
+				}
+			}
+			break;
+		}
+		//mtllib
+		case 'm':
+		{
+			std::ifstream min;
+			string path = string(filename);
+			unsigned int tmp = path.find_last_of('/');
+			for (unsigned int i = path.length() - 1; i > tmp; i--)
+				path.pop_back();
+			fscanf(file, "%s", buf);
+			string s(buf);
+			string relative_path = path;
+
+			string abs_path;
+			path += buf;
+
+			min.open(path);
+			if (min.is_open() == false)
+			{
+				cout << "ERROR: CANNOT OPEN MTLLIB " << path << endl;
+				exit(1);
+			}
+			while (min >> s) {
+				if (s == "newmtl") {
+					surface.push_back(Material());
+					min >> s;
+					surface[surface.size() - 1].name = s;
+					surface[surface.size() - 1].is_src = false;
+				}
+				else if (s == "Kd") {
+					min >> num1 >> num2 >> num3;
+					surface[surface.size() - 1].kd = glm::vec3(num1, num2, num3);
+				}
+				else if (s == "Ka") {
+					min >> num1 >> num2 >> num3;
+					surface[surface.size() - 1].ka = glm::vec3(num1, num2, num3);
+				}
+				else if (s == "Ks") {
+					min >> num1 >> num2 >> num3;
+					surface[surface.size() - 1].ks = glm::vec3(num1, num2, num3);
+				}
+				else if (s == "map_Kd") {
+					min >> s;
+					cout << s << endl;
+					bool success;
+					abs_path = relative_path + s;
+					success = surface[surface.size() - 1].pic(abs_path.c_str());
+					surface[surface.size() - 1].is_src = success;
+				}
+				else {
+					min.getline(buf, 256);
+				}
+			}
+			break;
+		}
+		case 'u':
+		{
+			active = -1;
+			fscanf(file, "%s", buf);
+			string s(buf);
+			for (unsigned int i = 0; i < surface.size(); i++) {
+				if (surface[i].name == s) {
+					active = i;
+					break;
+				}
+			}
+			break;
+		}
+		default:
+		{
+			fgets(buf, sizeof(buf), file);
+			break;
+		}
+		}
+	}
+	cout << filename << " load finished!\n";
+	return *this;
+}
 void object::shadow()
 {
 	//cout << "shadow" << endl;
@@ -287,6 +693,7 @@ void scene::shadow()
 	}
 
 }
+
 void scene::show(smLight & light)
 {
 	for (auto &e : objCollection) {
@@ -297,6 +704,7 @@ void scene::show(smLight & light)
 			elementShader->setFloat("u_lightSpec", light.specular);
 		}
 	}
+	/*
 	for (auto &t : texCollection) {
 		t.show();
 		if (t.diy) {
@@ -305,7 +713,7 @@ void scene::show(smLight & light)
 			elementShader->setFloat("u_lightSpec", light.specular);
 		}
 	}
-
+	*/
 	for (auto & t : cloudCollection)
 	{
 		t.show();
