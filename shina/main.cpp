@@ -34,7 +34,7 @@ static void smInit()
 	elementShader = new smShader("files//element.vert", "files//element.frag");
 	texShader = new smShader("files//tex.vert", "files//tex.frag");
 	shadowShader = new smShader("files//shadow.vert", "files//shadow.frag");
-	camera = new smCamera(cameraPosition,cameraDir);
+	camera = new smCamera(cameraPosition, cameraDir);
 	mouse = new smMouse();
 	keyBoard = new smKeyBoard();
 
@@ -109,7 +109,7 @@ static void smDisplay() {
 
 
 
-	
+
 	render.render(myworld, *camera);
 	//sphere->show();
 
@@ -125,7 +125,9 @@ void build() {
 	static scene tmp;
 	//Sphere *a = new Sphere(0.05, 1, glm::vec4(1.0f, 0.0f, 1.0f,1.0f));
 	//a->init();
-	tmp.push_back(object().load("city//test3.obj").scale(0.05,0.05,0.05));
+	texture obj;
+	obj.load("city//test3.obj");
+	tmp.push_back(object().load("city//test3.obj").scale(0.05, 0.05, 0.05));
 	//tmp.push_back(cloud().push_back(*sphere).push_back(*a));
 	//testCircles.push_back(sphere(10, 2, "fuck", glm::vec4(1, 0, 0, 1)));
 	//cout<<testCircles.particlesCollection[0].draw()<<endl;
@@ -133,10 +135,8 @@ void build() {
 
 	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
 
-
-	//tmp.push_back(object().load("city//test1.obj").unitize());
 	myworld.push_back(tmp);
-	myworld.push_back(smLight(0, glm::vec3 (55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
+	myworld.push_back(smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
 	//myworld.push_back(smLight(0, glm::vec3(-24.f, 32.f, 18.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.1f, .1f, .1f), 1.f));
 }
 static void smMouseFunc(int x, int y) {
@@ -154,11 +154,11 @@ static void smDrag(int x, int y) {
 	*/
 	float getx;
 	float gety;
-	if(abs(-mouse->pre.x + float(x))<100&& abs(-mouse->pre.y + float(y))<100)
-		camera->rotateCamera((-mouse->pre.x+float(x))/40, (-mouse->pre.y+float(y))/40);
+	if (abs(-mouse->pre.x + float(x))<100 && abs(-mouse->pre.y + float(y))<100)
+		camera->rotateCamera((-mouse->pre.x + float(x)) / 40, (-mouse->pre.y + float(y)) / 40);
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
-	
+
 	//glutPostRedisplay();
 }
 static void smClick(int button, int state, int x, int y) {
@@ -168,7 +168,7 @@ static void smClick(int button, int state, int x, int y) {
 	//if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN) {
 	//	mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
 	//}
-	
+
 	//glutPostRedisplay();
 }
 static void smWheel(int wheel, int dir, int x, int y) {
@@ -209,7 +209,7 @@ int main(int argc, char*argv[])
 	glutDisplayFunc(smDisplay);
 	glutReshapeFunc(smReshape);
 
-	
+
 	glutPassiveMotionFunc(smMouseFunc);
 	glutMotionFunc(smDrag);
 	glutMouseFunc(smClick);
@@ -218,7 +218,7 @@ int main(int argc, char*argv[])
 	glutKeyboardFunc(smKeyDown);
 	glutKeyboardUpFunc(smKeyUp);
 
-	glutTimerFunc(100,smTimer,1);
+	glutTimerFunc(100, smTimer, 1);
 	//glutSpecialFunc(smSpecialDown);
 	//glutSpecialUpFunc(smSpecialUp);
 
