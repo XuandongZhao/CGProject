@@ -798,6 +798,142 @@ private:
 	vector<float> pos;
 	vector<float> coord;
 	vector<float> normal;
+	//新的vec，表示用第几个材料画 和每个三角形都有一个mtl值，-1代表没有材料
+	vector<int> mtl;
+	//增加了一个材质类，有材质信息和图片信息
+	class Material {
+	public:
+		std::string name;//材质名字
+		glm::vec3 kd, ka, ks;//材质信息
+		Bitmap src;//图片信息
+		bool is_src;//是否有图片，有则使用图片画，否则用材质画
+
+		//这个函数从texture类放到material类里面
+		bool pic(const char *fileName)
+		{
+			// load picture to bitmap
+			CImage *img = new CImage;
+			if (!fileName)
+			{
+				cout << "Warning: image open failed!\nMaterial name is " << name << endl;
+				exit(1);
+				return false;
+			}
+			HRESULT hr = img->Load(fileName);
+			if (!SUCCEEDED(hr))
+			{
+				cout << "Warning: load image failed!\nMaterial name is " << name << endl;
+				exit(1);
+				return false;
+			}
+			src.sizeX = img->GetWidth();
+			src.sizeY = img->GetHeight();
+			if (img->GetPitch() < 0)
+			{
+				src.data = (unsigned char *)img->GetBits() + (img->GetPitch()*(img->GetHeight() - 1));
+			}
+			else
+			{
+				src.data = (unsigned char *)img->GetBits();
+			}
+			return true;
+		}
+	};
+	vector<Material>surface;
+	//active表示当前用第几个材质
+	int active = -1;
+	//这些都放在材质里面了
+	/*glm::vec3 kd, ka;
+	float ks;
+	*/
+	glm::mat4 model;
+public:
+	bool diy = false;
+	//放到材质里面了
+	//Bitmap src;
+
+	GLuint vao, svao, texName;
+	GLuint vboHandles[3],
+		positionBufferHandle, coordBufferHandle, normalBufferHandle;
+	GLuint spositionBufferHandle;
+
+	texture(bool diy = false,
+		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
+		float s = 0) {
+		pos.clear();
+		coord.clear();
+		normal.clear();
+		glGenVertexArrays(1, &vao);
+		glGenVertexArrays(1, &svao);
+		glGenBuffers(3, vboHandles);
+		positionBufferHandle = vboHandles[0];
+		coordBufferHandle = vboHandles[1];
+		normalBufferHandle = vboHandles[2];
+		glGenBuffers(1, &spositionBufferHandle);
+		glGenTextures(1, &texName);
+
+		this->diy = diy;
+		/*
+		kd = d;
+		ka = a;
+		ks = s;
+		*/
+	}
+	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
+		pos.push_back(pos1);
+		pos.push_back(pos2);
+		pos.push_back(pos3);
+	}
+	void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
+		coord.push_back(coord1);
+		coord.push_back(coord2);
+	}
+	void pushNormal(float normal1, float normal2, float normal3) {
+		normal.push_back(normal1);
+		normal.push_back(normal2);
+		normal.push_back(normal3);
+	}
+	float *getPos() {
+		return toArray<float>(&pos);
+	}
+	float *getCoord() {
+		return toArray<float>(&coord);
+	}
+	float *getNormal() {
+		return toArray<float>(&normal);
+	}
+
+	texture& load(const char *filename);
+	void shadow();
+	//void show();
+
+	//void pic(const char *fileName);
+
+	inline void loadIdentity()
+	{
+		this->model = glm::mat4();
+	}
+
+	inline void translate(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::translate(this->model, vec3(x, y, z));
+	}
+	inline void scale(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::scale(this->model, vec3(x, y, z));
+	}
+	inline void rotate(GLfloat angel, vec3 axis)
+	{
+		this->model = glm::rotate(this->model, angel, axis);
+	}
+};
+/*
+class texture {
+private:
+	using vec3 = glm::vec3;
+	vector<float> pos;
+	vector<float> coord;
+	vector<float> normal;
 
 	glm::vec3 kd, ka;
 	float ks;
@@ -879,7 +1015,7 @@ public:
 	{
 		this->model = glm::rotate(this->model, angel, axis);
 	}
-};
+};*/
 
 
 class cloud
