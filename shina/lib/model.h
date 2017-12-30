@@ -762,7 +762,6 @@ public:
 			}
 			}
 		}
-		//cout << line << endl;
 		cout << filename << " load finished!\n";
 		return *this;
 	}
@@ -795,11 +794,6 @@ public:
 class texture {
 private:
 	using vec3 = glm::vec3;
-	vector<float> pos;
-	vector<float> coord;
-	vector<float> normal;
-	//新的vec，表示用第几个材料画 和每个三角形都有一个mtl值，-1代表没有材料
-	vector<int> mtl;
 	//增加了一个材质类，有材质信息和图片信息
 	class Material {
 	public:
@@ -839,18 +833,40 @@ private:
 			return true;
 		}
 	};
-	vector<Material>surface;
-	//active表示当前用第几个材质
-	int active = -1;
-	//这些都放在材质里面了
-	/*glm::vec3 kd, ka;
-	float ks;
-	*/
+	class Group {
+	public:
+		vector<float> pos;
+		vector<float> coord;
+		vector<float> normal;
+		Material material;
+		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
+			pos.push_back(pos1);
+			pos.push_back(pos2);
+			pos.push_back(pos3);
+		}
+		void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
+			coord.push_back(coord1);
+			coord.push_back(coord2);
+		}
+		void pushNormal(float normal1, float normal2, float normal3) {
+			normal.push_back(normal1);
+			normal.push_back(normal2);
+			normal.push_back(normal3);
+		}
+		float *getPos() {
+			return toArray<float>(&pos);
+		}
+		float *getCoord() {
+			return toArray<float>(&coord);
+		}
+		float *getNormal() {
+			return toArray<float>(&normal);
+		}
+	};
+	vector<Group> group;
 	glm::mat4 model;
 public:
 	bool diy = false;
-	//放到材质里面了
-	//Bitmap src;
 
 	GLuint vao, svao, texName;
 	GLuint vboHandles[3],
@@ -860,9 +876,6 @@ public:
 	texture(bool diy = false,
 		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
 		float s = 0) {
-		pos.clear();
-		coord.clear();
-		normal.clear();
 		glGenVertexArrays(1, &vao);
 		glGenVertexArrays(1, &svao);
 		glGenBuffers(3, vboHandles);
@@ -873,42 +886,22 @@ public:
 		glGenTextures(1, &texName);
 
 		this->diy = diy;
-		/*
-		kd = d;
-		ka = a;
-		ks = s;
-		*/
-	}
-	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
-		pos.push_back(pos1);
-		pos.push_back(pos2);
-		pos.push_back(pos3);
-	}
-	void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
-		coord.push_back(coord1);
-		coord.push_back(coord2);
-	}
-	void pushNormal(float normal1, float normal2, float normal3) {
-		normal.push_back(normal1);
-		normal.push_back(normal2);
-		normal.push_back(normal3);
-	}
-	float *getPos() {
-		return toArray<float>(&pos);
-	}
-	float *getCoord() {
-		return toArray<float>(&coord);
-	}
-	float *getNormal() {
-		return toArray<float>(&normal);
 	}
 
 	texture& load(const char *filename);
 	void shadow();
-	//void show();
-
-	//void pic(const char *fileName);
-
+	void show();
+	void print()
+	{
+		for (size_t i = 0; i < group.size(); i++)
+		{
+			cout << "group: " << i << endl;
+			cout << "v num: " << group[i].pos.size() / 3<< endl;
+			cout << "vt num: " << group[i].coord.size() / 2<< endl;
+			cout << "vn num: " << group[i].normal.size() / 3<< endl;
+			cout << "material name: " << group[i].material.name << endl;
+		}
+	}
 	inline void loadIdentity()
 	{
 		this->model = glm::mat4();
@@ -927,6 +920,7 @@ public:
 		this->model = glm::rotate(this->model, angel, axis);
 	}
 };
+
 /*
 class texture {
 private:
