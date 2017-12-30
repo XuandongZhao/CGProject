@@ -7,6 +7,8 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
+#include "lib\Particle.h"
+#include <time.h>  
 using namespace std;
 smCamera*camera;
 smMouse* mouse;
@@ -23,9 +25,61 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 Sphere *sphere;
+CParticle totalCloudInfo;
+
+/** 用来设置粒子的属性值 */
+float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
+int r, g, b;
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
+
+bool initCloudInfo()
+{
+	for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); ++i)
+	{
+		///初始化颜色（白色）
+		r = 255;
+		g = 255;
+		b = 255;
+		totalCloudInfo.SetColor(i, r, g, b);
+
+		///初始化坐标
+		x = 0.1f * (rand() % 50) - 2.5f;
+		y = 2 + 0.1f * (rand() % 2);
+		if ((int)x % 2 == 0)
+			z = rand() % 6;
+		else
+			x = -rand() % 3;
+		totalCloudInfo.SetPosition(i, x, y, z);
+
+		///初始化速度
+		vx = 0.00001 * (rand() % 100);
+		vy = 0.0000002 * (rand() % 28000);
+		vz = 0;
+		totalCloudInfo.SetVelocity(i, vx, vy, vz);
+
+		///初始化加速度
+		ax = 0;
+		ay = 0.000005f;
+		az = 0;
+		totalCloudInfo.SetAcceleration(i, ax, ay, az);
+
+		///初始化生命周期
+		lifetime = 100;
+		totalCloudInfo.SetLifeTime(i, lifetime);
+
+		///消失速度
+		deci = 0.005 * (rand() % 50);
+		totalCloudInfo.SetDec(i, deci);
+
+		///初始化大小
+		totalCloudInfo.SetSize(i, 0.01f);
+	}
+	return true;
+}
+
+
 
 static void smInit()
 {
@@ -43,6 +97,8 @@ static void smInit()
 
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+	totalCloudInfo.Create(500);
+	initCloudInfo();
 }
 unsigned int cnt = 0;
 
@@ -123,14 +179,29 @@ static void smReshape(int w, int h) {
 //object sss;
 void build() {
 	static scene tmp;
-	//Sphere *a = new Sphere(0.05, 1, glm::vec4(1.0f, 0.0f, 1.0f,1.0f));
-	//a->init();
+	cloud temC;
+	int count = 0;
+	time_t start, end;
+	double cost;
+	time(&start);
+	for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); i++) {
+		Sphere *a = new Sphere(0.01, 30, glm::vec4(255.0f, 255.0f, 255.0f, 255.0f));
+		a->init();
+		totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
+	//	a->translate(x,y,z);
+		a->translate(x/10.0, y/10.0, z/10.0);
+		cout << "111" << x <<" "<< y <<" "<<z<< endl;
+		temC.push_back(*a);
+	}
+	time(&end);
+	cost = difftime(end, start);
+	cout << cost << endl;
 	texture obj;
 	obj.load("city//test3.obj");
 	tmp.push_back(object().load("city//test3.obj").scale(0.05, 0.05, 0.05));
-	//tmp.push_back(cloud().push_back(*sphere).push_back(*a));
+	tmp.push_back(temC);
 	//testCircles.push_back(sphere(10, 2, "fuck", glm::vec4(1, 0, 0, 1)));
-	//cout<<testCircles.particlesCollection[0].draw()<<endl;
+	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)
 
 
 	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
