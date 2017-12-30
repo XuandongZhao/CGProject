@@ -5,33 +5,8 @@ extern smShader *elementShader;
 extern smShader *texShader;
 extern smShader *shadowShader;
 /*
-void texture::pic(const char *fileName) {
-	// load picture to bitmap
-	CImage *img = new CImage;
-	cout << "fff:" << fileName << endl;
-	if (!fileName) 
-	{
-		return;
-	}
-	HRESULT hr = img->Load(fileName);
-	if (!SUCCEEDED(hr)) 
-	{
-		return;
-	}
-	cout << "success: " << fileName << endl;
-	src.sizeX = img->GetWidth();
-	src.sizeY = img->GetHeight();
-	if (img->GetPitch() < 0)
-	{
-		src.data = (unsigned char *)img->GetBits() + (img->GetPitch()*(img->GetHeight() - 1));
-	}
-	else
-	{
-		src.data = (unsigned char *)img->GetBits();
-	}
-}*/
 void texture::shadow() {
-	if (pos.size() == 0)return;
+	//if (pos.size() == 0)return;
 
 	shadowShader->use();
 	shadowShader->setMat4("u_modelMatrix", model);
@@ -46,6 +21,7 @@ void texture::shadow() {
 	glBindVertexArray(svao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
 }
+*/
 /*
 void texture::show() {
 	if (pos.size() == 0)return;
@@ -84,149 +60,6 @@ void texture::show() {
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
 }*/
-/*
-texture& texture::load(const char*filename)
-{
-	std::ifstream fin;
-
-	fin.open(filename);
-	if (fin.is_open() == FALSE)return *this;
-
-	string op;
-	float num1, num2, num3;
-
-	vector<float>pos;
-	vector<float>coord;
-	vector<float>normal;
-
-	vector<string> texName;
-	vector<string> texDir;
-
-	while (fin >> op) {
-		//cout << "*****" << endl;
-		if (op == "v") {
-			fin >> num1 >> num2 >> num3;
-			pos.push_back(num1);
-			pos.push_back(num3);
-			pos.push_back(num2);
-		}
-		else if (op == "vt") {
-			fin >> num1 >> num2;
-			coord.push_back(num1);
-			coord.push_back(num2);
-		}
-		else if (op == "vn") {
-			fin >> num1 >> num2 >> num3;
-			normal.push_back(num1);
-			normal.push_back(num2);
-			normal.push_back(num3);
-		}
-		else if (op == "f") {
-			string v1, v2, v3;
-			int tmp1 = 0, tmp2 = 0, tmp3 = 0;
-
-			fin >> v1 >> v2 >> v3;
-			num1 = (float)atoi(v1.c_str() + tmp1);
-			num2 = (float)atoi(v2.c_str() + tmp2);
-			num3 = (float)atoi(v3.c_str() + tmp3);
-			this->pushPos(pos[(int)num1 * 3 - 3], pos[(int)num1 * 3 - 2], pos[(int)num1 * 3 - 1]);
-			this->pushPos(pos[(int)num2 * 3 - 3], pos[(int)num2 * 3 - 2], pos[(int)num2 * 3 - 1]);
-			this->pushPos(pos[(int)num3 * 3 - 3], pos[(int)num3 * 3 - 2], pos[(int)num3 * 3 - 1]);
-
-			tmp1 = v1.find_first_of('/', tmp1) + 1;
-			tmp2 = v2.find_first_of('/', tmp2) + 1;
-			tmp3 = v3.find_first_of('/', tmp3) + 1;
-			if (tmp1 == 0 || tmp2 == 0 || tmp3 == 0) {
-				this->pushCoord();
-				this->pushCoord();
-				this->pushCoord();
-			}
-			else {
-				num1 = (float)atoi(v1.c_str() + tmp1);
-				num2 = (float)atoi(v2.c_str() + tmp2);
-				num3 = (float)atoi(v3.c_str() + tmp3);
-				this->pushCoord(coord[(int)num1 * 2 - 2], coord[(int)num1 * 2 - 1]);
-				this->pushCoord(coord[(int)num2 * 2 - 2], coord[(int)num2 * 2 - 1]);
-				this->pushCoord(coord[(int)num3 * 2 - 2], coord[(int)num3 * 2 - 1]);
-			}
-
-			tmp1 = v1.find_first_of('/', tmp1) + 1;
-			tmp2 = v2.find_first_of('/', tmp2) + 1;
-			tmp3 = v3.find_first_of('/', tmp3) + 1;
-			if (tmp1 == 0 || tmp2 == 0 || tmp3 == 0) {
-				int p1 = atoi(v1.c_str());
-				int p2 = atoi(v2.c_str());
-				int p3 = atoi(v3.c_str());
-				glm::vec3 edge1(pos[p2 * 3 - 3] - pos[p1 * 3 - 3],
-					pos[p2 * 3 - 2] - pos[p1 * 3 - 2],
-					pos[p2 * 3 - 1] - pos[p1 * 3 - 1]);
-				glm::vec3 edge2(pos[p3 * 3 - 3] - pos[p2 * 3 - 3],
-					pos[p3 * 3 - 2] - pos[p2 * 3 - 2],
-					pos[p3 * 3 - 1] - pos[p2 * 3 - 1]);
-				glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
-					edge2.z*edge1.x - edge1.z*edge2.x,
-					edge2.x*edge1.y - edge1.x*edge2.y);
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-			}
-			else {
-				num1 = (float)atoi(v1.c_str() + tmp1);
-				num2 = (float)atoi(v2.c_str() + tmp2);
-				num3 = (float)atoi(v3.c_str() + tmp3);
-				this->pushNormal(normal[(int)num1 * 3 - 3], normal[(int)num1 * 3 - 2], normal[(int)num1 * 3 - 1]);
-				this->pushNormal(normal[(int)num2 * 3 - 3], normal[(int)num2 * 3 - 2], normal[(int)num2 * 3 - 1]);
-				this->pushNormal(normal[(int)num3 * 3 - 3], normal[(int)num3 * 3 - 2], normal[(int)num3 * 3 - 1]);
-			}
-		}
-		else if (op == "mtllib") {
-			std::ifstream min;
-			string path = string(filename);
-			unsigned int tmp = path.find_last_of('/');
-			for (unsigned int i = path.length() - 1; i > tmp; i--)
-				path.pop_back();
-			fin >> op;
-			path += op;
-
-			min.open(path);
-			if (min.is_open() == FALSE)continue;
-
-			bool complete = true;
-			while (min >> op) {
-				if (op == "newmtl") {
-					if (!complete)texDir.push_back("");
-					min >> op;
-					texName.push_back(op);
-					complete = false;
-				}
-				else if (op == "src") {
-					if (complete)texName.push_back("");
-					min >> op;
-					texDir.push_back(op);
-					complete = true;
-				}
-				else continue;
-			}
-		}
-		else if (op == "usemtl") {
-			fin >> op;
-			for (unsigned int i = 0; i < texName.size(); i++) {
-				if (op == texName[i]) {
-					pic(texDir[i].c_str());
-					break;
-				}
-			}
-		}
-		else {
-			char *buf = new char[256];
-			fin.getline(buf, 256);
-			delete buf;
-		}
-	}
-
-	return *this;
-}
-*/
 texture& texture::load(const char*filename)
 {
 	FILE* file = fopen(filename, "r");
@@ -235,7 +68,7 @@ texture& texture::load(const char*filename)
 		cout << "obj name error!" << endl;
 		return *this;
 	}
-
+	int active = 0;
 	int v_num = 0;
 	int vn_num = 0;
 	int vt_num = 0;
@@ -299,19 +132,20 @@ texture& texture::load(const char*filename)
 				fscanf(file, "%d//%d", &v1, &n1);
 				fscanf(file, "%d//%d", &v2, &n2);
 				//v
-				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+				this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+
 				//vt
-				this->pushCoord();
-				this->pushCoord();
-				this->pushCoord();
+				this->group[active].pushCoord();
+				this->group[active].pushCoord();
+				this->group[active].pushCoord();
+
 				//vn
-				this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
-				this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
-				this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
-				//material index
-				mtl.push_back(active);
+				this->group[active].pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+				this->group[active].pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+				this->group[active].pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
+
 				//if the face is not a triangle, regard it as the combination of several triangles
 				//assign old vertex to new and add one more vertex
 				v1 = v2;
@@ -320,19 +154,19 @@ texture& texture::load(const char*filename)
 
 				while (fscanf(file, "%d//%d", &v2, &n2) == 2)
 				{
-					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+					//v
+					this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-					this->pushCoord();
-					this->pushCoord();
-					this->pushCoord();
-
-					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
-					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
-					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
-
-					mtl.push_back(active);
+					//vt
+					this->group[active].pushCoord();
+					this->group[active].pushCoord();
+					this->group[active].pushCoord();
+					//vn
+					this->group[active].pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->group[active].pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->group[active].pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
 
 					v1 = v2;
 					n1 = n2;
@@ -345,28 +179,17 @@ texture& texture::load(const char*filename)
 				fscanf(file, "%d/%d/%d", &v1, &t1, &n1);
 				fscanf(file, "%d/%d/%d", &v2, &t2, &n2);
 
-				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+				this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-				if (active != -1)
-				{
-					this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
-					this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
-					this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
-				}
-				else
-				{
-					this->pushCoord();
-					this->pushCoord();
-					this->pushCoord();
-				}
+				this->group[active].pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+				this->group[active].pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+				this->group[active].pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
 
-				this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
-				this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
-				this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
-
-				mtl.push_back(active);
+				this->group[active].pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+				this->group[active].pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+				this->group[active].pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
 
 				//add more
 				v1 = v2;
@@ -374,28 +197,17 @@ texture& texture::load(const char*filename)
 				t1 = t2;
 				while (fscanf(file, "%d/%d/%d", &v2, &t2, &n2) == 3)
 				{
-					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+					this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-					if (active != -1)
-					{
-						this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
-						this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
-						this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
-					}
-					else
-					{
-						this->pushCoord();
-						this->pushCoord();
-						this->pushCoord();
-					}
+					this->group[active].pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+					this->group[active].pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+					this->group[active].pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
 
-					this->pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
-					this->pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
-					this->pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
-
-					mtl.push_back(active);
+					this->group[active].pushNormal(normal[n0 * 3 - 3], normal[n0 * 3 - 2], normal[n0 * 3 - 1]);
+					this->group[active].pushNormal(normal[n1 * 3 - 3], normal[n1 * 3 - 2], normal[n1 * 3 - 1]);
+					this->group[active].pushNormal(normal[n2 * 3 - 3], normal[n2 * 3 - 2], normal[n2 * 3 - 1]);
 
 					v1 = v2;
 					n1 = n2;
@@ -408,24 +220,14 @@ texture& texture::load(const char*filename)
 				cout << line << endl;
 				fscanf(file, "%d/%d", &v1, &t1);
 				fscanf(file, "%d/%d", &v2, &t1);
-				cout << v0 << " " << v1 << " " << v2 << endl;
 
-				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+				this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-				if (active != -1)
-				{
-					this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
-					this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
-					this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
-				}
-				else
-				{
-					this->pushCoord();
-					this->pushCoord();
-					this->pushCoord();
-				}
+				this->group[active].pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+				this->group[active].pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+				this->group[active].pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
 
 				glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 					pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
@@ -437,11 +239,9 @@ texture& texture::load(const char*filename)
 					edge2.z*edge1.x - edge1.z*edge2.x,
 					edge2.x*edge1.y - edge1.x*edge2.y);
 
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-
-				mtl.push_back(active);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 
 				//add more
 				v1 = v2;
@@ -449,22 +249,13 @@ texture& texture::load(const char*filename)
 				t1 = t2;
 				while (fscanf(file, "%d/%d", &v2, &t2) == 2)
 				{
-					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+					this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-					if (active != -1)
-					{
-						this->pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
-						this->pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
-						this->pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
-					}
-					else
-					{
-						this->pushCoord();
-						this->pushCoord();
-						this->pushCoord();
-					}
+					this->group[active].pushCoord(coord[t0 * 3 - 3], coord[t0 * 3 - 2]);
+					this->group[active].pushCoord(coord[t1 * 3 - 3], coord[t1 * 3 - 2]);
+					this->group[active].pushCoord(coord[t2 * 3 - 3], coord[t2 * 3 - 2]);
 
 					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
@@ -476,11 +267,9 @@ texture& texture::load(const char*filename)
 						edge2.z*edge1.x - edge1.z*edge2.x,
 						edge2.x*edge1.y - edge1.x*edge2.y);
 
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-
-					mtl.push_back(active);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
 
 					v1 = v2;
 					n1 = n2;
@@ -493,13 +282,13 @@ texture& texture::load(const char*filename)
 				fscanf(file, "%d", &v1);
 				fscanf(file, "%d", &v2);
 
-				this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-				this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-				this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+				this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+				this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+				this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-				this->pushCoord();
-				this->pushCoord();
-				this->pushCoord();
+				this->group[active].pushCoord();
+				this->group[active].pushCoord();
+				this->group[active].pushCoord();
 
 				glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 					pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
@@ -511,11 +300,9 @@ texture& texture::load(const char*filename)
 					edge2.z*edge1.x - edge1.z*edge2.x,
 					edge2.x*edge1.y - edge1.x*edge2.y);
 
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-				this->pushNormal(norm.x, norm.y, norm.z);
-
-				mtl.push_back(active);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
+				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 
 				//add more
 				v1 = v2;
@@ -523,13 +310,13 @@ texture& texture::load(const char*filename)
 				t1 = t2;
 				while (fscanf(file, "%d", &v2) > 0)
 				{
-					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
-					this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-					this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
+					this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
+					this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
+					this->group[active].pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
-					this->pushCoord();
-					this->pushCoord();
-					this->pushCoord();
+					this->group[active].pushCoord();
+					this->group[active].pushCoord();
+					this->group[active].pushCoord();
 
 					glm::vec3 edge1(pos[v1 * 3 - 3] - pos[v0 * 3 - 3],
 						pos[v1 * 3 - 2] - pos[v0 * 3 - 2],
@@ -541,11 +328,9 @@ texture& texture::load(const char*filename)
 						edge2.z*edge1.x - edge1.z*edge2.x,
 						edge2.x*edge1.y - edge1.x*edge2.y);
 
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-
-					mtl.push_back(active);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
+					this->group[active].pushNormal(norm.x, norm.y, norm.z);
 
 					v1 = v2;
 					n1 = n2;
@@ -577,30 +362,30 @@ texture& texture::load(const char*filename)
 			}
 			while (min >> s) {
 				if (s == "newmtl") {
-					surface.push_back(Material());
+					group.push_back(Group());
 					min >> s;
-					surface[surface.size() - 1].name = s;
-					surface[surface.size() - 1].is_src = false;
+					group[group.size() - 1].material.name = s;
+					group[group.size() - 1].material.is_src = false;
 				}
 				else if (s == "Kd") {
 					min >> num1 >> num2 >> num3;
-					surface[surface.size() - 1].kd = glm::vec3(num1, num2, num3);
+					group[group.size() - 1].material.kd = glm::vec3(num1, num2, num3);
 				}
 				else if (s == "Ka") {
 					min >> num1 >> num2 >> num3;
-					surface[surface.size() - 1].ka = glm::vec3(num1, num2, num3);
+					group[group.size() - 1].material.ka = glm::vec3(num1, num2, num3);
 				}
 				else if (s == "Ks") {
 					min >> num1 >> num2 >> num3;
-					surface[surface.size() - 1].ks = glm::vec3(num1, num2, num3);
+					group[group.size() - 1].material.ks = glm::vec3(num1, num2, num3);
 				}
 				else if (s == "map_Kd") {
 					min >> s;
 					cout << s << endl;
 					bool success;
 					abs_path = relative_path + s;
-					success = surface[surface.size() - 1].pic(abs_path.c_str());
-					surface[surface.size() - 1].is_src = success;
+					success = group[group.size() - 1].material.pic(abs_path.c_str());
+					group[group.size() - 1].material.is_src = success;
 				}
 				else {
 					min.getline(buf, 256);
@@ -610,11 +395,11 @@ texture& texture::load(const char*filename)
 		}
 		case 'u':
 		{
-			active = -1;
+			active = 0;
 			fscanf(file, "%s", buf);
 			string s(buf);
-			for (unsigned int i = 0; i < surface.size(); i++) {
-				if (surface[i].name == s) {
+			for (unsigned int i = 0; i < group.size(); i++) {
+				if (group[i].material.name == s) {
 					active = i;
 					break;
 				}
@@ -629,6 +414,7 @@ texture& texture::load(const char*filename)
 		}
 	}
 	cout << filename << " load finished!\n";
+	print();
 	return *this;
 }
 void object::shadow()
@@ -687,11 +473,12 @@ void scene::shadow()
 	{
 		i.shadow();
 	}
+	/*
 	for (auto & i : texCollection)
 	{
 		i.shadow();
 	}
-
+	*/
 }
 
 void scene::show(smLight & light)
