@@ -104,7 +104,7 @@ unsigned int cnt = 0;
 
 static void smTimer(int id)
 {
-	cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
+	//cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
 	//cout << "1" << endl;
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
@@ -179,13 +179,17 @@ static void smReshape(int w, int h) {
 //object sss;
 void build() {
 	static scene tmp;
+	/*Sphere *a = new Sphere(10, 1, glm::vec4(1.0f, 0.0f, 1.0f,1.0f));
+	a->init();
+	a->translate(0, 100, 0);
+	tmp.push_back(cloud().push_back(*a));*/
 	cloud temC;
 	int count = 0;
 	time_t start, end;
 	double cost;
 	time(&start);
 	for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); i++) {
-		Sphere *a = new Sphere(0.01, 30, glm::vec4(255.0f, 255.0f, 255.0f, 255.0f));
+		Sphere *a = new Sphere(0.01, 30, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		a->init();
 		totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
 	//	a->translate(x,y,z);

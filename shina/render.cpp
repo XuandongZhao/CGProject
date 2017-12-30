@@ -51,6 +51,11 @@ void smRender::render(world & myworld,smCamera& camera)
 		texShader->setVec3("u_lightDiff", light.diffuse);
 		texShader->setVec3("u_lightAmb", light.ambient);
 		texShader->setFloat("u_lightSpec", light.specular);
+		paticleShader->use();
+		paticleShader->setMat4("u_projection", projection);
+		paticleShader->setMat4("u_view", view);
+		//paticleShader->setMat4("u_lightMatrix", light.lightMatrix);
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, light.textureHandle);
 		for (auto& s : myworld.getScenes()) 

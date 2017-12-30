@@ -44,8 +44,8 @@ void Sphere::init()
 
 void Sphere::show()
 {
-	cout << "1" <<pos.size()/3<< endl;
-	cout << "&&&" << vao << " " << vbo << endl;
+	//cout << "1" <<pos.size()/3<< endl;
+	//cout << "&&&" << vao << " " << vbo << endl;
 	paticleShader->use();
 	
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
