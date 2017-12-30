@@ -202,7 +202,7 @@ void build() {
 	cout << cost << endl;
 	texture obj;
 	obj.load("city//test3.obj");
-	tmp.push_back(object().load("city//test3.obj").scale(0.05, 0.05, 0.05));
+	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
 	tmp.push_back(temC);
 	//testCircles.push_back(sphere(10, 2, "fuck", glm::vec4(1, 0, 0, 1)));
 	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)

@@ -797,10 +797,32 @@ private:
 	//增加了一个材质类，有材质信息和图片信息
 	class Material {
 	public:
+		GLuint texName;
 		std::string name;//材质名字
 		glm::vec3 kd, ka, ks;//材质信息
 		Bitmap src;//图片信息
 		bool is_src;//是否有图片，有则使用图片画，否则用材质画
+		bool diy = false;
+
+		GLuint vao, svao;
+		GLuint vboHandles[4],
+			positionBufferHandle, colorBufferHandle,  normalBufferHandle;
+		GLuint spositionBufferHandle;
+
+		GLuint coordBufferHandle;
+
+		Material()
+		{
+			this->diy = false;
+			glGenVertexArrays(1, &vao);
+			glGenVertexArrays(1, &svao);
+			glGenBuffers(4, vboHandles);
+			positionBufferHandle = vboHandles[0];
+			colorBufferHandle = vboHandles[3];
+			coordBufferHandle = vboHandles[1];
+			normalBufferHandle = vboHandles[2];
+			glGenBuffers(1, &spositionBufferHandle);
+		}
 
 		//这个函数从texture类放到material类里面
 		bool pic(const char *fileName)
@@ -837,8 +859,10 @@ private:
 	public:
 		vector<float> pos;
 		vector<float> coord;
+		vector<float> color;
 		vector<float> normal;
 		Material material;
+		bool colorFilled=false;
 		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
 			pos.push_back(pos1);
 			pos.push_back(pos2);
@@ -862,28 +886,41 @@ private:
 		float *getNormal() {
 			return toArray<float>(&normal);
 		}
+		float *getColor() {
+			return toArray<float>(&color);
+		}
+		void fillColor()
+		{
+			if (!colorFilled)
+			{
+				for (int i = 0; i < pos.size(); i++)
+				{
+					if (i % 3 == 0)
+					{
+						color.push_back(material.kd.r);
+					}
+					else if (i % 3 == 1)
+					{
+						color.push_back(material.kd.g);
+					}
+					else {
+						color.push_back(material.kd.b);
+					}
+				}
+				colorFilled = true;
+			}
+		}
 	};
 	vector<Group> group;
 	glm::mat4 model;
 public:
 	bool diy = false;
 
-	GLuint vao, svao, texName;
-	GLuint vboHandles[3],
-		positionBufferHandle, coordBufferHandle, normalBufferHandle;
-	GLuint spositionBufferHandle;
+
 
 	texture(bool diy = false,
 		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
 		float s = 0) {
-		glGenVertexArrays(1, &vao);
-		glGenVertexArrays(1, &svao);
-		glGenBuffers(3, vboHandles);
-		positionBufferHandle = vboHandles[0];
-		coordBufferHandle = vboHandles[1];
-		normalBufferHandle = vboHandles[2];
-		glGenBuffers(1, &spositionBufferHandle);
-		glGenTextures(1, &texName);
 
 		this->diy = diy;
 	}
@@ -907,17 +944,20 @@ public:
 		this->model = glm::mat4();
 	}
 
-	inline void translate(GLfloat x, GLfloat y, GLfloat z)
+	inline texture& translate(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::translate(this->model, vec3(x, y, z));
+		return *this;
 	}
-	inline void scale(GLfloat x, GLfloat y, GLfloat z)
+	inline texture& scale(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::scale(this->model, vec3(x, y, z));
+		return *this;
 	}
-	inline void rotate(GLfloat angel, vec3 axis)
+	inline texture& rotate(GLfloat angel, vec3 axis)
 	{
 		this->model = glm::rotate(this->model, angel, axis);
+		return *this;
 	}
 };
 

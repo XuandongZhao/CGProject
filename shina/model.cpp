@@ -4,62 +4,110 @@
 extern smShader *elementShader;
 extern smShader *texShader;
 extern smShader *shadowShader;
-/*
+
 void texture::shadow() {
 	//if (pos.size() == 0)return;
 
 	shadowShader->use();
 	shadowShader->setMat4("u_modelMatrix", model);
+	for (Group &graph : group)
+	{
+		glBindVertexArray(graph.material.svao);
+		glBindBuffer(GL_ARRAY_BUFFER, graph.material.spositionBufferHandle);
+		glBufferData(GL_ARRAY_BUFFER, graph.pos.size() * 4, graph.getPos(), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+		glBindVertexArray(0);
 
-	glBindVertexArray(svao);
-	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glBindVertexArray(0);
-
-	glBindVertexArray(svao);
-	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-}
-*/
-/*
-void texture::show() {
-	if (pos.size() == 0)return;
-
-	texShader->use();
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, coordBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, coord.size() * 4, getCoord(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, normalBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, normal.size() * 4, getNormal(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, src.sizeX, src.sizeY, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, src.data);
-
-	if (diy) {
-		texShader->setVec3("u_lightDiff", kd);
-		texShader->setVec3("u_lightAmb", ka);
-		texShader->setFloat("u_lightSpec", ks);
+		glBindVertexArray(graph.material.svao);
+		glDrawArrays(GL_TRIANGLES, 0, graph.pos.size() / 3);
 	}
 
-	texShader->setMat4("u_modelMatrix", model);
-	texShader->setInt("u_shadowMap", 0);
-	texShader->setInt("u_textureMap", 1);
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-}*/
+	
+}
+
+
+void texture::show() {
+
+	for (Group &graph : group)
+	{
+		if (graph.pos.size() == 0)	return;
+		
+		if (graph.material.is_src)
+		{
+
+			texShader->use();
+			glBindVertexArray(graph.material.vao);
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.positionBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER, graph.pos.size() * 4, graph.getPos(), GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.coordBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER, graph.coord.size() * 4, graph.getCoord(), GL_STATIC_DRAW);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.normalBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER, graph.normal.size() * 4, graph.getNormal(), GL_STATIC_DRAW);
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+			glBindVertexArray(0);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, graph.material.texName);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, graph.material.src.sizeX, graph.material.src.sizeY, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, graph.material.src.data);
+
+			if (graph.material.diy) {
+				texShader->setVec3("u_lightDiff", graph.material.kd);
+				texShader->setVec3("u_lightAmb", graph.material.ka);
+				texShader->setFloat("u_lightSpec", 0);//TODO
+			}
+
+			texShader->setMat4("u_modelMatrix", model);
+			texShader->setInt("u_shadowMap", 0);
+			texShader->setInt("u_textureMap", 1);
+			glBindVertexArray(graph.material.vao);
+			glDrawArrays(GL_TRIANGLES, 0, graph.pos.size() / 3);
+		}
+		else {
+			if (graph.pos.size() == 0)return;
+
+			elementShader->use();
+			glBindVertexArray(graph.material.vao);
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.positionBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER, graph.pos.size() * 4, graph.getPos(), GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+			graph.fillColor();
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.colorBufferHandle);
+			//cout << graph.color.size() * 4 << endl;
+			glBufferData(GL_ARRAY_BUFFER, graph.color.size() * 4, graph.getColor(), GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, graph.material.normalBufferHandle);
+			glBufferData(GL_ARRAY_BUFFER, graph.normal.size() * 4, graph.getNormal(), GL_STATIC_DRAW);
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+			glBindVertexArray(0);
+
+			if (diy) {
+				elementShader->setVec3("u_lightDiff", graph.material.kd);
+				elementShader->setVec3("u_lightAmb", graph.material.ka);
+				elementShader->setFloat("u_lightSpec", 0);
+			}
+
+			elementShader->setMat4("u_modelMatrix", model);
+			elementShader->setInt("u_shadowMap", 0);
+			glBindVertexArray(graph.material.vao);
+			glDrawArrays(GL_TRIANGLES, 0, graph.pos.size() / 3);
+		}
+	}
+
+	
+}
 texture& texture::load(const char*filename)
 {
 	FILE* file = fopen(filename, "r");
@@ -93,8 +141,8 @@ texture& texture::load(const char*filename)
 			case '\0':
 				fscanf(file, "%f %f %f", &num1, &num2, &num3);
 				pos.push_back(num1);
-				pos.push_back(num3);
 				pos.push_back(num2);
+				pos.push_back(num3);
 				v_num++;
 				break;
 			case 'n':
@@ -386,6 +434,10 @@ texture& texture::load(const char*filename)
 					abs_path = relative_path + s;
 					success = group[group.size() - 1].material.pic(abs_path.c_str());
 					group[group.size() - 1].material.is_src = success;
+					if (success)
+					{
+						glGenTextures(1, &group[group.size() - 1].material.texName);
+					}
 				}
 				else {
 					min.getline(buf, 256);
@@ -445,6 +497,7 @@ void object::show() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
+	//cout << color.size() * 4 << endl;
 	glBufferData(GL_ARRAY_BUFFER, color.size() * 4, getColor(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
@@ -473,12 +526,12 @@ void scene::shadow()
 	{
 		i.shadow();
 	}
-	/*
+	
 	for (auto & i : texCollection)
 	{
 		i.shadow();
 	}
-	*/
+	
 }
 
 void scene::show(smLight & light)
@@ -491,16 +544,16 @@ void scene::show(smLight & light)
 			elementShader->setFloat("u_lightSpec", light.specular);
 		}
 	}
-	/*
+	
 	for (auto &t : texCollection) {
 		t.show();
-		if (t.diy) {
+		/*if (t.diy) {
 			elementShader->setVec3("u_lightDiff", light.diffuse);
 			elementShader->setVec3("u_lightAmb", light.ambient);
 			elementShader->setFloat("u_lightSpec", light.specular);
-		}
+		}*/
 	}
-	*/
+	
 	for (auto & t : cloudCollection)
 	{
 		t.show();
