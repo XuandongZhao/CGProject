@@ -189,11 +189,11 @@ void build() {
 	double cost;
 	time(&start);
 	for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); i++) {
-		Sphere *a = new Sphere(0.01, 30, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		Sphere *a = new Sphere(0.01, 30, glm::vec4(1.0f, 0, 0, 1.0f));
 		a->init();
 		totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
 	//	a->translate(x,y,z);
-		a->translate(x/10.0, y/10.0, z/10.0);
+		a->translate(x/10, y/10+50, z/10);
 		cout << "111" << x <<" "<< y <<" "<<z<< endl;
 		temC.push_back(*a);
 	}
