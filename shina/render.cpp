@@ -30,7 +30,7 @@ void smRender::render(world & myworld,smCamera& camera)
 		}
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+		glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.f, 8096.0f);
 		glm::mat4 view = glm::lookAt(camera.eye, camera.eye + camera.dir, glm::vec3(0.0, 1.0, 0.0));
 		elementShader->use();
 		elementShader->setMat4("u_projection", projection);

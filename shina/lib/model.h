@@ -823,6 +823,13 @@ private:
 			normalBufferHandle = vboHandles[2];
 			glGenBuffers(1, &spositionBufferHandle);
 		}
+		~Material()
+		{
+			glDeleteVertexArrays(1, &vao);
+			glDeleteVertexArrays(1, &svao);
+			glDeleteBuffers(4, vboHandles);
+
+		}
 
 		//这个函数从texture类放到material类里面
 		bool pic(const char *fileName)
