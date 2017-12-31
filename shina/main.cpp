@@ -7,7 +7,6 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
-#include "lib\Particle.h"
 #include <time.h>  
 using namespace std;
 smCamera*camera;
@@ -25,7 +24,7 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 Sphere *sphere;
-CParticle totalCloudInfo;
+cloud temC;
 
 /** 用来设置粒子的属性值 */
 float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
@@ -36,45 +35,53 @@ glm::vec3 cameraDir(0, 0, -30);
 
 bool initCloudInfo()
 {
-	for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); ++i)
+	srand((unsigned)time(NULL));
+	for (int i = 0; i < temC.totalCloudInfo.GetNumOfParticle(); ++i)
 	{
 		///初始化颜色（白色）
 		r = 255;
 		g = 255;
 		b = 255;
-		totalCloudInfo.SetColor(i, r, g, b);
+		temC.totalCloudInfo.SetColor(i, r, g, b);
 
 		///初始化坐标
-		x = 0.1f * (rand() % 50) - 2.5f;
-		y = 2 + 0.1f * (rand() % 2);
+		//x = 3.0 * (rand()/double(RAND_MAX)) - 1.50f;
+		////y = 50 + rand() % 3;
+		//z = 3.0 * (rand()/double(RAND_MAX)) - 1.50f;
+		x = 0.1f * (rand() % 30) - 1.5f;
+			z = 0.1f * (rand() % 30) - 1.5f;
+//		cout << "  " << x << "  " << z<<endl;
 		if ((int)x % 2 == 0)
 			z = rand() % 6;
 		else
 			x = -rand() % 3;
-		totalCloudInfo.SetPosition(i, x, y, z);
+		temC.totalCloudInfo.SetPosition(i, x, y, z);
 
 		///初始化速度
-		vx = 0.00001 * (rand() % 100);
-		vy = 0.0000002 * (rand() % 28000);
-		vz = 0;
-		totalCloudInfo.SetVelocity(i, vx, vy, vz);
+	//	vx = 0.00001 * (rand() % 100);
+	//	vy = 0.0000002 * (rand() % 28000);
+	//	vz = 0;
+		vx = abs(0.1f * (rand() % 50) - 2.5f)+0.1;
+		vz = abs(0.1f * (rand() % 50) - 2.5f)+0.1;
+		temC.totalCloudInfo.SetVelocity(i, vx, vy, vz);
 
 		///初始化加速度
 		ax = 0;
 		ay = 0.000005f;
 		az = 0;
-		totalCloudInfo.SetAcceleration(i, ax, ay, az);
+		temC.totalCloudInfo.SetAcceleration(i, ax, ay, az);
 
 		///初始化生命周期
-		lifetime = 100;
-		totalCloudInfo.SetLifeTime(i, lifetime);
+		lifetime = 10;
+		temC.totalCloudInfo.SetLifeTime(i, lifetime);
 
 		///消失速度
-		deci = 0.005 * (rand() % 50);
-		totalCloudInfo.SetDec(i, deci);
+		deci = 1;
+			//0.005 * (rand() % 50);
+		temC.totalCloudInfo.SetDec(i, deci);
 
 		///初始化大小
-		totalCloudInfo.SetSize(i, 0.01f);
+		temC.totalCloudInfo.SetSize(i, 0.01f);
 	}
 	return true;
 }
@@ -97,7 +104,7 @@ static void smInit()
 
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-	totalCloudInfo.Create(500);
+	temC.totalCloudInfo.Create(5000);
 	initCloudInfo();
 }
 unsigned int cnt = 0;
@@ -164,8 +171,6 @@ static void smDisplay() {
 	//glClear(GL_COLOR_BUFFER_BIT);
 
 
-
-
 	render.render(myworld, *camera);
 	//sphere->show();
 
@@ -183,23 +188,51 @@ void build() {
 	a->init();
 	a->translate(0, 100, 0);
 	tmp.push_back(cloud().push_back(*a));*/
-	cloud temC;
 	int count = 0;
 	time_t start, end;
 	double cost;
-	time(&start);
-	/*for (int i = 0; i < totalCloudInfo.GetNumOfParticle(); i++) {
-		Sphere *a = new Sphere(0.01, 30, glm::vec4(1.0f, 0, 0, 1.0f));
+	double ini = 0;
+	int c = 0;
+	int flag0 = 1;
+	int flag1 = 1;
+	double iniz = 0;
+	for (int i = 0; i < temC.totalCloudInfo.GetNumOfParticle(); i++) {
+		Sphere *a = new Sphere(0.5, 100, glm::vec4(1.0f, 1.0, 1.0, 1.0f));
 		a->init();
-		totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
-	//	a->translate(x,y,z);
-		a->translate(x/10, y/10+50, z/10);
-		cout << "111" << x <<" "<< y <<" "<<z<< endl;
+		temC.totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
+		a->loadIdentity();
+		flag0 = rand() / double(RAND_MAX);
+		flag1 = rand() / double(RAND_MAX);
+		a->translate(x/500+flag0*ini, 100, z/500-flag1*ini);
+		c++;
+		if (c % 100 == 0) {
+			ini += 0.000005;
+			if (c % 2000 == 0) {
+				ini = 0;
+				iniz += 0.000005;
+			}
+			/*switch (c / 200 % 4) {
+			case 0: {
+				flag0 = 1;
+				flag1 = 0;
+			}break;
+			case 1: {
+				flag0 = 0;
+				flag1 = 1;
+			}break;
+			case 2: {
+				flag0 = -1;
+				flag1 = 0;
+			}break;
+			case 3: {
+				flag0 = 0;
+				flag1 = -1;
+			}break;
+			}*/
+		}
 		temC.push_back(*a);
-	}*/
-	time(&end);
-	cost = difftime(end, start);
-	cout << cost << endl;
+	}
+	
 	texture obj;
 	obj.load("city//test3.obj");
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));

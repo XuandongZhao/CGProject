@@ -8,6 +8,7 @@
 #include "light.h"
 #include "sphere.h"
 #include <atlimage.h>
+#include "lib\Particle.h"
 
 
 
@@ -1064,21 +1065,87 @@ class cloud
 private:
 	using sphereVec = std::vector<Sphere>;
 
+	/** 用来设置粒子的属性值 */
+	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
+	int r, g, b;
+
 public:
 	sphereVec sphereCollection;
-
-	cloud(){}
+	CParticle totalCloudInfo;
+	cloud()
+	{
+		////vx = (0.1f * (rand() % 50) - 2.5f) / 50;
+		//vx = abs(5.0 * (rand() / double(RAND_MAX)) - 2.5f)/50;
+		////y = 50 + rand() % 3;
+		//vz = abs(5.0 * (rand() / double(RAND_MAX)) - 2.5f)/50;
+	}
 	~cloud(){}
 	inline cloud& push_back(Sphere & e)
 	{
 		sphereCollection.push_back(e);
 		return *this;
 	}
+
+	/** 更新粒子 */
+	void UpdateSnow()
+	{
+
+		/** 更新位置 */
+		x += (vx/9);
+	//	y -= vy;
+		/** 更新速度 */
+	//	vy += ay;
+		vx += ax;
+		vz += az;
+		/** 更新生存时间 */
+		lifetime -= deci;
+
+		if (x > 3)
+			x = -2;
+
+		/** 如果粒子消失或生命结束 */
+		if (y <= -1 || lifetime <= 0)
+		{
+			/** 初始化位置 */
+			//x = 0.1f * (rand() % 50) - 2.5f;
+			//y = 2 + 0.1f * (rand() % 2);
+			x = 5.0 * (rand() / double(RAND_MAX)) - 2.5f;
+			y = 5.0 * (rand() / double(RAND_MAX)) - 2.5f;
+			if ((int)x % 2 == 0)
+				z = rand() % 6;
+			else
+				z = -rand() % 3;
+
+			/** 初始化速度 */
+			vx = abs((float)(5.0 * (rand() / double(RAND_MAX)) - 2.5f) / 60);
+			vy = 0;
+			vz = abs((float)(5.0 * (rand() / double(RAND_MAX)) - 2.5f) / 60);
+
+			/** 初始化加速度 */
+			ax = 0.0005f;
+			ay = 0.0005f;
+			az = 0.0005f;
+			lifetime = 10;
+			deci = 1;
+			//0.005*(rand() % 50);
+		}
+
+	}
+
 	void show()
 	{
+		int count = -1;
 		for (auto & i : sphereCollection)
 		{
+			++count;
+			totalCloudInfo.GetAll(count, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
+			UpdateSnow();
+			totalCloudInfo.SetAll(count, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
+	//		cout << vx << " " << vz << endl;
+			i.translate(vx+0.1, 0, -vz);
+		//	cout << count << " " << x << " " << y << " " << z << endl;
 			i.show();
+
 		}
 	}
 

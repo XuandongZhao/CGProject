@@ -22,7 +22,7 @@ CParticle::CParticle()
 /** Îö¹¹º¯Êý */
 CParticle::~CParticle()
 {
-    delete []data;
+//    delete []data;
     data = NULL;
 }
 
