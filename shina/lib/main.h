@@ -62,6 +62,11 @@
 #define _KEY_CTRL 0x72
 #define _KEY_ALT 0x74
 
+
+#define IS_SPHERE 0
+#define IS_TEXTURE 1
+
+
 using std::cin;
 using std::cout;
 using std::endl;

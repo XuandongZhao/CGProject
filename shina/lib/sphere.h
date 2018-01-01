@@ -7,6 +7,9 @@
 class Sphere
 {
 public:
+	bool useTexture = false;
+
+
 	Sphere(GLfloat radius, GLfloat _step,glm::vec4& color);
 	~Sphere()
 	{

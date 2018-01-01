@@ -8,7 +8,6 @@ extern smShader * paticleShader;
 Sphere::Sphere(GLfloat _radius = 1.f, GLfloat _step = 2.f,glm::vec4& _color=glm::vec4(1.0f,0.f,0.f,1.0f)) :
 	radius(_radius),step(_step),color(_color)
 {
-		
 	
 }
 
