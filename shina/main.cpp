@@ -32,15 +32,38 @@ glm::vec3 cameraDir(0, 0, -30);
 void initParticle(particle & m)
 {
 	//cout << "init" << endl;
+	if (m.tex == nullptr)
+	{
+		m.tex = new texture();
+		m.tex->load("fly//fly.obj");
+		
+		m.which = IS_TEXTURE;
+		//m.sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		//m.which = IS_SPHERE;
+	}
+
 	m.isDead = false;
-	float pos[3] = { rand()%10,50,rand()%10};
-	float speed[3] = { rand()%10-5,rand() % 10-5,rand() % 10-5 };
-	float aspeed[3] = { rand()%2-0.5,rand() % 2-0.5,rand() % 2 -0.5};
+	float x = rand() / (double(RAND_MAX))-0.5;
+	float z = rand() / (double(RAND_MAX))-0.5;
+	float pos[3] = { x,50,z};
+	
+	
+	float speed[3] = { (rand() / (double(RAND_MAX))-0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX))-0.5)*0.1 };
+	float aspeed[3] = { 0,0.005,0};
 	m.setPosition(pos[0], pos[1], pos[2]);
 	m.setSpeed(speed[0], speed[1], speed[2]);
 	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
-	m.lifetime = 10;
-	m.deci = 1;
+
+
+	if (abs(x) < abs(z))
+	{
+		m.lifetime = 2.0*abs(z) / 0.5;
+	}
+	else {
+		m.lifetime = 2.0*abs(x) / 0.5;
+	}
+		
+	m.deci =0.1+(rand() / (double(RAND_MAX)))*0.1;
 }
 
 /*
@@ -156,7 +179,7 @@ void build() {
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
-	testCloud.maxSize = 1000;
+	testCloud.maxSize = 10;
 	
 	testCloud.init();
 	tmp.push_back(testCloud);

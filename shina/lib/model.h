@@ -8,7 +8,6 @@
 #include "light.h"
 #include "sphere.h"
 #include <atlimage.h>
-#include "Particle.h"
 
 
 
@@ -134,160 +133,7 @@ public:
 
 		return e;
 	}
-	/*
-	object& load(const char *filename)
-	{
-		std::ifstream fin;
 
-		fin.open(filename);
-		if (fin.is_open() == FALSE)return *this;//NULL;
-
-		string op;
-		float num1, num2, num3;
-
-		vector<float>pos;
-		vector<float>color;
-		vector<float>normal;
-
-		while (fin >> op) {
-			if (op == "v") {
-				fin >> num1 >> num2 >> num3;
-				pos.push_back(num1);
-				pos.push_back(num3);
-				pos.push_back(num2);
-			}
-			else if (op == "vc") {
-				fin >> num1 >> num2 >> num3;
-				color.push_back(num1);
-				color.push_back(num2);
-				color.push_back(num3);
-			}
-			else if (op == "vn") {
-				fin >> num1 >> num2 >> num3;
-				normal.push_back(num1);
-				normal.push_back(num2);
-				normal.push_back(num3);
-			}
-			else if (op == "f") {
-				string v1, v2, v3;
-				int tmp1 = 0, tmp2 = 0, tmp3 = 0;
-
-				fin >> v1 >> v2 >> v3;
-				num1 = (float)atoi(v1.c_str() + tmp1);
-				num2 = (float)atoi(v2.c_str() + tmp2);
-				num3 = (float)atoi(v3.c_str() + tmp3);
-				this->pushPos(pos[(int)num1 * 3 - 3], pos[(int)num1 * 3 - 2], pos[(int)num1 * 3 - 1]);
-				this->pushPos(pos[(int)num2 * 3 - 3], pos[(int)num2 * 3 - 2], pos[(int)num2 * 3 - 1]);
-				this->pushPos(pos[(int)num3 * 3 - 3], pos[(int)num3 * 3 - 2], pos[(int)num3 * 3 - 1]);
-
-				tmp1 = v1.find_first_of('/', tmp1) + 1;
-				tmp2 = v2.find_first_of('/', tmp2) + 1;
-				tmp3 = v3.find_first_of('/', tmp3) + 1;
-				if (tmp1 == 0 || tmp2 == 0 || tmp3 == 0) {
-					if (active == -1) {
-						this->pushColor(1, 1, 1);
-						this->pushColor(1, 1, 1);
-						this->pushColor(1, 1, 1);
-					}
-					else {
-						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
-						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
-						this->pushColor(surface[active].kd.r, surface[active].kd.g, surface[active].kd.b);
-					}
-				}
-				else {
-					num1 = (float)atoi(v1.c_str() + tmp1);
-					num2 = (float)atoi(v2.c_str() + tmp2);
-					num3 = (float)atoi(v3.c_str() + tmp3);
-					this->pushColor(color[(int)num1 * 3 - 3], color[(int)num1 * 3 - 2], color[(int)num1 * 3 - 1]);
-					this->pushColor(color[(int)num2 * 3 - 3], color[(int)num2 * 3 - 2], color[(int)num2 * 3 - 1]);
-					this->pushColor(color[(int)num3 * 3 - 3], color[(int)num3 * 3 - 2], color[(int)num3 * 3 - 1]);
-				}
-
-				tmp1 = v1.find_first_of('/', tmp1) + 1;
-				tmp2 = v2.find_first_of('/', tmp2) + 1;
-				tmp3 = v3.find_first_of('/', tmp3) + 1;
-				if (tmp1 == 0 || tmp2 == 0 || tmp3 == 0) {
-					int p1 = atoi(v1.c_str());
-					int p2 = atoi(v2.c_str());
-					int p3 = atoi(v3.c_str());
-					glm::vec3 edge1(pos[p2 * 3 - 3] - pos[p1 * 3 - 3],
-						pos[p2 * 3 - 2] - pos[p1 * 3 - 2],
-						pos[p2 * 3 - 1] - pos[p1 * 3 - 1]);
-					glm::vec3 edge2(pos[p3 * 3 - 3] - pos[p2 * 3 - 3],
-						pos[p3 * 3 - 2] - pos[p2 * 3 - 2],
-						pos[p3 * 3 - 1] - pos[p2 * 3 - 1]);
-					glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
-						edge2.z*edge1.x - edge1.z*edge2.x,
-						edge2.x*edge1.y - edge1.x*edge2.y);
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-					this->pushNormal(norm.x, norm.y, norm.z);
-				}
-				else {
-					num1 = (float)atoi(v1.c_str() + tmp1);
-					num2 = (float)atoi(v2.c_str() + tmp2);
-					num3 = (float)atoi(v3.c_str() + tmp3);
-					this->pushNormal(normal[(int)num1 * 3 - 3], normal[(int)num1 * 3 - 2], normal[(int)num1 * 3 - 1]);
-					this->pushNormal(normal[(int)num2 * 3 - 3], normal[(int)num2 * 3 - 2], normal[(int)num2 * 3 - 1]);
-					this->pushNormal(normal[(int)num3 * 3 - 3], normal[(int)num3 * 3 - 2], normal[(int)num3 * 3 - 1]);
-				}
-			}
-			else if (op == "mtllib") {
-				std::ifstream min;
-				string path = string(filename);
-				unsigned int tmp = path.find_last_of('/');
-				for (unsigned int i = path.length() - 1; i > tmp; i--)
-					path.pop_back();
-				fin >> op;
-				path += op;
-
-				min.open(path);
-				if (min.is_open() == FALSE)continue;
-				while (min >> op) {
-					if (op == "newmtl") {
-						surface.push_back(Material());
-						min >> op;
-						surface[surface.size() - 1].name = op;
-					}
-					else if (op == "Kd") {
-						min >> num1 >> num2 >> num3;
-						surface[surface.size() - 1].kd = glm::vec3(num1, num2, num3);
-					}
-					else if (op == "Ka") {
-						min >> num1 >> num2 >> num3;
-						surface[surface.size() - 1].ka = glm::vec3(num1, num2, num3);
-					}
-					else if (op == "Ks") {
-						min >> num1 >> num2 >> num3;
-						surface[surface.size() - 1].ks = glm::vec3(num1, num2, num3);
-					}
-					else {
-						char *buf = new char[256];
-						min.getline(buf, 256);
-						delete buf;
-					}
-				}
-			}
-			else if (op == "usemtl") {
-				fin >> op;
-				active = -1;
-				for (unsigned int i = 0; i < surface.size(); i++) {
-					if (surface[i].name == op) {
-						active = i;
-						break;
-					}
-				}
-			}
-			else {
-				char *buf = new char[256];
-				fin.getline(buf, 256);
-				delete buf;
-			}
-		}
-		return *this;
-	}
-	*/
 
 	object& unitize(GLfloat scale)
 	{
@@ -968,12 +814,23 @@ public:
 		return *this;
 	}
 };
+
+
+/*
+	0 sphere
+	1 texture
+*/
+
 struct particle {
-	Sphere sphere;
+	Sphere* sphere=nullptr;
+	texture*tex = nullptr;
+
+	int which = -1;
+
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
 	bool isDead = false;
 
-	particle():sphere(0.05,45,glm::vec4(1.0f,0.f,0.f,1.f))
+	particle()
 	{
 		
 	}
@@ -1014,13 +871,60 @@ struct particle {
 			isDead = true;
 		}
 	}
+
+	inline void init()
+	{
+		switch (which)
+		{
+			case IS_SPHERE:
+			{
+				assert(sphere != nullptr);
+				sphere->init();
+				break;
+			}
+			case IS_TEXTURE:
+			{
+				assert(tex != nullptr);
+				break;
+			}
+			default:
+			{
+				assert(0);
+			}
+
+		}
+	}
+
 	inline void show()
 	{
 		if (!isDead)
 		{
-			sphere.loadIdentity();
-			sphere.translate(x, y, z);
-			sphere.show();
+			switch (which)
+			{
+				case IS_SPHERE:
+				{
+					assert(sphere != nullptr);
+					sphere->loadIdentity();
+					sphere->translate(x, y, z);
+					sphere->show();
+					break;
+				}
+				case IS_TEXTURE:
+				{
+					assert(tex != nullptr);
+					tex->loadIdentity();
+					tex->translate(x, y, z);
+					//cout << "fuck" << endl;
+					tex->show();
+					break;
+				}
+				default:
+				{
+					assert(0);
+				}
+				
+			}
+			
 		}
 	}
 
@@ -1082,7 +986,7 @@ public:
 		{
 			particle newParticle =particle();
 			initParticle(newParticle);
-			newParticle.sphere.init();
+			newParticle.init();
 			particleCollection.push_back(newParticle);
 		}
 	}

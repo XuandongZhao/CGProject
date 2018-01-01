@@ -144,7 +144,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="obbCollision.cpp" />
-    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
@@ -157,7 +156,6 @@
     <ClInclude Include="lib\model.h" />
     <ClInclude Include="lib\mouse.h" />
     <ClInclude Include="lib\obbCollision.h" />
-    <ClInclude Include="lib\Particle.h" />
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />
     <ClInclude Include="lib\sphere.h" />
