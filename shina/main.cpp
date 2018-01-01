@@ -7,10 +7,13 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
+<<<<<<< HEAD
 #include "lib\obbCollision.h"
 #include <time.h> 
+=======
+>>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 #include <iostream>
-using namespace std;
+
 smCamera*camera;
 smMouse* mouse;
 smKeyBoard* keyBoard;
@@ -25,6 +28,7 @@ smShader *elementShader;
 smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
+<<<<<<< HEAD
 Sphere *sphere;
 cloud temC;
 obbCollision *obbcam = new obbCollision;
@@ -32,67 +36,44 @@ obb_box *camerabox;
 /** 用来设置粒子的属性值 */
 float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
 int r, g, b;
+=======
+
+cloud testCloud;
+>>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
 
-bool initCloudInfo()
+void initParticle(particle & m)
 {
-	srand((unsigned)time(NULL));
-	for (int i = 0; i < temC.totalCloudInfo.GetNumOfParticle(); ++i)
-	{
-		///初始化颜色（白色）
-		r = 255;
-		g = 255;
-		b = 255;
-		temC.totalCloudInfo.SetColor(i, r, g, b);
-
-		///初始化坐标
-		//x = 3.0 * (rand()/double(RAND_MAX)) - 1.50f;
-		////y = 50 + rand() % 3;
-		//z = 3.0 * (rand()/double(RAND_MAX)) - 1.50f;
-		x = 0.1f * (rand() % 30) - 1.5f;
-		z = 0.1f * (rand() % 30) - 1.5f;
-//		cout << "  " << x << "  " << z<<endl;
-		if ((int)x % 2 == 0)
-			z = rand() % 6;
-		else
-			x = -rand() % 3;
-		temC.totalCloudInfo.SetPosition(i, x, y, z);
-
-		///初始化速度
-	//	vx = 0.00001 * (rand() % 100);
-	//	vy = 0.0000002 * (rand() % 28000);
-	//	vz = 0;
-		vx = abs(0.1f * (rand() % 50) - 2.5f)+0.1;
-		vz = abs(0.1f * (rand() % 50) - 2.5f)+0.1;
-		temC.totalCloudInfo.SetVelocity(i, vx, vy, vz);
-
-		///初始化加速度
-		ax = 0;
-		ay = 0.000005f;
-		az = 0;
-		temC.totalCloudInfo.SetAcceleration(i, ax, ay, az);
-
-		///初始化生命周期
-		lifetime = 10;
-		temC.totalCloudInfo.SetLifeTime(i, lifetime);
-
-		///消失速度
-		deci = 1;
-			//0.005 * (rand() % 50);
-		temC.totalCloudInfo.SetDec(i, deci);
-
-		///初始化大小
-		temC.totalCloudInfo.SetSize(i, 0.01f);
-	}
-	return true;
+	//cout << "init" << endl;
+	m.isDead = false;
+	float pos[3] = { rand()%10,50,rand()%10};
+	float speed[3] = { rand()%10-5,rand() % 10-5,rand() % 10-5 };
+	float aspeed[3] = { rand()%2-0.5,rand() % 2-0.5,rand() % 2 -0.5};
+	m.setPosition(pos[0], pos[1], pos[2]);
+	m.setSpeed(speed[0], speed[1], speed[2]);
+	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
+	m.lifetime = 10;
+	m.deci = 1;
 }
 
+/*
+	@return true for dead
+*/
+bool isDead(particle & m)
+{
+	if (m.y < 50)
+	{
+		return true;
+	}
+	return false;
+}
 
 
 static void smInit()
 {
+	srand((unsigned int)time(NULL));
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	elementShader = new smShader("files//element.vert", "files//element.frag");
@@ -105,9 +86,12 @@ static void smInit()
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+<<<<<<< HEAD
 	temC.totalCloudInfo.Create(5000);
 	initCloudInfo();
 	//obb_box build1 = obbcam->gen_obb_box(object::getPos)
+=======
+>>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 }
 unsigned int cnt = 0;
 
@@ -126,21 +110,21 @@ static void smTimer(int id)
 
 		}
 		//myworld.getScenes()[0].cloudCollection[0].sphereCollection[0].translate(-0.1,0,0);
-		camera->moveCamera(-50, 0);
+		camera->moveCamera(-5, 0);
 		//sphere->translate(-0.1, 0, 0);
 		//(camera->getEye()).z -= 5;
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
-		camera->moveCamera(50, 0);
+		camera->moveCamera(5, 0);
 	}
 	if (keyBoard->getKey((keyMap)'s') == true)
 	{
-		camera->moveCamera(0, -50);
+		camera->moveCamera(0, -5);
 	}
 	if (keyBoard->getKey((keyMap)'w') == true)
 	{
-		camera->moveCamera(0, 50);
+		camera->moveCamera(0, 5);
 	}
 
 	if (keyBoard->getKey((keyMap)'q') == true)
@@ -191,61 +175,15 @@ static void smReshape(int w, int h) {
 	SCR_WIDTH = w;
 	SCR_HEIGHT = h;
 }
-//object sss;
 void build() {
 	static scene tmp;
-	/*Sphere *a = new Sphere(10, 1, glm::vec4(1.0f, 0.0f, 1.0f,1.0f));
-	a->init();
-	a->translate(0, 100, 0);
-	tmp.push_back(cloud().push_back(*a));*/
-	int count = 0;
-	time_t start, end;
-	double cost;
-	double ini = 0;
-	int c = 0;
-	int flag0 = 1;
-	int flag1 = 1;
-	double iniz = 0;
-	for (int i = 0; i < temC.totalCloudInfo.GetNumOfParticle(); i++) {
-		Sphere *a = new Sphere(0.5, 100, glm::vec4(1.0f, 1.0, 1.0, 1.0f));
-		a->init();
-		temC.totalCloudInfo.GetAll(i, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
-		a->loadIdentity();
-		flag0 = rand() / double(RAND_MAX);
-		flag1 = rand() / double(RAND_MAX);
-		a->translate(x/500+flag0*ini, 100, z/500-flag1*ini);
-		c++;
-		if (c % 100 == 0) {
-			ini += 0.000005;
-			if (c % 2000 == 0) {
-				ini = 0;
-				iniz += 0.000005;
-			}
-			/*switch (c / 200 % 4) {
-			case 0: {
-				flag0 = 1;
-				flag1 = 0;
-			}break;
-			case 1: {
-				flag0 = 0;
-				flag1 = 1;
-			}break;
-			case 2: {
-				flag0 = -1;
-				flag1 = 0;
-			}break;
-			case 3: {
-				flag0 = 0;
-				flag1 = -1;
-			}break;
-			}*/
-		}
-		temC.push_back(*a);
-	}
+
+
 	
 	texture obj;
 	obj.load("city//test3.obj");
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
+<<<<<<< HEAD
 	object obj1;
 	obj1.load("city//tem//1//test1.obj");
 	tmp.push_back(obj1.scale(0.05, 0.05, 0.05));
@@ -254,6 +192,15 @@ void build() {
 	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)
 
 	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
+=======
+	testCloud.initParticle = initParticle;
+	testCloud.isDead = isDead;
+	testCloud.maxSize = 1000;
+	
+	testCloud.init();
+	tmp.push_back(testCloud);
+
+>>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 
 	myworld.push_back(tmp);
 	myworld.push_back(smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
@@ -266,12 +213,6 @@ static void smMouseFunc(int x, int y) {
 	glutPostRedisplay();
 }
 static void smDrag(int x, int y) {
-	/*
-	if (mouse->state[GLUT_LEFT_BUTTON] == GLUT_DOWN)
-	camera->rotateCamera(float(x - mouse->pre.x) / 2000, float(y - mouse->pre.y) / 2000);
-	if (mouse->state[GLUT_RIGHT_BUTTON] == GLUT_DOWN)
-	camera->moveCamera(float(x - mouse->pre.x) / 20, float(y - mouse->pre.y) / 20);
-	*/
 	float getx;
 	float gety;
 	if (abs(-mouse->pre.x + float(x))<100 && abs(-mouse->pre.y + float(y))<100)

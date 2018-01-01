@@ -7,7 +7,7 @@
 class Sphere
 {
 public:
-	Sphere(GLfloat radius, GLfloat _step,glm::vec4 color);
+	Sphere(GLfloat radius, GLfloat _step,glm::vec4& color);
 	~Sphere()
 	{
 		
@@ -15,6 +15,18 @@ public:
 
 	void init();
 	void show();
+	inline void setColor(glm::vec4 & color)
+	{
+		this->color = color;
+	}
+	inline void setStep(int step)
+	{
+		this->step = step;
+	}
+	inline void setRadius(GLfloat radius)
+	{
+		this->radius = radius;
+	}
 
 	inline void loadIdentity()
 	{

@@ -16,6 +16,7 @@
 #include <queue>
 #include <list>
 #include <map>
+#include <ctime>
 #include <glfw/glew.h>
 #include <gl/glaux.h> 
 #include <gl/freeglut.h>

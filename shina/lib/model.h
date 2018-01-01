@@ -8,7 +8,7 @@
 #include "light.h"
 #include "sphere.h"
 #include <atlimage.h>
-#include "lib\Particle.h"
+#include "Particle.h"
 
 
 
@@ -967,184 +967,122 @@ public:
 		return *this;
 	}
 };
+struct particle {
+	Sphere sphere;
+	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
+	bool isDead = false;
 
-/*
-class texture {
-private:
-	using vec3 = glm::vec3;
-	vector<float> pos;
-	vector<float> coord;
-	vector<float> normal;
-
-	glm::vec3 kd, ka;
-	float ks;
-
-	glm::mat4 model;
-public:
-	bool diy = false;
-	Bitmap src;
-
-	GLuint vao, svao, texName;
-	GLuint vboHandles[3],
-		positionBufferHandle, coordBufferHandle, normalBufferHandle;
-	GLuint spositionBufferHandle;
-
-	texture(bool diy = false,
-		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
-		float s = 0) {
-		pos.clear();
-		coord.clear();
-		normal.clear();
-		glGenVertexArrays(1, &vao);
-		glGenVertexArrays(1, &svao);
-		glGenBuffers(3, vboHandles);
-		positionBufferHandle = vboHandles[0];
-		coordBufferHandle = vboHandles[1];
-		normalBufferHandle = vboHandles[2];
-		glGenBuffers(1, &spositionBufferHandle);
-		glGenTextures(1, &texName);
-
-		this->diy = diy;
-		kd = d;
-		ka = a;
-		ks = s;
-	}
-	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
-		pos.push_back(pos1);
-		pos.push_back(pos2);
-		pos.push_back(pos3);
-	}
-	void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
-		coord.push_back(coord1);
-		coord.push_back(coord2);
-	}
-	void pushNormal(float normal1, float normal2, float normal3) {
-		normal.push_back(normal1);
-		normal.push_back(normal2);
-		normal.push_back(normal3);
-	}
-	float *getPos() {
-		return toArray<float>(&pos);
-	}
-	float *getCoord() {
-		return toArray<float>(&coord);
-	}
-	float *getNormal() {
-		return toArray<float>(&normal);
-	}
-
-	texture& load(const char *filename);
-	void shadow();
-	void show();
-
-	void pic(const char *fileName);
-	
-	inline void loadIdentity()
+	particle():sphere(0.05,45,glm::vec4(1.0f,0.f,0.f,1.f))
 	{
-		this->model = glm::mat4();
+		
 	}
-	
-	inline void translate(GLfloat x, GLfloat y, GLfloat z)
-	{
-		this->model = glm::translate(this->model, vec3(x, y, z));
-	}
-	inline void scale(GLfloat x, GLfloat y, GLfloat z)
-	{
-		this->model = glm::scale(this->model, vec3(x, y, z));
-	}
-	inline void rotate(GLfloat angel, vec3 axis)
-	{
-		this->model = glm::rotate(this->model, angel, axis);
-	}
-};*/
 
+	inline void setCoor(float x, float y, float z)
+	{
+		this->x = x; this->y = y; this->z = z;
+	}
+	inline void setPosition(float x, float y, float z)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+	inline void setAccerator(float ax, float ay, float az)
+	{
+		this->ax = ax;
+		this->ay = ay;
+		this->az = az;
+	}
+	inline void setSpeed(float vx, float vy, float vz)
+	{
+		this->vx = vx;
+		this->vy = vy;
+		this->vz = vz;
+	}
+	inline void update()
+	{
+		x += vx;
+		y += vy;
+		z += vz;
+		vx += ax;
+		vy += ay;
+		vz += az;
+		lifetime -= deci;
+		if (lifetime <= 0)
+		{
+			isDead = true;
+		}
+	}
+	inline void show()
+	{
+		if (!isDead)
+		{
+			sphere.loadIdentity();
+			sphere.translate(x, y, z);
+			sphere.show();
+		}
+	}
+
+};
 
 class cloud
 {
 private:
-	using sphereVec = std::vector<Sphere>;
 
-	/** 用来设置粒子的属性值 */
-	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
-	int r, g, b;
 
 public:
-	sphereVec sphereCollection;
-	CParticle totalCloudInfo;
+	int maxSize = -1;
+	void (*initParticle)(particle&)=nullptr;
+
+	bool(*isDead)(particle&) = nullptr;
+
+	std::vector<particle> particleCollection;
 	cloud()
 	{
-		////vx = (0.1f * (rand() % 50) - 2.5f) / 50;
-		//vx = abs(5.0 * (rand() / double(RAND_MAX)) - 2.5f)/50;
-		////y = 50 + rand() % 3;
-		//vz = abs(5.0 * (rand() / double(RAND_MAX)) - 2.5f)/50;
+
 	}
 	~cloud(){}
-	inline cloud& push_back(Sphere & e)
+	inline cloud& push_back(particle & e)
 	{
-		sphereCollection.push_back(e);
+		particleCollection.push_back(e);
 		return *this;
 	}
 
-	/** 更新粒子 */
-	void UpdateSnow()
-	{
-
-		/** 更新位置 */
-		x += (vx/9);
-	//	y -= vy;
-		/** 更新速度 */
-	//	vy += ay;
-		vx += ax;
-		vz += az;
-		/** 更新生存时间 */
-		lifetime -= deci;
-
-		if (x > 3)
-			x = -2;
-
-		/** 如果粒子消失或生命结束 */
-		if (y <= -1 || lifetime <= 0)
-		{
-			/** 初始化位置 */
-			//x = 0.1f * (rand() % 50) - 2.5f;
-			//y = 2 + 0.1f * (rand() % 2);
-			x = 5.0 * (rand() / double(RAND_MAX)) - 2.5f;
-			y = 5.0 * (rand() / double(RAND_MAX)) - 2.5f;
-			if ((int)x % 2 == 0)
-				z = rand() % 6;
-			else
-				z = -rand() % 3;
-
-			/** 初始化速度 */
-			vx = abs((float)(5.0 * (rand() / double(RAND_MAX)) - 2.5f) / 60);
-			vy = 0;
-			vz = abs((float)(5.0 * (rand() / double(RAND_MAX)) - 2.5f) / 60);
-
-			/** 初始化加速度 */
-			ax = 0.0005f;
-			ay = 0.0005f;
-			az = 0.0005f;
-			lifetime = 10;
-			deci = 1;
-			//0.005*(rand() % 50);
-		}
-
-	}
+	
 
 	void show()
 	{
-		int count = -1;
-		for (auto & i : sphereCollection)
-		{
-			++count;
-			totalCloudInfo.GetAll(count, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
-			UpdateSnow();
-			totalCloudInfo.SetAll(count, r, g, b, x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci);
-	//		cout << vx << " " << vz << endl;
-			i.translate(vx+0.1, 0, -vz);
-		//	cout << count << " " << x << " " << y << " " << z << endl;
-			i.show();
 
+		for (auto & i : particleCollection)
+		{
+			
+			i.update();
+			if (i.isDead)
+			{
+				initParticle(i);
+			}
+			else if (isDead != nullptr)
+			{
+				if (isDead(i))
+				{
+					initParticle(i);
+				}
+				
+			}
+			i.show();
+		}
+	}
+
+	void init()
+	{
+		assert(initParticle != nullptr);
+		assert(maxSize > 0);
+		for (int i = 0; i < maxSize; i++)
+		{
+			particle newParticle =particle();
+			initParticle(newParticle);
+			newParticle.sphere.init();
+			particleCollection.push_back(newParticle);
 		}
 	}
 
