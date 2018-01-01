@@ -7,11 +7,10 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
-<<<<<<< HEAD
+
 #include "lib\obbCollision.h"
 #include <time.h> 
-=======
->>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
+
 #include <iostream>
 
 smCamera*camera;
@@ -28,7 +27,7 @@ smShader *elementShader;
 smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
-<<<<<<< HEAD
+
 Sphere *sphere;
 cloud temC;
 obbCollision *obbcam = new obbCollision;
@@ -36,10 +35,9 @@ obb_box *camerabox;
 /** 用来设置粒子的属性值 */
 float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
 int r, g, b;
-=======
+
 
 cloud testCloud;
->>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
@@ -86,12 +84,12 @@ static void smInit()
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-<<<<<<< HEAD
-	temC.totalCloudInfo.Create(5000);
-	initCloudInfo();
+
+	//temC.totalCloudInfo.Create(5000);
+	//initCloudInfo();
 	//obb_box build1 = obbcam->gen_obb_box(object::getPos)
-=======
->>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
+
+
 }
 unsigned int cnt = 0;
 
@@ -183,7 +181,7 @@ void build() {
 	texture obj;
 	obj.load("city//test3.obj");
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
-<<<<<<< HEAD
+
 	object obj1;
 	obj1.load("city//tem//1//test1.obj");
 	tmp.push_back(obj1.scale(0.05, 0.05, 0.05));
@@ -192,7 +190,7 @@ void build() {
 	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)
 
 	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
-=======
+
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
 	testCloud.maxSize = 1000;
@@ -200,7 +198,6 @@ void build() {
 	testCloud.init();
 	tmp.push_back(testCloud);
 
->>>>>>> fc0f04d6d94dcc78d6efab5b782185ba64d8ee3e
 
 	myworld.push_back(tmp);
 	myworld.push_back(smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
