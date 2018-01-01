@@ -2,12 +2,7 @@
 #define COLLISION_H
 #include <glm\glm.hpp>
 #include <vector>
-#ifndef M_PI
-#define M_PI
-
 const float PI = 3.14159;
-
-#endif // !M_PI
 
 struct obb_box {
 	glm::vec3 center;//ÖÐÐÄµã

@@ -7,8 +7,11 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
+<<<<<<< HEAD
 
 #include "lib\obbCollision.h"
+=======
+>>>>>>> parent of a1bb557... add separate buildings
 #include <time.h> 
 
 #include <iostream>
@@ -30,8 +33,7 @@ smShader * paticleShader;
 
 Sphere *sphere;
 cloud temC;
-obbCollision *obbcam = new obbCollision;
-obb_box *camerabox;
+
 /** 用来设置粒子的属性值 */
 float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
 int r, g, b;
@@ -84,29 +86,26 @@ static void smInit()
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+<<<<<<< HEAD
 
 	//temC.totalCloudInfo.Create(5000);
 	//initCloudInfo();
 	//obb_box build1 = obbcam->gen_obb_box(object::getPos)
 
 
+=======
+	temC.totalCloudInfo.Create(5000);
+	initCloudInfo();
+>>>>>>> parent of a1bb557... add separate buildings
 }
 unsigned int cnt = 0;
 
 static void smTimer(int id)
 {
-	cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
-	camerabox->center = glm::vec3(camera->eye.x, camera->eye.y, camera->eye.z);
-	camerabox->half = glm::vec3(1., 1., 1.);
-	camerabox->x_axis = glm::vec3(1., 0, 0);
-	camerabox->z_axis = glm::vec3(0, 0, 1.);
+	//cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
 	//cout << "1" << endl;
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		for (size_t i = 0; i < 8; i++)
-		{
-
-		}
 		//myworld.getScenes()[0].cloudCollection[0].sphereCollection[0].translate(-0.1,0,0);
 		camera->moveCamera(-5, 0);
 		//sphere->translate(-0.1, 0, 0);
@@ -181,13 +180,17 @@ void build() {
 	texture obj;
 	obj.load("city//test3.obj");
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
+<<<<<<< HEAD
 
 	object obj1;
 	obj1.load("city//tem//1//test1.obj");
 	tmp.push_back(obj1.scale(0.05, 0.05, 0.05));
+=======
+>>>>>>> parent of a1bb557... add separate buildings
 	tmp.push_back(temC);
 	//testCircles.push_back(sphere(10, 2, "fuck", glm::vec4(1, 0, 0, 1)));
 	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)
+
 
 	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
 
