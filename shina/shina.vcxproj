@@ -23,7 +23,7 @@
     <ProjectGuid>{2CC65AC3-6160-433A-B3E9-188F5060496A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>shina</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -143,6 +143,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="obbCollision.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="sphere.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="lib\main.h" />
     <ClInclude Include="lib\model.h" />
     <ClInclude Include="lib\mouse.h" />
+    <ClInclude Include="lib\obbCollision.h" />
     <ClInclude Include="lib\Particle.h" />
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />

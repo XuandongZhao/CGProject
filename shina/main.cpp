@@ -7,7 +7,8 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
-#include <time.h>  
+#include <time.h> 
+#include <iostream>
 using namespace std;
 smCamera*camera;
 smMouse* mouse;
@@ -49,7 +50,7 @@ bool initCloudInfo()
 		////y = 50 + rand() % 3;
 		//z = 3.0 * (rand()/double(RAND_MAX)) - 1.50f;
 		x = 0.1f * (rand() % 30) - 1.5f;
-			z = 0.1f * (rand() % 30) - 1.5f;
+		z = 0.1f * (rand() % 30) - 1.5f;
 //		cout << "  " << x << "  " << z<<endl;
 		if ((int)x % 2 == 0)
 			z = rand() % 6;
@@ -100,8 +101,6 @@ static void smInit()
 	keyBoard = new smKeyBoard();
 
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
-
-
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 	temC.totalCloudInfo.Create(5000);
