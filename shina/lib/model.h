@@ -925,7 +925,6 @@ public:
 	bool diy = false;
 
 
-
 	texture(bool diy = false,
 		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
 		float s = 0) {

@@ -1,0 +1,10 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl _Wood_Fence_1
+Ka 0.000000 0.000000 0.000000
+Kd 0.556863 0.262745 0.117647
+Ks 0.330000 0.330000 0.330000
+map_Kd test4/_Wood_Fence_1.jpg
+
