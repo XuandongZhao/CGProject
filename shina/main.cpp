@@ -24,6 +24,7 @@ smShader *elementShader;
 smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
+smShader * texParticleShader;
 
 vector<collosion> objV;
 collosion fly;
@@ -40,22 +41,24 @@ bool launch = false;
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
 
-
+float fireX, fireY=50, fireZ;
 
 void initParticle(particle * m)
 {
-	if (m->sphere == nullptr)
+	if (m->rec == nullptr)
 	{
-		//m.tex = new texture();
-		//m.tex->load("fly//fly.obj");
-		//m.which = IS_TEXTURE;
-		m->sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
-		m->which = IS_SPHERE;
+		m->rec = new rectangle();
+		m->rec->setShape(0.05, 0.05);
+		m->rec->fill("source//file.jpg");
+		m->which = IS_RECTANGLE;
+		//m->sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		//m->which = IS_SPHERE;
 	}
 	m->isDead = false;
-	float x = rand() / (double(RAND_MAX)) - 0.5;
-	float z = rand() / (double(RAND_MAX)) - 0.5;
-	float pos[3] = { x,50,z };
+	float x = fireX + rand() / (double(RAND_MAX)) - 0.5;
+	float y = fireY;
+	float z = fireZ + rand() / (double(RAND_MAX)) - 0.5;
+	float pos[3] = { x,y,z };
 
 
 	float speed[3] = { (rand() / (double(RAND_MAX)) - 0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX)) - 0.5)*0.1 };
@@ -63,14 +66,15 @@ void initParticle(particle * m)
 	m->setPosition(pos[0], pos[1], pos[2]);
 	m->setSpeed(speed[0], speed[1], speed[2]);
 	m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
+	m->setAngle(rand() / (double(RAND_MAX)), rand() / (double(RAND_MAX)), rand() / (double(RAND_MAX)));
 
 	
-	if (fabs(x) < fabs(z))
+	if (fabs(x-fireX) < fabs(z-fireZ))
 	{
-		m->lifetime = 2.0*fabs(z) / 0.5;
+		m->lifetime = 2.0*fabs(z-fireZ) / 0.5;
 	}
 	else {
-		m->lifetime = 2.0*fabs(x) / 0.5;
+		m->lifetime = 2.0*fabs(x-fireX) / 0.5;
 	}
 	m->deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
 }
@@ -80,9 +84,18 @@ void initParticle(particle * m)
 */
 bool isDead(particle * m)
 {
-	if (m->y < 50)
+	if (fabs(m->x - fireX) < fabs(m->z - fireZ))
 	{
-		return true;
+		if (m->lifetime > 2.0*fabs(m->z - fireZ) / 0.5)
+		{
+			return true;
+		}
+	}
+	else {
+		if (m->lifetime > 2.0*fabs(m->x - fireX) / 0.5)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -101,6 +114,7 @@ static void smInit()
 	keyBoard = new smKeyBoard();
 
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
+	texParticleShader = new smShader("files//rectangle.vert", "files//rectangle.frag");
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
@@ -110,28 +124,34 @@ static void smTimer(int id)
 {
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		camera->moveCamera(-5, 0);
+		//camera->moveCamera(-5, 0);
+		fireX++;
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
-		camera->moveCamera(5, 0);
+		//camera->moveCamera(5, 0);
+		fireX--;
 	}
 	if (keyBoard->getKey((keyMap)'s') == true)
 	{
-		camera->moveCamera(0, -5);
+		//camera->moveCamera(0, -5);
+		fireZ++;
 	}
 	if (keyBoard->getKey((keyMap)'w') == true)
 	{
-		camera->moveCamera(0, 5);
+		//camera->moveCamera(0, 5);
+		fireZ--;
 	}
 
 	if (keyBoard->getKey((keyMap)'q') == true)
 	{
-		camera->moveHCamera(10);
+		//camera->moveHCamera(10);
+		fireY+=0.1;
 	}
 	if (keyBoard->getKey((keyMap)'e') == true)
 	{
-		camera->moveHCamera(-10);
+		//camera->moveHCamera(-10);
+		fireY-=0.1;
 	}
 
 
@@ -327,7 +347,7 @@ void build() {
 
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
-	testCloud.maxSize = 1000;
+	testCloud.maxSize = 5000;
 	testCloud.init();
 	tmp.push_back(&testCloud);
 

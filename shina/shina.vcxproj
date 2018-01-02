@@ -156,6 +156,11 @@
     <ClInclude Include="lib\main.h" />
     <ClInclude Include="lib\model.h" />
     <ClInclude Include="lib\mouse.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="lib\obbCollision.h" />
+    <ClInclude Include="lib\rectangle.h" />
+>>>>>>> add rectangle texture
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />
     <ClInclude Include="lib\sphere.h" />

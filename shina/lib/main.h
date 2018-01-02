@@ -63,8 +63,9 @@
 #define _KEY_ALT 0x74
 
 
-#define IS_SPHERE 0
-#define IS_TEXTURE 1
+#define IS_SPHERE 1
+#define IS_TEXTURE 2
+#define IS_RECTANGLE 3
 
 
 using std::cin;
