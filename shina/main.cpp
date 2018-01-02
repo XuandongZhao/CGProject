@@ -24,72 +24,22 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 
-cloud testCloud,Explosion;
+cloud testCloud;
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
-void initExplosion(particle & m)
+
+
+
+void initParticle(particle & m)
 {
 	if (m.sphere == nullptr)
 	{
 		//m.tex = new texture();
-		//m.tex->load("source//pic.obj");
+		//m.tex->load("fly//fly.obj");
 		//m.which = IS_TEXTURE;
-		m.sphere = new Sphere();
-		//m.sphere = new Sphere(50, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		m.sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
 		m.which = IS_SPHERE;
-	}
-	m.setScale(1, 1, 1);
-	m.isDead = false;
-
-	float pos[3] = { 0,50,0 };
-
-	//float speed[3] = { (rand() / (double)RAND_MAX - 0.5)*5,(rand() / (double)RAND_MAX)*10,(rand() / (double)RAND_MAX - 0.5)*5 };
-	float speed[3] = { 0,0,0 };
-	float aspeed[3] = { fabs(rand() / (double)RAND_MAX - 0.5)*0.01,(rand() / (double)RAND_MAX)*0.1,(rand() / (double)RAND_MAX - 0.5)*0.01 };
-	if (speed[0] * aspeed[0] < 0)
-	{
-		aspeed[0] = -aspeed[0];
-	}
-
-	if (speed[2] * aspeed[2] < 0)
-	{
-		aspeed[2] = -aspeed[2];
-	}
-	
-	float r[3] = { (rand() / (double)RAND_MAX - 0.5) * 180,(rand() / (double)RAND_MAX - 0.5) * 180,(rand() / (double)RAND_MAX - 0.5) * 180 };
-	//float w[3] = { (rand() / (double)RAND_MAX - 0.5) * 6,(rand() / (double)RAND_MAX - 0.5) * 6,(rand() / (double)RAND_MAX - 0.5) * 6 };
-	//float b[3] = { (rand() / (double)RAND_MAX - 0.5) * 1,(rand() / (double)RAND_MAX - 0.5) * 1,(rand() / (double)RAND_MAX - 0.5) * 1 };
-	
-	m.setPosition(pos[0], pos[1], pos[2]);
-	m.setSpeed(speed[0], speed[1], speed[2]);
-	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
-
-	m.SetAngle(r[0], r[1], r[2]);
-	//m.setW(w[0], w[1], w[2]);
-	//m.setB(b[0], b[1], b[2]);
-
-	m.lifetime = 5;
-
-	m.deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
-}
-
-bool ExplosionDead(particle & m)
-{
-	if (m.x < -0.3 || m.x > 0.3 || m.y > 51 || m.y < 50 || m.z > 0.3 || m.z < -0.3)
-		return true;
-	return false;
-}
-
-void initParticle(particle & m)
-{
-	if (m.tex == nullptr)
-	{
-		m.tex = new texture();
-		m.tex->load("fly//fly.obj");
-		m.which = IS_TEXTURE;
-		//m.sphere = new Sphere(50, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
-		//m.which = IS_SPHERE;
 	}
 	m.isDead = false;
 	float x = rand() / (double(RAND_MAX)) - 0.5;
@@ -210,22 +160,16 @@ void build() {
 	texture obj;
 	obj.load("city//test3.obj");
 
-	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
-	//testCloud.initParticle = initParticle;
-	//testCloud.isDead = isDead;
-	//testCloud.maxSize = 10;
-	//testCloud.init();
-	//tmp.push_back(testCloud);
+	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
+	testCloud.initParticle = initParticle;
+	testCloud.isDead = isDead;
+	testCloud.maxSize = 1000;
+	testCloud.init();
+	tmp.push_back(&testCloud);
 
-	/*爆炸测试*/
-	/*Explosion.initParticle = initExplosion;
-	Explosion.isDead = ExplosionDead;
-	Explosion.maxSize = 100;
-	Explosion.init();
-	tmp.push_back(Explosion);*/
 
-	myworld.push_back(tmp);
-	myworld.push_back(smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
+	myworld.push_back(&tmp);
+	myworld.push_back(new smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
 	
 }
 static void smMouseFunc(int x, int y) {

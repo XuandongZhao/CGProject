@@ -210,13 +210,13 @@ public:
 		return *this;
 	}
 
-	object& load(const char *filename)
+	object* load(const char *filename)
 	{
 		FILE* file = fopen(filename, "r");
 		if (file == NULL)
 		{
 			cout << "obj name error!" << endl;
-			return *this;
+			return this;
 		}
 
 		int v_num = 0;
@@ -610,7 +610,7 @@ public:
 			}
 		}
 		cout << filename << " load finished!\n";
-		return *this;
+		return this;
 	}
 
 	void shadow();
@@ -619,20 +619,20 @@ public:
 	{
 		this->model = glm::mat4();
 	}
-	inline object& translate(GLfloat x, GLfloat y, GLfloat z)
+	inline object* translate(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::translate(this->model, vec3(x, y, z));
-		return *this;
+		return this;
 	}
-	inline object& scale(GLfloat x, GLfloat y, GLfloat z)
+	inline object* scale(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::scale(this->model, vec3(x, y, z));
-		return *this;
+		return this;
 	}
-	inline object& rotate(GLfloat angel, vec3 axis)
+	inline object* rotate(GLfloat angel, vec3 axis)
 	{
 		this->model = glm::rotate(this->model, angel, axis);
-		return *this;
+		return this;
 	}
 
 
@@ -778,7 +778,7 @@ public:
 		this->diy = diy;
 	}
 
-	texture& load(const char *filename);
+	texture* load(const char *filename);
 	void shadow();
 	void show();
 	void print()
@@ -797,20 +797,20 @@ public:
 		this->model = glm::mat4();
 	}
 
-	inline texture& translate(GLfloat x, GLfloat y, GLfloat z)
+	inline texture* translate(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::translate(this->model, vec3(x, y, z));
-		return *this;
+		return this;
 	}
-	inline texture& scale(GLfloat x, GLfloat y, GLfloat z)
+	inline texture* scale(GLfloat x, GLfloat y, GLfloat z)
 	{
 		this->model = glm::scale(this->model, vec3(x, y, z));
-		return *this;
+		return this;
 	}
-	inline texture& rotate(GLfloat angel, vec3 axis)
+	inline texture* rotate(GLfloat angel, vec3 axis)
 	{
 		this->model = glm::rotate(this->model, angel, axis);
-		return *this;
+		return this;
 	}
 
 };
@@ -1050,41 +1050,41 @@ public:
 
 class scene {
 private:
-	using objVector = std::vector<object>;
-	using textureVector = std::vector<texture>;
-	using cloudVector = std::vector<cloud>;
+	using objPtrVector = std::vector<object*>;
+	using texturePtrVector = std::vector<texture*>;
+	using cloudPtrVector = std::vector<cloud*>;
 	std::string name;
 	bool active;
 
 
 
 public:
-	objVector objCollection;
-	textureVector texCollection;
-	cloudVector cloudCollection;
+	objPtrVector objCollection;
+	texturePtrVector texCollection;
+	cloudPtrVector cloudCollection;
 
 	scene() :active(true)
 	{
 
 	}
 	virtual ~scene() {}
-	inline scene& push_back(object& e)
+	inline scene* push_back(object* e)
 	{
 		objCollection.push_back(e);
-		return *this;
+		return this;
 	}
-	inline scene& push_back(texture& e)
+	inline scene* push_back(texture* e)
 	{
 		texCollection.push_back(e);
-		return *this;
+		return this;
 	}
-	inline scene& push_back(cloud& e)
+	inline scene* push_back(cloud* e)
 	{
 		cloudCollection.push_back(e);
-		return *this;
+		return this;
 	}
 	void shadow();
-	void show(smLight& light);
+	void show(smLight* light);
 
 };
 
@@ -1092,28 +1092,28 @@ public:
 
 class world {
 private:
-	using sceneVector = std::vector<scene>;
-	using lightVector = std::vector<smLight>;
+	using scenePtrVector = std::vector<scene*>;
+	using lightPtrVector = std::vector<smLight*>;
 
 	std::string name;
 public:
-	sceneVector sceneCollection;
-	lightVector lightCollection;
+	scenePtrVector sceneCollection;
+	lightPtrVector lightCollection;
 	world(std::string tname) :name(tname) {}
 	virtual ~world() {}
-	void push_back(scene& e)
+	void push_back(scene* e)
 	{
 		sceneCollection.push_back(e);
 	}
-	void push_back(smLight& e)
+	void push_back(smLight* e)
 	{
 		lightCollection.push_back(e);
 	}
-	sceneVector& getScenes()
+	scenePtrVector& getScenes()
 	{
 		return sceneCollection;
 	}
-	lightVector& getLights()
+	lightPtrVector& getLights()
 	{
 		return lightCollection;
 	}

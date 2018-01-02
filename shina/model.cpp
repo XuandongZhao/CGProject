@@ -108,13 +108,13 @@ void texture::show() {
 
 
 }
-texture& texture::load(const char*filename)
+texture* texture::load(const char*filename)
 {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL)
 	{
 		cout << "obj name error!" << endl;
-		return *this;
+		return this;
 	}
 	int active = 0;
 	int v_num = 0;
@@ -467,7 +467,7 @@ texture& texture::load(const char*filename)
 	}
 	cout << filename << " load finished!\n";
 	//print();
-	return *this;
+	return this;
 }
 void object::shadow()
 {
@@ -524,29 +524,29 @@ void scene::shadow()
 {
 	for (auto & i : objCollection)
 	{
-		i.shadow();
+		i->shadow();
 	}
 
 	for (auto & i : texCollection)
 	{
-		i.shadow();
+		i->shadow();
 	}
 
 }
 
-void scene::show(smLight & light)
+void scene::show(smLight * light)
 {
 	for (auto &e : objCollection) {
-		e.show();
-		if (e.diy) {
-			elementShader->setVec3("u_lightDiff", light.diffuse);
-			elementShader->setVec3("u_lightAmb", light.ambient);
-			elementShader->setFloat("u_lightSpec", light.specular);
+		e->show();
+		if (e->diy) {
+			elementShader->setVec3("u_lightDiff", light->diffuse);
+			elementShader->setVec3("u_lightAmb", light->ambient);
+			elementShader->setFloat("u_lightSpec", light->specular);
 		}
 	}
 
 	for (auto &t : texCollection) {
-		t.show();
+		t->show();
 		/*if (t.diy) {
 		elementShader->setVec3("u_lightDiff", light.diffuse);
 		elementShader->setVec3("u_lightAmb", light.ambient);
@@ -556,6 +556,6 @@ void scene::show(smLight & light)
 
 	for (auto & t : cloudCollection)
 	{
-		t.show();
+		t->show();
 	}
 }
