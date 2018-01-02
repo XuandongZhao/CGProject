@@ -23,7 +23,7 @@ void texture::shadow() {
 		glDrawArrays(GL_TRIANGLES, 0, graph.pos.size() / 3);
 	}
 
-	
+
 }
 
 
@@ -32,7 +32,7 @@ void texture::show() {
 	for (Group &graph : group)
 	{
 		if (graph.pos.size() == 0)	return;
-		
+
 		if (graph.material.is_src)
 		{
 
@@ -106,7 +106,7 @@ void texture::show() {
 		}
 	}
 
-	
+
 }
 texture& texture::load(const char*filename)
 {
@@ -153,6 +153,7 @@ texture& texture::load(const char*filename)
 				vn_num++;
 				break;
 			case 't':
+				num3 = 0;
 				fscanf(file, "%f %f %f", &num1, &num2, &num3);
 				coord.push_back(num1);
 				coord.push_back(num2);
@@ -265,9 +266,8 @@ texture& texture::load(const char*filename)
 			// type: v/vt
 			else if (sscanf(buf, "%d/%d", &v0, &t0) == 2)
 			{
-				cout << line << endl;
 				fscanf(file, "%d/%d", &v1, &t1);
-				fscanf(file, "%d/%d", &v2, &t1);
+				fscanf(file, "%d/%d", &v2, &t2);
 
 				this->group[active].pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 				this->group[active].pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
@@ -286,7 +286,7 @@ texture& texture::load(const char*filename)
 				glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
 					edge2.z*edge1.x - edge1.z*edge2.x,
 					edge2.x*edge1.y - edge1.x*edge2.y);
-
+				
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
@@ -429,7 +429,7 @@ texture& texture::load(const char*filename)
 				}
 				else if (s == "map_Kd") {
 					min >> s;
-					cout << s << endl;
+					//cout << s << endl;
 					bool success;
 					abs_path = relative_path + s;
 					success = group[group.size() - 1].material.pic(abs_path.c_str());
@@ -466,7 +466,7 @@ texture& texture::load(const char*filename)
 		}
 	}
 	cout << filename << " load finished!\n";
-	print();
+	//print();
 	return *this;
 }
 void object::shadow()
@@ -526,12 +526,12 @@ void scene::shadow()
 	{
 		i.shadow();
 	}
-	
+
 	for (auto & i : texCollection)
 	{
 		i.shadow();
 	}
-	
+
 }
 
 void scene::show(smLight & light)
@@ -544,16 +544,16 @@ void scene::show(smLight & light)
 			elementShader->setFloat("u_lightSpec", light.specular);
 		}
 	}
-	
+
 	for (auto &t : texCollection) {
 		t.show();
 		/*if (t.diy) {
-			elementShader->setVec3("u_lightDiff", light.diffuse);
-			elementShader->setVec3("u_lightAmb", light.ambient);
-			elementShader->setFloat("u_lightSpec", light.specular);
+		elementShader->setVec3("u_lightDiff", light.diffuse);
+		elementShader->setVec3("u_lightAmb", light.ambient);
+		elementShader->setFloat("u_lightSpec", light.specular);
 		}*/
 	}
-	
+
 	for (auto & t : cloudCollection)
 	{
 		t.show();
