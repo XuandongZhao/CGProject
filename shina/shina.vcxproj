@@ -156,6 +156,7 @@
     <ClInclude Include="lib\model.h" />
     <ClInclude Include="lib\mouse.h" />
     <ClInclude Include="lib\obbCollision.h" />
+    <ClInclude Include="lib\rectangle.h" />
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />
     <ClInclude Include="lib\sphere.h" />

@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "light.h"
 #include "sphere.h"
+#include "rectangle.h"
 #include <atlimage.h>
 
 
@@ -824,6 +825,7 @@ public:
 struct particle {
 	Sphere* sphere;
 	texture*tex;
+	rectangle*rec;
 
 	int which;
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
@@ -857,7 +859,7 @@ struct particle {
 		this->vy = vy;
 		this->vz = vz;
 	}
-	inline void SetAngle(float rx, float ry, float rz)
+	inline void setAngle(float rx, float ry, float rz)
 	{
 		this->rx = rx;
 		this->ry = ry;
@@ -932,6 +934,11 @@ struct particle {
 			assert(tex != nullptr);
 			break;
 		}
+		case IS_RECTANGLE:
+		{
+			assert(rec != nullptr);
+			break;
+		}
 		default:
 		{
 			assert(0);
@@ -950,10 +957,11 @@ struct particle {
 			{
 				assert(sphere != nullptr);
 				sphere->loadIdentity();
+				sphere->translate(x, y, z);
 				sphere->rotate(rx, glm::vec3(1, 0, 0));
 				sphere->rotate(ry, glm::vec3(0, 1, 0));
 				sphere->rotate(rz, glm::vec3(0, 0, 1));
-				sphere->translate(x, y, z);
+				
 				sphere->scale(xScale,yScale,zScale);
 				sphere->show();
 				break;
@@ -962,12 +970,26 @@ struct particle {
 			{
 				assert(tex != nullptr);
 				tex->loadIdentity();
+				tex->translate(x, y, z);
 				tex->rotate(rx, glm::vec3(1, 0, 0));
 				tex->rotate(ry, glm::vec3(0, 1, 0));
 				tex->rotate(rz, glm::vec3(0, 0, 1));
-				tex->translate(x, y, z);
+				
 				tex->scale(xScale, yScale, zScale);
 				tex->show();
+				break;
+			}
+			case IS_RECTANGLE:
+			{
+				assert(rec != nullptr);
+				rec->loadIdentity();
+				rec->translate(x, y, z);
+				rec->rotate(rx, glm::vec3(1, 0, 0));
+				rec->rotate(ry, glm::vec3(0, 1, 0));
+				rec->rotate(rz, glm::vec3(0, 0, 1));
+				
+				rec->scale(xScale, yScale, zScale);
+				rec->show();
 				break;
 			}
 			default:
