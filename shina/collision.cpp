@@ -1,9 +1,10 @@
 #include "lib/collision.h"
 #include <cmath>
 #include <algorithm>
-using namespace std;
-void jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int T = 10000)
+
+void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int t = 10000)
 {
+	int T = t;
 	int i, j, k;
 	double max = a[0][1];
 	int row = 0;
@@ -82,7 +83,7 @@ void jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int T = 10000)
 	}
 }
 
-void schmidtOrthogonal(glm::mat3 &p, glm::vec3 &a) {
+void collosion::schmidtOrthogonal(glm::mat3 &p, glm::vec3 &a) {
 	int max_index = 0;
 	if (a[1] >= a[0] && a[1] >= a[2]) max_index = 1;
 	if (a[2] >= a[0] && a[2] >= a[1]) max_index = 2;
@@ -100,7 +101,7 @@ void schmidtOrthogonal(glm::mat3 &p, glm::vec3 &a) {
 	p = glm::transpose(p);
 }
 
-glm::mat3 cal_cov_mat(const vector<glm::vec3>& vertexs){
+glm::mat3 collosion::cal_cov_mat(const vector<glm::vec3>& vertexs){
 	glm::mat3 cov_mat;
 	//Compute the average x,y,z  
 	glm::vec3 avg(0.0f, 0.0f, 0.0f);
@@ -114,21 +115,20 @@ glm::mat3 cal_cov_mat(const vector<glm::vec3>& vertexs){
 		for (int r = c; r<3; r++)
 		{
 			cov_mat[r][c] = 0.0f;
-			float sum = 0.0f;
-			//cov(X,Y)=E[(X-x)(Y-y)]  
+			float sum = 0.0f; 
 			for (int i = 0; i<vertexs.size(); i++)
 			{
 				sum += (vertexs[i][r] - avg[r])*(vertexs[i][c] - avg[c]);
 			}
 			sum /= vertexs.size();
-			//	symmetric  
 			cov_mat[r][c] = cov_mat[c][r] = sum;
 		}
 	}
 	return cov_mat;
 }
 
-obb_box __gen_obb_box(const std::vector<glm::vec3>& vertexs, const glm::mat3 &p) {
+obb_box collosion::__gen_obb_box(const std::vector<glm::vec3> vertexs, const glm::mat3 &p) {
+	
 	obb_box obb;
 	glm::mat3 tp = glm::transpose(p);
 	obb.x_axis = tp[0];
@@ -149,16 +149,18 @@ obb_box __gen_obb_box(const std::vector<glm::vec3>& vertexs, const glm::mat3 &p)
 	return obb;
 }
 
-obb_box gen_obb_box(const std::vector<glm::vec3>& vertexs) {
+obb_box collosion::gen_obb_box(const std::vector<glm::vec3>& vertexs) {
 	glm::mat3 cov = cal_cov_mat(vertexs);
 	glm::mat3 p;
 	jacobi(cov, p);
 	glm::vec3 evalue(cov[0][0], cov[1][1], cov[2][2]);
 	schmidtOrthogonal(p, evalue);
-	return __gen_obb_box(vertexs, p);
+	a = __gen_obb_box(vertexs, p);
+	return a;
 }
 
-bool check_collision(const obb_box& a, const obb_box& b) {
+bool collosion::check_collision(collosion obj2) {
+	obb_box b = obj2.a;
 	glm::vec3 T = a.center - b.center;
 	glm::vec3 axis[15];
 	//?¨´???¨¢
@@ -169,7 +171,6 @@ bool check_collision(const obb_box& a, const obb_box& b) {
 	axis[4] = b.y_axis;
 	axis[5] = b.z_axis;
 	int k = 6;
-	//?????????¨¢
 	for (int i = 0; i < 3; i++) {
 		for (int j = 3; j < 6; j++) {
 			axis[k++] = glm::normalize(glm::cross(axis[i], axis[j]));
@@ -188,7 +189,6 @@ bool check_collision(const obb_box& a, const obb_box& b) {
 
 	using glm::dot;
 	for (int i = 0; i < 15; i++) {
-		//???¡§????
 		glm::vec3 L = axis[i];
 		float tmp = 0;
 		for (int j = 0; j < 3; j++) {

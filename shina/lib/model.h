@@ -71,10 +71,19 @@ public:
 		glDeleteBuffers(1, &spositionBufferHandle);
 	}
 
-	vector<glm::vec3> returnPos(int k) {
+	glm::mat4 getModel() {
+		return model;
+	}
 
-		for (int i = 0; i < pos.size(); i++)
-			posRe.push_back((glm::vec3)(pos[i] - 0));
+	vector<glm::vec3> returnPos() {
+
+		for (int i = 0; i < pos.size(); i += 3) {
+			float tem[3];
+			tem[0] = pos[i];
+			tem[1] = pos[i + 1];
+			tem[2] = pos[i + 2];
+			posRe.push_back(glm::make_vec3(tem));
+		}
 
 		return posRe;
 	}

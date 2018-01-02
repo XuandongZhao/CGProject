@@ -33,7 +33,7 @@
     <ClCompile Include="sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="obbCollision.cpp">
+    <ClCompile Include="collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="lib\sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\obbCollision.h">
+    <ClInclude Include="lib\collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

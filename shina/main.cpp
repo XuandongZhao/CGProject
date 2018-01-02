@@ -7,6 +7,7 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
+#include "lib\collision.h"
 #include <iostream>
 
 smCamera*camera;
@@ -23,6 +24,12 @@ smShader *elementShader;
 smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
+
+vector<collosion> objV;
+collosion fly;
+vector<object> totalObj;
+object * flyP;
+object *obFly;
 
 cloud testCloud;
 
@@ -126,19 +133,27 @@ static void smTimer(int id)
 
 	if (keyBoard->getKey((keyMap)'j') == true)
 	{
-		camera->rotateCamera(-0.1, 0);
+		obFly->translate(-50, 0, 0);
 	}
 	if (keyBoard->getKey((keyMap)'l') == true)
 	{
-		camera->rotateCamera(0.1, 0);
+		obFly->translate(50, 0, 0);
 	}
 	if (keyBoard->getKey((keyMap)'i') == true)
 	{
-		camera->rotateCamera(0, -0.1);
+		obFly->translate(0, 0, -80);
 	}
 	if (keyBoard->getKey((keyMap)'k') == true)
 	{
-		camera->rotateCamera(0, 0.1);
+		obFly->translate(0, 0, 50);
+	}
+	if (keyBoard->getKey((keyMap)'i') == true)
+	{
+		obFly->translate(0, 50, 0);
+	}
+	if (keyBoard->getKey((keyMap)'k') == true)
+	{
+		obFly->translate(0, -50, 0);
 	}
 
 
@@ -155,10 +170,91 @@ static void smReshape(int w, int h) {
 	SCR_WIDTH = w;
 	SCR_HEIGHT = h;
 }
+
+
+std::vector<glm::vec3> posRe;
+glm::mat4 model;
+DWORD WINAPI ThreadMethod(LPVOID lpParameter)//执行线程任务的函数
+{
+	Sleep(10000);
+	BOOL geifen = TRUE;
+	while (geifen)
+	{
+		model = obFly->getModel();
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++)
+				cout << model[j][i] << "\t";
+			cout << endl;
+		}
+		posRe = fly.top;
+
+		cout << "111: " << posRe.size() << "  " << fly.posRe.size() << endl;
+
+		for (int i = 0; i < posRe.size(); i++) {
+			int last = 1;
+			glm::mat4 tem;
+			double result[4];
+			for (int j = 0; j < 4; j++) {
+				result[j] = 0;
+				for (int k = 0; k<3; k++)
+					result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
+				result[j] += ((double)(model[3][j])) * last;
+			}
+			for (int j = 0; j < 3; j++) {
+				fly.topR[i][j] = result[j] / result[3];
+			}
+
+		}
+
+		fly.gen_obb_box(fly.topR);
+		for (int i = 0; i < objV.size(); i++) {
+			cout << fly.check_collision(objV[i]);
+			cout << "the xyz of building" << i << " is = " << objV[i].a.center[0] << " " << objV[i].a.center[1] << " " << objV[i].a.center[2] << endl;
+			cout << "the xyz of fly is " << " " << fly.a.center[0] << " " << fly.a.center[1] << " " << fly.a.center[2] << endl;
+			if (fly.check_collision(objV[i]))
+				cout << "碰撞了:" << i << endl;
+
+		}
+		Sleep(10);
+
+	}
+	return 0;
+}
+
+void dealBox() {
+	char boxFileName[50];
+	strcpy(boxFileName, "city//tem//6//test6.obj");
+	for (int i = 1; i <= 8; i++) {
+		object obj1;
+		boxFileName[11] = i + '0';
+		boxFileName[18] = i + '0';
+		obj1.load(boxFileName);
+		obj1.scale(0.05, 0.05, 0.05);
+		collosion temC;
+		temC.gen_obb_box(obj1.returnPos());
+		temC.div20();
+		objV.push_back(temC);
+	}
+	HANDLE hThread = NULL;
+	DWORD dwThreadID = 0;//保存线程ID
+	hThread = CreateThread(0, 0, ThreadMethod, NULL, 0, &dwThreadID);//创建线程
+	CloseHandle(hThread);//关闭内核对象,不会停止线程
+}
+
 void build() {
 	static scene tmp;
 
 	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
+	obFly = new object();
+	obFly->load("fly//fly.obj");
+	obFly->scale(0.05, 0.05, 0.05);
+	fly.setPos(obFly->returnPos());
+	fly.gen_obb_box(obFly->returnPos());
+	tmp.push_back(obFly);
+	fly.initTop();
+	dealBox();
+
+	
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
 	testCloud.maxSize = 1000;
