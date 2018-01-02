@@ -7,13 +7,6 @@
 #include "lib\keyboard.h"
 #include "lib\shader.h"
 #include "lib\sphere.h"
-<<<<<<< HEAD
-
-#include "lib\obbCollision.h"
-=======
->>>>>>> parent of a1bb557... add separate buildings
-#include <time.h> 
-
 #include <iostream>
 
 smCamera*camera;
@@ -31,58 +24,98 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 
-Sphere *sphere;
-cloud temC;
-
-/** 用来设置粒子的属性值 */
-float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
-int r, g, b;
-
-
-cloud testCloud;
+cloud testCloud,Explosion;
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
-
-void initParticle(particle & m)
+void initExplosion(particle & m)
 {
-	//cout << "init" << endl;
-	if (m.tex == nullptr)
+	if (m.sphere == nullptr)
 	{
-		m.tex = new texture();
-		m.tex->load("fly//fly.obj");
-		
-		m.which = IS_TEXTURE;
-		//m.sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
-		//m.which = IS_SPHERE;
+		//m.tex = new texture();
+		//m.tex->load("source//pic.obj");
+		//m.which = IS_TEXTURE;
+		m.sphere = new Sphere();
+		//m.sphere = new Sphere(50, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		m.which = IS_SPHERE;
+	}
+	m.setScale(1, 1, 1);
+	m.isDead = false;
+
+	float pos[3] = { 0,50,0 };
+
+	//float speed[3] = { (rand() / (double)RAND_MAX - 0.5)*5,(rand() / (double)RAND_MAX)*10,(rand() / (double)RAND_MAX - 0.5)*5 };
+	float speed[3] = { 0,0,0 };
+	float aspeed[3] = { fabs(rand() / (double)RAND_MAX - 0.5)*0.01,(rand() / (double)RAND_MAX)*0.1,(rand() / (double)RAND_MAX - 0.5)*0.01 };
+	if (speed[0] * aspeed[0] < 0)
+	{
+		aspeed[0] = -aspeed[0];
 	}
 
-	m.isDead = false;
-	float x = rand() / (double(RAND_MAX))-0.5;
-	float z = rand() / (double(RAND_MAX))-0.5;
-	float pos[3] = { x,50,z};
+	if (speed[2] * aspeed[2] < 0)
+	{
+		aspeed[2] = -aspeed[2];
+	}
 	
+	float r[3] = { (rand() / (double)RAND_MAX - 0.5) * 180,(rand() / (double)RAND_MAX - 0.5) * 180,(rand() / (double)RAND_MAX - 0.5) * 180 };
+	//float w[3] = { (rand() / (double)RAND_MAX - 0.5) * 6,(rand() / (double)RAND_MAX - 0.5) * 6,(rand() / (double)RAND_MAX - 0.5) * 6 };
+	//float b[3] = { (rand() / (double)RAND_MAX - 0.5) * 1,(rand() / (double)RAND_MAX - 0.5) * 1,(rand() / (double)RAND_MAX - 0.5) * 1 };
 	
-	float speed[3] = { (rand() / (double(RAND_MAX))-0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX))-0.5)*0.1 };
-	float aspeed[3] = { 0,0.005,0};
 	m.setPosition(pos[0], pos[1], pos[2]);
 	m.setSpeed(speed[0], speed[1], speed[2]);
 	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
 
+	m.SetAngle(r[0], r[1], r[2]);
+	//m.setW(w[0], w[1], w[2]);
+	//m.setB(b[0], b[1], b[2]);
 
-	if (abs(x) < abs(z))
+	m.lifetime = 5;
+
+	m.deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
+}
+
+bool ExplosionDead(particle & m)
+{
+	if (m.x < -0.3 || m.x > 0.3 || m.y > 51 || m.y < 50 || m.z > 0.3 || m.z < -0.3)
+		return true;
+	return false;
+}
+
+void initParticle(particle & m)
+{
+	if (m.tex == nullptr)
 	{
-		m.lifetime = 2.0*abs(z) / 0.5;
+		m.tex = new texture();
+		m.tex->load("fly//fly.obj");
+		m.which = IS_TEXTURE;
+		//m.sphere = new Sphere(50, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		//m.which = IS_SPHERE;
+	}
+	m.isDead = false;
+	float x = rand() / (double(RAND_MAX)) - 0.5;
+	float z = rand() / (double(RAND_MAX)) - 0.5;
+	float pos[3] = { x,50,z };
+
+
+	float speed[3] = { (rand() / (double(RAND_MAX)) - 0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX)) - 0.5)*0.1 };
+	float aspeed[3] = { 0,0.005,0 };
+	m.setPosition(pos[0], pos[1], pos[2]);
+	m.setSpeed(speed[0], speed[1], speed[2]);
+	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
+
+	
+	if (fabs(x) < fabs(z))
+	{
+		m.lifetime = 2.0*fabs(z) / 0.5;
 	}
 	else {
-		m.lifetime = 2.0*abs(x) / 0.5;
+		m.lifetime = 2.0*fabs(x) / 0.5;
 	}
-		
-	m.deci =0.1+(rand() / (double(RAND_MAX)))*0.1;
+	m.deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
 }
 
 /*
-	@return true for dead
+@return true for dead
 */
 bool isDead(particle & m)
 {
@@ -109,30 +142,14 @@ static void smInit()
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-<<<<<<< HEAD
-
-	//temC.totalCloudInfo.Create(5000);
-	//initCloudInfo();
-	//obb_box build1 = obbcam->gen_obb_box(object::getPos)
-
-
-=======
-	temC.totalCloudInfo.Create(5000);
-	initCloudInfo();
->>>>>>> parent of a1bb557... add separate buildings
 }
 unsigned int cnt = 0;
 
 static void smTimer(int id)
 {
-	//cout << camera->eye.x << " " << camera->eye.y << " " << camera->eye.z << "***" << endl;
-	//cout << "1" << endl;
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		//myworld.getScenes()[0].cloudCollection[0].sphereCollection[0].translate(-0.1,0,0);
 		camera->moveCamera(-5, 0);
-		//sphere->translate(-0.1, 0, 0);
-		//(camera->getEye()).z -= 5;
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
@@ -181,14 +198,7 @@ static void smTimer(int id)
 
 static void smDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-
 	render.render(myworld, *camera);
-	//sphere->show();
-
-	//testCircles.show(*camera);
 	glutSwapBuffers();
 }
 static void smReshape(int w, int h) {
@@ -197,37 +207,26 @@ static void smReshape(int w, int h) {
 }
 void build() {
 	static scene tmp;
-
-
-	
 	texture obj;
 	obj.load("city//test3.obj");
+
 	tmp.push_back(obj.scale(0.05, 0.05, 0.05));
-<<<<<<< HEAD
+	//testCloud.initParticle = initParticle;
+	//testCloud.isDead = isDead;
+	//testCloud.maxSize = 10;
+	//testCloud.init();
+	//tmp.push_back(testCloud);
 
-	object obj1;
-	obj1.load("city//tem//1//test1.obj");
-	tmp.push_back(obj1.scale(0.05, 0.05, 0.05));
-=======
->>>>>>> parent of a1bb557... add separate buildings
-	tmp.push_back(temC);
-	//testCircles.push_back(sphere(10, 2, "fuck", glm::vec4(1, 0, 0, 1)));
-	//cout<<testCircles.particlesCollection[0].draw()<<endl;.push_back(*sphere)
-
-
-	//tmp.push_back(object().load("fly//fly.obj").translate(0,50,0));
-
-	testCloud.initParticle = initParticle;
-	testCloud.isDead = isDead;
-	testCloud.maxSize = 10;
-	
-	testCloud.init();
-	tmp.push_back(testCloud);
-
+	/*鐖嗙偢娴嬭瘯*/
+	/*Explosion.initParticle = initExplosion;
+	Explosion.isDead = ExplosionDead;
+	Explosion.maxSize = 100;
+	Explosion.init();
+	tmp.push_back(Explosion);*/
 
 	myworld.push_back(tmp);
 	myworld.push_back(smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
-	//myworld.push_back(smLight(0, glm::vec3(-24.f, 32.f, 18.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.1f, .1f, .1f), 1.f));
+	
 }
 static void smMouseFunc(int x, int y) {
 	mouse->now.x = float(x);
@@ -242,18 +241,11 @@ static void smDrag(int x, int y) {
 		camera->rotateCamera((-mouse->pre.x + float(x)) / 40, (-mouse->pre.y + float(y)) / 40);
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
-
-	//glutPostRedisplay();
 }
 static void smClick(int button, int state, int x, int y) {
 	mouse->state[button] = state;
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
-	//if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN) {
-	//	mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
-	//}
-
-	//glutPostRedisplay();
 }
 static void smWheel(int wheel, int dir, int x, int y) {
 	if (dir > 0)camera->zoomCamera(.95f);
@@ -269,7 +261,6 @@ static void smKeyDown(unsigned char cAscii, int x, int y)
 	{
 		keyBoard->getKey((keyMap)cAscii) = true;
 	}
-	//cout << "Down  " << cAscii << " " << x << " " << y << endl;
 }
 static void smKeyUp(unsigned char cAscii, int x, int y)
 {
@@ -277,7 +268,6 @@ static void smKeyUp(unsigned char cAscii, int x, int y)
 	{
 		keyBoard->getKey((keyMap)cAscii) = false;
 	}
-	//cout << "Up  " << cAscii << " " << x << " " << y << endl;
 }
 
 int main(int argc, char*argv[])
@@ -303,8 +293,6 @@ int main(int argc, char*argv[])
 	glutKeyboardUpFunc(smKeyUp);
 
 	glutTimerFunc(100, smTimer, 1);
-	//glutSpecialFunc(smSpecialDown);
-	//glutSpecialUpFunc(smSpecialUp);
 
 	build();
 	glutMainLoop();
