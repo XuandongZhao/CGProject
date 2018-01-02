@@ -51,9 +51,12 @@ private:
 	obb_box __gen_obb_box(const std::vector<glm::vec3> vertexs, const glm::mat3 &p);
 public:
 	obb_box a;
+	obb_box a2;
 	std::vector<glm::vec3> posRe;
 	std::vector<glm::vec3> topR;
+	std::vector<glm::vec3> topR2;
 	std::vector<glm::vec3> top;
+	std::vector<glm::vec3> top2;
 	collosion() {};
 	collosion(char* filePath) {
 		object obj1;
@@ -68,6 +71,48 @@ public:
 		a.center /= 20;
 		a.half /= 20;
 	}
+
+	void initTopP() {
+		float temV[3];
+		float temV1[3] = { -5689.73,895, 310.76 };
+		top.push_back(glm::make_vec3(temV1));
+		float temV2[3] = { -2287.73,895, 310.76 };
+		top.push_back(glm::make_vec3(temV2));
+		float temV3[3] = { -2287.73,895, 11066.8 };
+		top.push_back(glm::make_vec3(temV3));
+		float temV8[3] = { -5689.73,895, 11066.8 };
+		top.push_back(glm::make_vec3(temV8));
+		float temV4[3] = { -5689.73,2541,310.76 };
+		top.push_back(glm::make_vec3(temV4));
+
+		float temV5[3] = { -2287.73,2541,310.76 };
+		top.push_back(glm::make_vec3(temV5));
+		float temV6[3] = { -5689.73, 2541, 11066.8 };
+		top.push_back(glm::make_vec3(temV6));
+		float temV7[3] = { -2287.73,2541,11066.8 };
+		top.push_back(glm::make_vec3(temV7));
+		topR = top;
+
+		float temV11[3] = { -7804.73,895,6165.76 };
+		top2.push_back(glm::make_vec3(temV1));
+		float temV21[3] = { -96.7308,895,6165.76 };
+		top2.push_back(glm::make_vec3(temV2));
+		float temV31[3] = { -96.7308,895,8575.76 };
+		top2.push_back(glm::make_vec3(temV3));
+		float temV81[3] = { -7804.73,895,8575.76 };
+		top2.push_back(glm::make_vec3(temV8));
+		float temV41[3] = { -7804.73,2108,6165.76 };
+		top2.push_back(glm::make_vec3(temV4));
+
+		float temV51[3] = { -96.7308,2108,6165.76 };
+		top2.push_back(glm::make_vec3(temV5));
+		float temV61[3] = { -7804.73,2108,8575.76 };
+		top2.push_back(glm::make_vec3(temV6));
+		float temV71[3] = { -96.7308,2108,8575.76 };
+		top2.push_back(glm::make_vec3(temV7));
+		topR2 = top2;
+	}
+
 	void initTop() {
 		float temV[3];
 		for(int i=0; i<3; i++)
@@ -115,14 +160,14 @@ public:
 	参数：
 	vertexs : 定点坐标
 	*/
-	obb_box gen_obb_box(const std::vector<glm::vec3>& vertexs);
+	obb_box gen_obb_box(const std::vector<glm::vec3>& vertexs, int type = 0);
 	/*
 	功能：检测物体是否碰撞
 	返回：布尔值
 	参数：
 	两个obb盒结构
 	*/
-	bool check_collision(collosion obj2);
+	bool check_collision(collosion obj2, int type = 0);
 };
 #endif // !COLLISION_H
 

@@ -149,18 +149,29 @@ obb_box collosion::__gen_obb_box(const std::vector<glm::vec3> vertexs, const glm
 	return obb;
 }
 
-obb_box collosion::gen_obb_box(const std::vector<glm::vec3>& vertexs) {
+obb_box collosion::gen_obb_box(const std::vector<glm::vec3>& vertexs, int type) {
 	glm::mat3 cov = cal_cov_mat(vertexs);
 	glm::mat3 p;
 	jacobi(cov, p);
 	glm::vec3 evalue(cov[0][0], cov[1][1], cov[2][2]);
 	schmidtOrthogonal(p, evalue);
-	a = __gen_obb_box(vertexs, p);
-	return a;
+	if (type == 0) {
+		a = __gen_obb_box(vertexs, p);
+		return a;
+	}
+	else if (type == 1) {
+		a2 = __gen_obb_box(vertexs, p);
+		return a2;
+	}
+	
 }
 
-bool collosion::check_collision(collosion obj2) {
+bool collosion::check_collision(collosion obj2, int type) {
 	obb_box b = obj2.a;
+	obb_box a;
+	if (type == 0)
+		a = this->a;
+	else a = this->a2;
 	glm::vec3 T = a.center - b.center;
 	glm::vec3 axis[15];
 	//?и┤???ив

@@ -27,11 +27,15 @@ smShader * paticleShader;
 
 vector<collosion> objV;
 collosion fly;
+collosion flyPC;
 vector<object> totalObj;
 object * flyP;
 object *obFly;
+texture *obPlane;
 
 cloud testCloud;
+
+bool launch = false;
 
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
@@ -134,29 +138,79 @@ static void smTimer(int id)
 	if (keyBoard->getKey((keyMap)'j') == true)
 	{
 		obFly->translate(-50, 0, 0);
+		obFly->rotate(0.05, glm::vec3(0, 1, 0));
 	}
 	if (keyBoard->getKey((keyMap)'l') == true)
 	{
 		obFly->translate(50, 0, 0);
+		obFly->rotate(-0.05, glm::vec3(0, 1, 0));
 	}
-	if (keyBoard->getKey((keyMap)'i') == true)
+	if (keyBoard->getKey((keyMap)'k') == true)
 	{
 		obFly->translate(0, 0, -80);
 	}
-	if (keyBoard->getKey((keyMap)'k') == true)
-	{
-		obFly->translate(0, 0, 50);
-	}
 	if (keyBoard->getKey((keyMap)'i') == true)
+	{
+		obFly->translate(0, 0, 80);
+	}
+	if (keyBoard->getKey((keyMap)'u') == true)
 	{
 		obFly->translate(0, 50, 0);
 	}
-	if (keyBoard->getKey((keyMap)'k') == true)
+	if (keyBoard->getKey((keyMap)'o') == true)
 	{
 		obFly->translate(0, -50, 0);
 	}
+	if (keyBoard->getKey((keyMap)'m') == true)
+	{
+		obFly->rotate(0.03, glm::vec3(1, 0, 0));
+	}
+	if (keyBoard->getKey((keyMap)'.') == true)
+	{
+		obFly->rotate(-0.03, glm::vec3(1, 0, 0));
+	}
 
 
+	if (!launch) {
+		if (keyBoard->getKey((keyMap)'j') == true)
+		{
+			obPlane->translate(-50, 0, 0);
+			obPlane->rotate(0.05, glm::vec3(0, 1, 0));
+		}
+		if (keyBoard->getKey((keyMap)'l') == true)
+		{
+			obPlane->translate(50, 0, 0);
+			obPlane->rotate(-0.05, glm::vec3(0, 1, 0));
+		}
+		if (keyBoard->getKey((keyMap)'k') == true)
+		{
+			obPlane->translate(0, 0, -80);
+		}
+		if (keyBoard->getKey((keyMap)'i') == true)
+		{
+			obPlane->translate(0, 0, 80);
+		}
+		if (keyBoard->getKey((keyMap)'u') == true)
+		{
+			obPlane->translate(0, 50, 0);
+		}
+		if (keyBoard->getKey((keyMap)'o') == true)
+		{
+			obPlane->translate(0, -50, 0);
+		}
+		if (keyBoard->getKey((keyMap)'m') == true)
+		{
+			obPlane->rotate(0.03, glm::vec3(1, 0, 0));
+		}
+		if (keyBoard->getKey((keyMap)'.') == true)
+		{
+			obPlane->rotate(-0.03, glm::vec3(1, 0, 0));
+		}
+	}
+	if (keyBoard->getKey((keyMap)' ') == true)
+	{
+		launch = true;
+	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
 }
@@ -174,6 +228,36 @@ static void smReshape(int w, int h) {
 
 std::vector<glm::vec3> posRe;
 glm::mat4 model;
+
+void testCollision(collosion& fly, int type) {
+	if(type == 0)
+		posRe = fly.top;
+	else posRe = fly.top2;
+
+	for (int i = 0; i < posRe.size(); i++) {
+		int last = 1;
+		glm::mat4 tem;
+		double result[4];
+		for (int j = 0; j < 4; j++) {
+			result[j] = 0;
+			for (int k = 0; k<3; k++)
+				result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
+			result[j] += ((double)(model[3][j])) * last;
+		}
+		for (int j = 0; j < 3; j++) {
+			if(type == 0)
+				fly.topR[i][j] = result[j] / result[3];
+			else fly.topR2[i][j] = result[j] / result[3];
+		}
+
+	}
+
+	if(type == 0)
+		fly.gen_obb_box(fly.topR, type);
+	else
+		fly.gen_obb_box(fly.topR2, type);
+}
+
 DWORD WINAPI ThreadMethod(LPVOID lpParameter)//执行线程任务的函数
 {
 	Sleep(10000);
@@ -181,39 +265,19 @@ DWORD WINAPI ThreadMethod(LPVOID lpParameter)//执行线程任务的函数
 	while (geifen)
 	{
 		model = obFly->getModel();
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++)
-				cout << model[j][i] << "\t";
-			cout << endl;
-		}
-		posRe = fly.top;
-
-		cout << "111: " << posRe.size() << "  " << fly.posRe.size() << endl;
-
-		for (int i = 0; i < posRe.size(); i++) {
-			int last = 1;
-			glm::mat4 tem;
-			double result[4];
-			for (int j = 0; j < 4; j++) {
-				result[j] = 0;
-				for (int k = 0; k<3; k++)
-					result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
-				result[j] += ((double)(model[3][j])) * last;
-			}
-			for (int j = 0; j < 3; j++) {
-				fly.topR[i][j] = result[j] / result[3];
-			}
-
-		}
-
-		fly.gen_obb_box(fly.topR);
+		testCollision(fly, 0);
+		model = obPlane->getModel();
+		testCollision(flyPC, 0);
+		testCollision(flyPC, 1);
 		for (int i = 0; i < objV.size(); i++) {
-			cout << fly.check_collision(objV[i]);
 			cout << "the xyz of building" << i << " is = " << objV[i].a.center[0] << " " << objV[i].a.center[1] << " " << objV[i].a.center[2] << endl;
-			cout << "the xyz of fly is " << " " << fly.a.center[0] << " " << fly.a.center[1] << " " << fly.a.center[2] << endl;
+			cout << "the xyz of fly is " << " " << flyPC.a.center[0] << " " << flyPC.a.center[1] << " " << flyPC.a.center[2] << endl;;
 			if (fly.check_collision(objV[i]))
-				cout << "碰撞了:" << i << endl;
-
+				cout << "导弹碰撞了:" << i << endl;
+			if (flyPC.check_collision(objV[i])
+				|| flyPC.check_collision(objV[i], 1)) {
+				cout << "飞机碰撞了:" << i << endl;
+			}
 		}
 		Sleep(10);
 
@@ -246,15 +310,21 @@ void build() {
 
 	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
 	obFly = new object();
-	obFly->load("fly//fly.obj");
+	obFly->load("fly//flyD.obj");
 	obFly->scale(0.05, 0.05, 0.05);
 	fly.setPos(obFly->returnPos());
 	fly.gen_obb_box(obFly->returnPos());
 	tmp.push_back(obFly);
 	fly.initTop();
+	
+
+	obPlane = new texture();
+	obPlane->load("fly//flyP.obj");
+	flyPC.initTopP();
+	tmp.push_back(obPlane->scale(0.05, 0.05, 0.05));
+
 	dealBox();
 
-	
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
 	testCloud.maxSize = 1000;
@@ -295,14 +365,16 @@ static void smWheel(int wheel, int dir, int x, int y) {
 static void smKeyDown(unsigned char cAscii, int x, int y)
 {
 	static keyMap mykeys;
-	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
+	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i'
+		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.')
 	{
 		keyBoard->getKey((keyMap)cAscii) = true;
 	}
 }
 static void smKeyUp(unsigned char cAscii, int x, int y)
 {
-	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i')
+	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i'
+		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.')
 	{
 		keyBoard->getKey((keyMap)cAscii) = false;
 	}

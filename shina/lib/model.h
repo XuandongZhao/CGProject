@@ -778,6 +778,9 @@ private:
 public:
 	bool diy = false;
 
+	glm::mat4 getModel() {
+		return model;
+	}
 
 
 	texture(bool diy = false,
