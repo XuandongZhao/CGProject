@@ -46,10 +46,10 @@ public:
 		positionBufferHandle, colorBufferHandle, normalBufferHandle;
 	GLuint spositionBufferHandle;
 
-	
 
-	object(bool _diy = false, vec3 _ka=vec3(0,0,0), float _ks=0, vec3 _kd=vec3(0,0,0))
-		:diy(_diy),ka(_ka),ks(_ks),kd(_kd)
+
+	object(bool _diy = false, vec3 _ka = vec3(0, 0, 0), float _ks = 0, vec3 _kd = vec3(0, 0, 0))
+		:diy(_diy), ka(_ka), ks(_ks), kd(_kd)
 	{
 		pos.clear();
 		color.clear();
@@ -70,12 +70,12 @@ public:
 		glDeleteBuffers(3, vboHandles);
 		glDeleteBuffers(1, &spositionBufferHandle);
 	}
-	
+
 	vector<glm::vec3> returnPos(int k) {
-		
+
 		for (int i = 0; i < pos.size(); i++)
 			posRe.push_back((glm::vec3)(pos[i] - 0));
-			
+
 		return posRe;
 	}
 	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
@@ -209,7 +209,7 @@ public:
 
 		return *this;
 	}
-	
+
 	object& load(const char *filename)
 	{
 		FILE* file = fopen(filename, "r");
@@ -234,7 +234,7 @@ public:
 		while (fscanf(file, "%s", buf) != EOF)
 		{
 			line++;
-			
+
 			switch (buf[0])
 			{
 			case 'v':
@@ -263,13 +263,13 @@ public:
 			}
 			case 'f':
 			{
-				
+
 				int v0, t0, n0, v1, t1, n1, v2, t2, n2;
 				v0 = v1 = v2 = 0;
 				n0 = n1 = n2 = 0;
 				t0 = t1 = t2 = 0;
 				fscanf(file, "%s", buf);
-				
+
 				// type: v//vn
 				if (sscanf(buf, "%d//%d", &v0, &n0) == 2)
 				{
@@ -301,12 +301,12 @@ public:
 					v1 = v2;
 					n1 = n2;
 					t1 = t2;
-					
+
 					while (fscanf(file, "%d//%d", &v2, &n2) == 2)
 					{
 						this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
 						this->pushPos(pos[v1 * 3 - 3], pos[v1 * 3 - 2], pos[v1 * 3 - 1]);
-						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]); 
+						this->pushPos(pos[v2 * 3 - 3], pos[v2 * 3 - 2], pos[v2 * 3 - 1]);
 
 						if (active != -1)
 						{
@@ -394,7 +394,7 @@ public:
 				{
 					//cout << line << endl;
 					fscanf(file, "%d/%d", &v1, &t1);
-					fscanf(file, "%d/%d", &v2, &t1);
+					fscanf(file, "%d/%d", &v2, &t2);
 					//cout << v0 << " " << v1 << " " << v2 << endl;
 
 					this->pushPos(pos[v0 * 3 - 3], pos[v0 * 3 - 2], pos[v0 * 3 - 1]);
@@ -471,7 +471,7 @@ public:
 					}
 				}
 				// type: v
-				else if(sscanf(buf, "%d", &v0) == 1)
+				else if (sscanf(buf, "%d", &v0) == 1)
 				{
 					fscanf(file, "%d", &v1);
 					fscanf(file, "%d", &v2);
@@ -551,7 +551,7 @@ public:
 				}
 				break;
 			}
-			
+
 			case 'm':
 			{
 				std::ifstream min;
@@ -612,7 +612,7 @@ public:
 		cout << filename << " load finished!\n";
 		return *this;
 	}
-	
+
 	void shadow();
 	void show();
 	inline void loadIdentity()
@@ -641,19 +641,19 @@ public:
 class texture {
 private:
 	using vec3 = glm::vec3;
-	//增加了一个材质类，有材质信息和图片信息
+	//澧炲姞浜嗕竴涓潗璐ㄧ被锛屾湁鏉愯川淇℃伅鍜屽浘鐗囦俊鎭?
 	class Material {
 	public:
 		GLuint texName;
-		std::string name;//材质名字
-		glm::vec3 kd, ka, ks;//材质信息
-		Bitmap src;//图片信息
-		bool is_src;//是否有图片，有则使用图片画，否则用材质画
+		std::string name;//鏉愯川鍚嶅瓧
+		glm::vec3 kd, ka, ks;//鏉愯川淇℃伅
+		Bitmap src;//鍥剧墖淇℃伅
+		bool is_src;//鏄惁鏈夊浘鐗囷紝鏈夊垯浣跨敤鍥剧墖鐢伙紝鍚﹀垯鐢ㄦ潗璐ㄧ敾
 		bool diy = false;
 
 		GLuint vao, svao;
 		GLuint vboHandles[4],
-			positionBufferHandle, colorBufferHandle,  normalBufferHandle;
+			positionBufferHandle, colorBufferHandle, normalBufferHandle;
 		GLuint spositionBufferHandle;
 
 		GLuint coordBufferHandle;
@@ -678,7 +678,7 @@ private:
 
 		}
 
-		//这个函数从texture类放到material类里面
+		//杩欎釜鍑芥暟浠巘exture绫绘斁鍒癿aterial绫婚噷闈?
 		bool pic(const char *fileName)
 		{
 			// load picture to bitmap
@@ -686,14 +686,12 @@ private:
 			if (!fileName)
 			{
 				cout << "Warning: image open failed!\nMaterial name is " << name << endl;
-				exit(1);
 				return false;
 			}
 			HRESULT hr = img->Load(fileName);
 			if (!SUCCEEDED(hr))
 			{
 				cout << "Warning: load image failed!\nMaterial name is " << name << endl;
-				exit(1);
 				return false;
 			}
 			src.sizeX = img->GetWidth();
@@ -716,7 +714,7 @@ private:
 		vector<float> color;
 		vector<float> normal;
 		Material material;
-		bool colorFilled=false;
+		bool colorFilled = false;
 		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
 			pos.push_back(pos1);
 			pos.push_back(pos2);
@@ -767,6 +765,7 @@ private:
 	};
 	vector<Group> group;
 	glm::mat4 model;
+
 public:
 	bool diy = false;
 
@@ -787,9 +786,9 @@ public:
 		for (size_t i = 0; i < group.size(); i++)
 		{
 			cout << "group: " << i << endl;
-			cout << "v num: " << group[i].pos.size() / 3<< endl;
-			cout << "vt num: " << group[i].coord.size() / 2<< endl;
-			cout << "vn num: " << group[i].normal.size() / 3<< endl;
+			cout << "v num: " << group[i].pos.size() / 3 << endl;
+			cout << "vt num: " << group[i].coord.size() / 2 << endl;
+			cout << "vn num: " << group[i].normal.size() / 3 << endl;
 			cout << "material name: " << group[i].material.name << endl;
 		}
 	}
@@ -813,26 +812,27 @@ public:
 		this->model = glm::rotate(this->model, angel, axis);
 		return *this;
 	}
+
 };
 
 
 /*
-	0 sphere
-	1 texture
+0 sphere
+1 texture
 */
 
 struct particle {
-	Sphere* sphere=nullptr;
-	texture*tex = nullptr;
+	Sphere* sphere;
+	texture*tex;
 
-	int which = -1;
-
+	int which;
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
-	bool isDead = false;
-
-	particle()
+	float rx,ry,rz,wx, wy, wz, bx, by, bz;//r为旋转角度,w和b分别为角速度和角加速度
+	bool isDead;
+	float xScale, yScale, zScale,xFactor,yFactor,zFactor;
+	particle():x(0),y(0),z(0),vx(0),vy(0),vz(0),ax(0),ay(0),az(0),sizei(0),lifetime(0),deci(0),rx(0),ry(0),rz(0),wx(0),wy(0),wz(0),bx(0),by(0),bz(0),isDead(false),which(-1),sphere(nullptr),tex(nullptr),xScale(1),yScale(1),zScale(1),xFactor(1),yFactor(1),zFactor(1)
 	{
-		
+
 	}
 
 	inline void setCoor(float x, float y, float z)
@@ -857,6 +857,36 @@ struct particle {
 		this->vy = vy;
 		this->vz = vz;
 	}
+	inline void SetAngle(float rx, float ry, float rz)
+	{
+		this->rx = rx;
+		this->ry = ry;
+		this->rz = rz;
+	}
+	inline void setW(float wx, float wy, float wz)
+	{
+		this->wx = wx;
+		this->wy = wy;
+		this->wz = wz;
+	}
+	inline void setB(float bx, float by, float bz)
+	{
+		this->bx = bx;
+		this->by = by;
+		this->bz = bz;
+	}
+	inline void setScale(float xScale, float yScale, float zScale)
+	{
+		this->xScale = xScale;
+		this->yScale = yScale;
+		this->zScale = zScale;
+	}
+	inline void setFactor(float xFactor, float yFactor, float zFactor)
+	{
+		this->xFactor = xFactor;
+		this->yFactor = yFactor;
+		this->zFactor = zFactor;
+	}
 	inline void update()
 	{
 		x += vx;
@@ -865,6 +895,21 @@ struct particle {
 		vx += ax;
 		vy += ay;
 		vz += az;
+		rx += wx;
+		ry += wy;
+		rz += wz;
+
+		rx += wx;
+		ry += wy;
+		rz += wz;
+		wx += bx;
+		wy += by;
+		wz += bz;
+
+		xScale *= xFactor;
+		yScale *= yFactor;
+		zScale *= zFactor;
+
 		lifetime -= deci;
 		if (lifetime <= 0)
 		{
@@ -876,21 +921,21 @@ struct particle {
 	{
 		switch (which)
 		{
-			case IS_SPHERE:
-			{
-				assert(sphere != nullptr);
-				sphere->init();
-				break;
-			}
-			case IS_TEXTURE:
-			{
-				assert(tex != nullptr);
-				break;
-			}
-			default:
-			{
-				assert(0);
-			}
+		case IS_SPHERE:
+		{
+			assert(sphere != nullptr);
+			sphere->init();
+			break;
+		}
+		case IS_TEXTURE:
+		{
+			assert(tex != nullptr);
+			break;
+		}
+		default:
+		{
+			assert(0);
+		}
 
 		}
 	}
@@ -901,30 +946,37 @@ struct particle {
 		{
 			switch (which)
 			{
-				case IS_SPHERE:
-				{
-					assert(sphere != nullptr);
-					sphere->loadIdentity();
-					sphere->translate(x, y, z);
-					sphere->show();
-					break;
-				}
-				case IS_TEXTURE:
-				{
-					assert(tex != nullptr);
-					tex->loadIdentity();
-					tex->translate(x, y, z);
-					//cout << "fuck" << endl;
-					tex->show();
-					break;
-				}
-				default:
-				{
-					assert(0);
-				}
-				
+			case IS_SPHERE:
+			{
+				assert(sphere != nullptr);
+				sphere->loadIdentity();
+				sphere->rotate(rx, glm::vec3(1, 0, 0));
+				sphere->rotate(ry, glm::vec3(0, 1, 0));
+				sphere->rotate(rz, glm::vec3(0, 0, 1));
+				sphere->translate(x, y, z);
+				sphere->scale(xScale,yScale,zScale);
+				sphere->show();
+				break;
 			}
-			
+			case IS_TEXTURE:
+			{
+				assert(tex != nullptr);
+				tex->loadIdentity();
+				tex->rotate(rx, glm::vec3(1, 0, 0));
+				tex->rotate(ry, glm::vec3(0, 1, 0));
+				tex->rotate(rz, glm::vec3(0, 0, 1));
+				tex->translate(x, y, z);
+				tex->scale(xScale, yScale, zScale);
+				tex->show();
+				break;
+			}
+			default:
+			{
+				assert(0);
+			}
+
+			}
+
 		}
 	}
 
@@ -937,7 +989,7 @@ private:
 
 public:
 	int maxSize = -1;
-	void (*initParticle)(particle&)=nullptr;
+	void(*initParticle)(particle&) = nullptr;
 
 	bool(*isDead)(particle&) = nullptr;
 
@@ -946,21 +998,21 @@ public:
 	{
 
 	}
-	~cloud(){}
+	~cloud() {}
 	inline cloud& push_back(particle & e)
 	{
 		particleCollection.push_back(e);
 		return *this;
 	}
 
-	
+
 
 	void show()
 	{
 
 		for (auto & i : particleCollection)
 		{
-			
+
 			i.update();
 			if (i.isDead)
 			{
@@ -972,8 +1024,9 @@ public:
 				{
 					initParticle(i);
 				}
-				
+
 			}
+			
 			i.show();
 		}
 	}
@@ -984,7 +1037,7 @@ public:
 		assert(maxSize > 0);
 		for (int i = 0; i < maxSize; i++)
 		{
-			particle newParticle =particle();
+			particle newParticle = particle();
 			initParticle(newParticle);
 			newParticle.init();
 			particleCollection.push_back(newParticle);
@@ -1003,13 +1056,13 @@ private:
 	std::string name;
 	bool active;
 
-	
-	
+
+
 public:
 	objVector objCollection;
 	textureVector texCollection;
 	cloudVector cloudCollection;
-	
+
 	scene() :active(true)
 	{
 
@@ -1041,13 +1094,13 @@ class world {
 private:
 	using sceneVector = std::vector<scene>;
 	using lightVector = std::vector<smLight>;
-	
+
 	std::string name;
 public:
 	sceneVector sceneCollection;
 	lightVector lightCollection;
-	world(std::string tname):name(tname){}
-	virtual ~world(){}
+	world(std::string tname) :name(tname) {}
+	virtual ~world() {}
 	void push_back(scene& e)
 	{
 		sceneCollection.push_back(e);
