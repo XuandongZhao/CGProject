@@ -31,17 +31,17 @@ glm::vec3 cameraDir(0, 0, -30);
 
 
 
-void initParticle(particle & m)
+void initParticle(particle * m)
 {
-	if (m.sphere == nullptr)
+	if (m->sphere == nullptr)
 	{
 		//m.tex = new texture();
 		//m.tex->load("fly//fly.obj");
 		//m.which = IS_TEXTURE;
-		m.sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
-		m.which = IS_SPHERE;
+		m->sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
+		m->which = IS_SPHERE;
 	}
-	m.isDead = false;
+	m->isDead = false;
 	float x = rand() / (double(RAND_MAX)) - 0.5;
 	float z = rand() / (double(RAND_MAX)) - 0.5;
 	float pos[3] = { x,50,z };
@@ -49,27 +49,27 @@ void initParticle(particle & m)
 
 	float speed[3] = { (rand() / (double(RAND_MAX)) - 0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX)) - 0.5)*0.1 };
 	float aspeed[3] = { 0,0.005,0 };
-	m.setPosition(pos[0], pos[1], pos[2]);
-	m.setSpeed(speed[0], speed[1], speed[2]);
-	m.setAccerator(aspeed[0], aspeed[1], aspeed[2]);
+	m->setPosition(pos[0], pos[1], pos[2]);
+	m->setSpeed(speed[0], speed[1], speed[2]);
+	m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
 
 	
 	if (fabs(x) < fabs(z))
 	{
-		m.lifetime = 2.0*fabs(z) / 0.5;
+		m->lifetime = 2.0*fabs(z) / 0.5;
 	}
 	else {
-		m.lifetime = 2.0*fabs(x) / 0.5;
+		m->lifetime = 2.0*fabs(x) / 0.5;
 	}
-	m.deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
+	m->deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
 }
 
 /*
 @return true for dead
 */
-bool isDead(particle & m)
+bool isDead(particle * m)
 {
-	if (m.y < 50)
+	if (m->y < 50)
 	{
 		return true;
 	}
@@ -157,8 +157,6 @@ static void smReshape(int w, int h) {
 }
 void build() {
 	static scene tmp;
-	texture obj;
-	obj.load("city//test3.obj");
 
 	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
 	testCloud.initParticle = initParticle;

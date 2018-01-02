@@ -989,20 +989,20 @@ private:
 
 public:
 	int maxSize = -1;
-	void(*initParticle)(particle&) = nullptr;
+	void(*initParticle)(particle*) = nullptr;
 
-	bool(*isDead)(particle&) = nullptr;
+	bool(*isDead)(particle*) = nullptr;
 
-	std::vector<particle> particleCollection;
+	std::vector<particle*> particleCollection;
 	cloud()
 	{
 
 	}
 	~cloud() {}
-	inline cloud& push_back(particle & e)
+	inline cloud* push_back(particle * e)
 	{
 		particleCollection.push_back(e);
-		return *this;
+		return this;
 	}
 
 
@@ -1013,8 +1013,8 @@ public:
 		for (auto & i : particleCollection)
 		{
 
-			i.update();
-			if (i.isDead)
+			i->update();
+			if (i->isDead)
 			{
 				initParticle(i);
 			}
@@ -1027,7 +1027,7 @@ public:
 
 			}
 			
-			i.show();
+			i->show();
 		}
 	}
 
@@ -1037,9 +1037,9 @@ public:
 		assert(maxSize > 0);
 		for (int i = 0; i < maxSize; i++)
 		{
-			particle newParticle = particle();
+			particle* newParticle = new particle();
 			initParticle(newParticle);
-			newParticle.init();
+			newParticle->init();
 			particleCollection.push_back(newParticle);
 		}
 	}
