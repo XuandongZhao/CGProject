@@ -11,7 +11,8 @@
 #include <atlimage.h>
 
 
-
+extern glm::vec3 initialColor;
+extern glm::vec3 fadeColor;
 
 class texture;
 class object;
@@ -823,15 +824,17 @@ public:
 */
 
 struct particle {
-	Sphere* sphere;
-	texture*tex;
-	rectangle*rec;
+	Sphere* sphere=nullptr;
+	texture*tex=nullptr;
+	rectangle*rec=nullptr;
 
 	int which;
+	float fullLife;
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
 	float rx,ry,rz,wx, wy, wz, bx, by, bz;//r为旋转角度,w和b分别为角速度和角加速度
 	bool isDead;
 	float xScale, yScale, zScale,xFactor,yFactor,zFactor;
+
 	particle():x(0),y(0),z(0),vx(0),vy(0),vz(0),ax(0),ay(0),az(0),sizei(0),lifetime(0),deci(0),rx(0),ry(0),rz(0),wx(0),wy(0),wz(0),bx(0),by(0),bz(0),isDead(false),which(-1),sphere(nullptr),tex(nullptr),xScale(1),yScale(1),zScale(1),xFactor(1),yFactor(1),zFactor(1)
 	{
 
@@ -891,26 +894,31 @@ struct particle {
 	}
 	inline void update()
 	{
-		x += vx;
-		y += vy;
-		z += vz;
-		vx += ax;
-		vy += ay;
-		vz += az;
-		rx += wx;
-		ry += wy;
-		rz += wz;
+		x += vx*deci;
+		y += vy*deci;
+		z += vz*deci;
+		vx += ax*deci;
+		vy += ay*deci;
+		vz += az*deci;
+		rx += wx*deci;
+		ry += wy*deci;
+		rz += wz*deci;
 
-		rx += wx;
-		ry += wy;
-		rz += wz;
-		wx += bx;
-		wy += by;
-		wz += bz;
+		rx += wx*deci;
+		ry += wy*deci;
+		rz += wz*deci;
+		wx += bx*deci;
+		wy += by*deci;
+		wz += bz*deci;
 
-		xScale *= xFactor;
-		yScale *= yFactor;
-		zScale *= zFactor;
+		xScale *= (xFactor);
+		yScale *= (yFactor);
+		zScale *= (zFactor);
+		
+		rec->color.r = interpolate<float>(lifetime/fullLife,initialColor.r,fadeColor.r);
+		rec->color.g = interpolate<float>(lifetime / fullLife, initialColor.g, fadeColor.g);
+		rec->color.b = interpolate<float>(lifetime / fullLife, initialColor.b, fadeColor.b);
+		rec->color.a -= 0.5*deci;
 
 		lifetime -= deci;
 		if (lifetime <= 0)
@@ -949,6 +957,8 @@ struct particle {
 
 	inline void show()
 	{
+		
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		if (!isDead)
 		{
 			switch (which)
@@ -989,6 +999,7 @@ struct particle {
 				rec->rotate(rz, glm::vec3(0, 0, 1));
 				
 				rec->scale(xScale, yScale, zScale);
+				
 				rec->show();
 				break;
 			}
@@ -1000,6 +1011,7 @@ struct particle {
 			}
 
 		}
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 };

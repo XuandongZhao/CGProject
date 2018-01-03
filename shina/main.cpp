@@ -32,40 +32,49 @@ glm::vec3 cameraDir(0, 0, -30);
 
 float fireX, fireY=50, fireZ;
 
+glm::vec3 initialColor(0.9765f, 1.f, 0.396f);
+glm::vec3 fadeColor(0.396f, 0.0824f, 0.04705f);
+GLfloat randNumber[10000];
+
 void initParticle(particle * m)
 {
 	if (m->rec == nullptr)
 	{
 		m->rec = new rectangle();
-		m->rec->setShape(0.05, 0.05);
+		m->rec->setShape(0.1, 0.3);
 		m->rec->fill("source//file.jpg");
 		m->which = IS_RECTANGLE;
 		//m->sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
 		//m->which = IS_SPHERE;
 	}
+	//cout << "fuck" << endl;
+	int random = rand() % 10000;
 	m->isDead = false;
-	float x = fireX + rand() / (double(RAND_MAX)) - 0.5;
+	float x = fireX + randNumber[random] - 0.5;
 	float y = fireY;
-	float z = fireZ + rand() / (double(RAND_MAX)) - 0.5;
+	float z = fireZ + randNumber[(random*2)%10000] - 0.5;
 	float pos[3] = { x,y,z };
 
 
-	float speed[3] = { (rand() / (double(RAND_MAX)) - 0.5)*0.1,(rand() / (double(RAND_MAX)))*0.5,(rand() / (double(RAND_MAX)) - 0.5)*0.1 };
+	float speed[3] = { 0,randNumber[(random*3) % 10000],0 };
 	float aspeed[3] = { 0,0.005,0 };
 	m->setPosition(pos[0], pos[1], pos[2]);
 	m->setSpeed(speed[0], speed[1], speed[2]);
 	m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
-	m->setAngle(rand() / (double(RAND_MAX)), rand() / (double(RAND_MAX)), rand() / (double(RAND_MAX)));
+	m->setAngle(randNumber[(random * 4) % 10000], randNumber[(random * 5) % 10000], randNumber[(random * 6) % 10000]);
+	(m->rec)->color = glm::vec4(initialColor,1.f);
 
-	
-	if (fabs(x-fireX) < fabs(z-fireZ))
+
+	m->lifetime = 1+randNumber[(random * 8) % 10000];
+	m->fullLife = m->lifetime;
+	/*if (fabs(x-fireX) < fabs(z-fireZ))
 	{
-		m->lifetime = 2.0*fabs(z-fireZ) / 0.5;
+		m->lifetime = 2.0*fabs(fabs(z-fireZ)-0.5) / 0.5;
 	}
 	else {
-		m->lifetime = 2.0*fabs(x-fireX) / 0.5;
-	}
-	m->deci = 0.1 + (rand() / (double(RAND_MAX)))*0.1;
+		m->lifetime = 2.0*fabs(fabs(x-fireX)-0.5) / 0.5;
+	}*/
+	m->deci = 0.05;
 }
 
 /*
@@ -73,28 +82,25 @@ void initParticle(particle * m)
 */
 bool isDead(particle * m)
 {
-	if (fabs(m->x - fireX) < fabs(m->z - fireZ))
-	{
-		if (m->lifetime > 2.0*fabs(m->z - fireZ) / 0.5)
-		{
-			return true;
-		}
-	}
-	else {
-		if (m->lifetime > 2.0*fabs(m->x - fireX) / 0.5)
-		{
-			return true;
-		}
-	}
+
 	return false;
 }
 
 
 static void smInit()
 {
+
 	srand((unsigned int)time(NULL));
+	for (int i = 0; i < 10000; i++)
+	{
+		randNumber[i]=rand() / (double(RAND_MAX));
+	}
+
+
+
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 	elementShader = new smShader("files//element.vert", "files//element.frag");
 	texShader = new smShader("files//tex.vert", "files//tex.frag");
 	shadowShader = new smShader("files//shadow.vert", "files//shadow.frag");
@@ -181,7 +187,7 @@ void build() {
 	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
 	testCloud.initParticle = initParticle;
 	testCloud.isDead = isDead;
-	testCloud.maxSize = 5000;
+	testCloud.maxSize = 3000;
 	testCloud.init();
 	tmp.push_back(&testCloud);
 
