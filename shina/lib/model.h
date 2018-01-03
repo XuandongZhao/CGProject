@@ -957,7 +957,7 @@ struct particle {
 
 	inline void show()
 	{
-		
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		if (!isDead)
 		{
@@ -1012,6 +1012,7 @@ struct particle {
 
 		}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_BLEND);
 	}
 
 };
