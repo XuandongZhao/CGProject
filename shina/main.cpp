@@ -67,13 +67,6 @@ void initParticle(particle * m)
 
 	m->lifetime = randNumber[(random * 8) % 10000];
 	m->fullLife = m->lifetime;
-	/*if (fabs(x-fireX) < fabs(z-fireZ))
-	{
-		m->lifetime = 2.0*fabs(fabs(z-fireZ)-0.5) / 0.5;
-	}
-	else {
-		m->lifetime = 2.0*fabs(fabs(x-fireX)-0.5) / 0.5;
-	}*/
 	m->deci = 0.05;
 }
 
