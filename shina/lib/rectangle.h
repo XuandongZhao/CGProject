@@ -50,6 +50,10 @@ class rectangle {
 	}
 
 public:
+<<<<<<< HEAD
+=======
+	glm::vec4 color;
+>>>>>>> shina
 	vector<GLfloat> pos;
 	vector<GLfloat> coord;
 	glm::vec3 position=glm::vec3(0,0,0);
@@ -91,6 +95,10 @@ public:
 	}
 	void show()
 	{
+<<<<<<< HEAD
+=======
+		
+>>>>>>> shina
 		texParticleShader->use();
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
@@ -113,8 +121,15 @@ public:
 
 		texParticleShader->setInt("u_textureMap", 1);
 		texParticleShader->setMat4("u_modelMatrix", model);
+<<<<<<< HEAD
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
+=======
+		texParticleShader->setVec4("v_color", color);
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
+		
+>>>>>>> shina
 	}
 
 	inline void loadIdentity()
