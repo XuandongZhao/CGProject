@@ -74,48 +74,48 @@ public:
 
 	void initTopP() {
 		float temV[3];
-		float temV1[3] = { -5689.73,895, 310.76 };
+		float temV1[3] = { -1161.57,640.815,6103.2 };
 		top.push_back(glm::make_vec3(temV1));
-		float temV2[3] = { -2287.73,895, 310.76 };
+		float temV2[3] = { -2737.57,640.815,6103.2 };
 		top.push_back(glm::make_vec3(temV2));
-		float temV3[3] = { -2287.73,895, 11066.8 };
+		float temV3[3] = { -2737.57,1457.81,6103.2 };
 		top.push_back(glm::make_vec3(temV3));
-		float temV8[3] = { -5689.73,895, 11066.8 };
+		float temV8[3] = { -1161.57,1457.81,6103.2 };
 		top.push_back(glm::make_vec3(temV8));
-		float temV4[3] = { -5689.73,2541,310.76 };
+		float temV4[3] = { -2737.57,640.815,11247.2 };
 		top.push_back(glm::make_vec3(temV4));
 
-		float temV5[3] = { -2287.73,2541,310.76 };
+		float temV5[3] = { -1161.57,640.815,11247.2 };
 		top.push_back(glm::make_vec3(temV5));
-		float temV6[3] = { -5689.73, 2541, 11066.8 };
+		float temV6[3] = { -2737.57,1457.81,11247.2 };
 		top.push_back(glm::make_vec3(temV6));
-		float temV7[3] = { -2287.73,2541,11066.8 };
+		float temV7[3] = { -1161.57,1457.81,11247.2 };
 		top.push_back(glm::make_vec3(temV7));
 		topR = top;
 
-		float temV11[3] = { -7804.73,895,6165.76 };
+		float temV11[3] = { -74.573,640.815,8728.2 };
 		top2.push_back(glm::make_vec3(temV1));
-		float temV21[3] = { -96.7308,895,6165.76 };
+		float temV21[3] = { -3978.5, 640.81, 8728.2 };
 		top2.push_back(glm::make_vec3(temV2));
-		float temV31[3] = { -96.7308,895,8575.76 };
+		float temV31[3] = { -3978.5, 1297.8, 8728.2 };
 		top2.push_back(glm::make_vec3(temV3));
-		float temV81[3] = { -7804.73,895,8575.76 };
+		float temV81[3] = { -74.573,1297.81,8728.2 };
 		top2.push_back(glm::make_vec3(temV8));
-		float temV41[3] = { -7804.73,2108,6165.76 };
+		float temV41[3] = { -3978.57, 640.815, 10026.2 };
 		top2.push_back(glm::make_vec3(temV4));
 
-		float temV51[3] = { -96.7308,2108,6165.76 };
+		float temV51[3] = { -74.573 ,640.815, 10026.2 };
 		top2.push_back(glm::make_vec3(temV5));
-		float temV61[3] = { -7804.73,2108,8575.76 };
+		float temV61[3] = { -3978.57,1297.81,10026.2 };
 		top2.push_back(glm::make_vec3(temV6));
-		float temV71[3] = { -96.7308,2108,8575.76 };
+		float temV71[3] = { -74.573,1297.81,10026.2 };
 		top2.push_back(glm::make_vec3(temV7));
 		topR2 = top2;
 	}
 
 	void initTop() {
 		float temV[3];
-		for(int i=0; i<3; i++)
+		for (int i = 0; i<3; i++)
 			temV[i] = a.center[i] + a.half[i];
 		top.push_back(glm::make_vec3(temV));
 		temV[0] = a.center[0] - a.half[0];

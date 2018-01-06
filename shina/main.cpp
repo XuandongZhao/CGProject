@@ -26,6 +26,14 @@ smShader *shadowShader;
 smShader * paticleShader;
 smShader * texParticleShader;
 
+vector<collosion> objV;
+collosion fly;
+collosion flyPC;
+vector<object> totalObj;
+object * flyP;
+texture *obFly;
+texture *obPlane;
+object * obMissile;
 
 cloud testCloud;
 
@@ -118,6 +126,36 @@ static void smInit()
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
 unsigned int cnt = 0;
+std::vector<glm::vec3> posRe;
+glm::mat4 model;
+void testCollision(collosion& fly, int type) {
+	if (type == 0)
+		posRe = fly.top;
+	else posRe = fly.top2;
+
+	for (int i = 0; i < posRe.size(); i++) {
+		int last = 1;
+		glm::mat4 tem;
+		double result[4];
+		for (int j = 0; j < 4; j++) {
+			result[j] = 0;
+			for (int k = 0; k<3; k++)
+				result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
+			result[j] += ((double)(model[3][j])) * last;
+		}
+		for (int j = 0; j < 3; j++) {
+			if (type == 0)
+				fly.topR[i][j] = result[j] / result[3];
+			else fly.topR2[i][j] = result[j] / result[3];
+		}
+
+	}
+
+	if (type == 0)
+		fly.gen_obb_box(fly.topR, type);
+	else
+		fly.gen_obb_box(fly.topR2, type);
+}
 
 static void smTimer(int id)
 {
@@ -230,6 +268,20 @@ static void smTimer(int id)
 	{
 		launch = true;
 	}
+	model = obFly->getModel();
+	testCollision(fly, 0);
+	model = obPlane->getModel();
+	testCollision(flyPC, 0);
+	testCollision(flyPC, 1);
+	for (int i = 0; i < objV.size(); i++) {
+
+		if (fly.check_collision(objV[i]))
+			cout << "导弹碰撞了:" << i << endl;
+		if (flyPC.check_collision(objV[i])
+			|| flyPC.check_collision(objV[i], 1)) {
+			cout << "飞机碰撞了:" << i << endl;
+		}
+	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
 }
@@ -303,7 +355,6 @@ DWORD WINAPI ThreadMethod(LPVOID lpParameter)//执行线程任务的函数
 	}
 	return 0;
 }
-
 void dealBox() {
 	char boxFileName[50];
 	strcpy(boxFileName, "city//tem//6//test6.obj");
@@ -318,24 +369,25 @@ void dealBox() {
 		temC.div20();
 		objV.push_back(temC);
 	}
-	HANDLE hThread = NULL;
-	DWORD dwThreadID = 0;//保存线程ID
-	hThread = CreateThread(0, 0, ThreadMethod, NULL, 0, &dwThreadID);//创建线程
-	CloseHandle(hThread);//关闭内核对象,不会停止线程
 }
 
 void build() {
 	static scene tmp;
 
 	tmp.push_back((new texture())->load("city//test3.obj")->scale(0.05, 0.05, 0.05));
-	obFly = new object();
+	obFly = new texture();
 	obFly->load("fly//flyD.obj");
 	obFly->scale(0.05, 0.05, 0.05);
-	fly.setPos(obFly->returnPos());
-	fly.gen_obb_box(obFly->returnPos());
+
+	obMissile = new object();
+	obMissile->load("fly//flyD.obj");
+	obMissile->scale(0.05, 0.05, 0.05);
+	fly.setPos(obMissile->returnPos());
+	fly.gen_obb_box(obMissile->returnPos());
+
 	tmp.push_back(obFly);
 	fly.initTop();
-	
+
 
 	obPlane = new texture();
 	obPlane->load("fly//flyP.obj");
@@ -355,7 +407,6 @@ void build() {
 
 	myworld.push_back(&tmp);
 	myworld.push_back(new smLight(0, glm::vec3(55.f, 500.f, 23.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.2f, .2f, .2f), 1.f));
-	
 }
 static void smMouseFunc(int x, int y) {
 	mouse->now.x = float(x);

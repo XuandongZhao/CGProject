@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int t = 10000)
+void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps = 0.00001, int t = 10000)
 {
 	int T = t;
 	int i, j, k;
@@ -26,12 +26,12 @@ void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int t = 1
 				}
 		if (max < eps)
 		{
-			return ;
+			return;
 		}
 
 		if (ite_num>T)
 		{
-			return ;
+			return;
 		}
 
 		double theta;
@@ -46,9 +46,9 @@ void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int t = 1
 		double cos_theta = cos(theta);
 		double sin_2theta = sin(2 * theta);
 		double cos_2theta = cos(2 * theta);
-		a[row][row] = aii*cos_theta*cos_theta + ajj*sin_theta*sin_theta + aij*sin_2theta;
-		a[col][col] = aii*sin_theta*sin_theta + ajj*cos_theta*cos_theta - aij*sin_2theta;
-		a[row][col] = 0.5*(ajj - aii)*sin_2theta + aij*cos_2theta;
+		a[row][row] = aii * cos_theta*cos_theta + ajj * sin_theta*sin_theta + aij * sin_2theta;
+		a[col][col] = aii * sin_theta*sin_theta + ajj * cos_theta*cos_theta - aij * sin_2theta;
+		a[row][col] = 0.5*(ajj - aii)*sin_2theta + aij * cos_2theta;
 		a[col][row] = a[row][col];
 		for (k = 0; k < 3; k++)
 		{
@@ -75,8 +75,8 @@ void collosion::jacobi(glm::mat3 &a, glm::mat3 &p, double eps=0.00001, int t = 1
 			{
 				double pki = p[k][row];
 				double pkj = p[k][col];
-				p[k][row] = pki*cos_theta + pkj*sin_theta;
-				p[k][col] = pkj*cos_theta - pki*sin_theta;
+				p[k][row] = pki * cos_theta + pkj * sin_theta;
+				p[k][col] = pkj * cos_theta - pki * sin_theta;
 			}
 		}
 		ite_num++;
@@ -89,8 +89,8 @@ void collosion::schmidtOrthogonal(glm::mat3 &p, glm::vec3 &a) {
 	if (a[2] >= a[0] && a[2] >= a[1]) max_index = 2;
 	p = glm::transpose(p);
 	glm::vec3 v0 = p[max_index];
-	glm::vec3 v1 = p[(max_index+1)%3];
-	glm::vec3 v2 = p[(max_index+2)%3];
+	glm::vec3 v1 = p[(max_index + 1) % 3];
+	glm::vec3 v2 = p[(max_index + 2) % 3];
 	v0 = glm::normalize(v0);
 	v1 -= glm::dot(v1, v0)*v0;
 	v1 = glm::normalize(v1);
@@ -101,7 +101,7 @@ void collosion::schmidtOrthogonal(glm::mat3 &p, glm::vec3 &a) {
 	p = glm::transpose(p);
 }
 
-glm::mat3 collosion::cal_cov_mat(const vector<glm::vec3>& vertexs){
+glm::mat3 collosion::cal_cov_mat(const vector<glm::vec3>& vertexs) {
 	glm::mat3 cov_mat;
 	//Compute the average x,y,z  
 	glm::vec3 avg(0.0f, 0.0f, 0.0f);
@@ -115,7 +115,7 @@ glm::mat3 collosion::cal_cov_mat(const vector<glm::vec3>& vertexs){
 		for (int r = c; r<3; r++)
 		{
 			cov_mat[r][c] = 0.0f;
-			float sum = 0.0f; 
+			float sum = 0.0f;
 			for (int i = 0; i<vertexs.size(); i++)
 			{
 				sum += (vertexs[i][r] - avg[r])*(vertexs[i][c] - avg[c]);
@@ -128,13 +128,13 @@ glm::mat3 collosion::cal_cov_mat(const vector<glm::vec3>& vertexs){
 }
 
 obb_box collosion::__gen_obb_box(const std::vector<glm::vec3> vertexs, const glm::mat3 &p) {
-	
+
 	obb_box obb;
 	glm::mat3 tp = glm::transpose(p);
 	obb.x_axis = tp[0];
 	obb.y_axis = tp[1];
 	obb.z_axis = tp[2];
-	glm::vec3 max_point(-INFINITY,-INFINITY,-INFINITY), min_point(INFINITY,INFINITY,INFINITY);
+	glm::vec3 max_point(-INFINITY, -INFINITY, -INFINITY), min_point(INFINITY, INFINITY, INFINITY);
 	for (auto i : vertexs) {
 		max_point.x = max(max_point.x, glm::dot(obb.x_axis, i));
 		max_point.y = max(max_point.y, glm::dot(obb.y_axis, i));
@@ -163,7 +163,7 @@ obb_box collosion::gen_obb_box(const std::vector<glm::vec3>& vertexs, int type) 
 		a2 = __gen_obb_box(vertexs, p);
 		return a2;
 	}
-	
+
 }
 
 bool collosion::check_collision(collosion obj2, int type) {
