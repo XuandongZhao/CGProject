@@ -421,18 +421,18 @@ static void smTimer(int id)
 	for (int i = 0; i < objV.size(); i++) {
 
 		if (fly.check_collision(objV[i]))
-			cout << "daodan pengzhuang:" << i << endl;
+			//cout << "daodan pengzhuang:" << i << endl;
 		if (flyPC.check_collision(objV[i])
 			|| flyPC.check_collision(objV[i], 1)) {
-			cout << "feiji penghzuang" << i << endl;
+			//cout << "feiji penghzuang" << i << endl;
 		}
 		if (cameraEye.check_collision(objV[i])) {
-			cout << "xiangji pengzhuang" << i << endl;
+			//cout << "xiangji pengzhuang" << i << endl;
 		}
 	}
 	if (flyPC.check_collision(cameraEye)
 		|| flyPC.check_collision(cameraEye, 1)) {
-		cout << "xiangji pengzhuang feiji" << endl;
+		//cout << "xiangji pengzhuang feiji" << endl;
 	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
