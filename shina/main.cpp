@@ -201,124 +201,6 @@ int speed = 80;
 char key[8];
 bool isFirstView = true;
 glm::vec3 eyeStart;
-static void moveFly() {
-	obPlane->translate(0, 0, -speed);
-	obFly->translate(0, 0, -speed);
-	if (keyBoard->getKey((keyMap)key[0]) == true)
-	{
-		obFly->translate(50, 0, 0);
-		obFly->rotate(-0.05, glm::vec3(0, 1, 0));
-	}
-	if (keyBoard->getKey((keyMap)key[1]) == true)
-	{
-		obFly->translate(-50, 0, 0);
-		obFly->rotate(0.05, glm::vec3(0, 1, 0));
-	}
-	if (keyBoard->getKey((keyMap)key[2]) == true)
-	{
-		//		obFly->translate(0, 0, -80);
-		speed -= 20;
-	}
-	if (keyBoard->getKey((keyMap)key[3]) == true)
-	{
-		//		obFly->translate(0, 0, 80);
-		speed += 20;
-	}
-	if (keyBoard->getKey((keyMap)key[4]) == true)
-	{
-		obFly->translate(0, 50, 0);
-	}
-	if (keyBoard->getKey((keyMap)key[5]) == true)
-	{
-		obFly->translate(0, -50, 0);
-	}
-	if (keyBoard->getKey((keyMap)key[6]) == true)
-	{
-		obFly->rotate(-0.03, glm::vec3(1, 0, 0));
-	}
-	if (keyBoard->getKey((keyMap)key[7]) == true)
-	{
-		obFly->rotate(0.03, glm::vec3(1, 0, 0));
-	}
-
-
-	if (!gameprog.launch) {
-		if (keyBoard->getKey((keyMap)key[0]) == true)
-		{
-			obPlane->translate(50, 0, 0);
-			obPlane->rotate(-0.05, glm::vec3(0, 1, 0));
-		}
-		if (keyBoard->getKey((keyMap)key[1]) == true)
-		{
-			obPlane->translate(-50, 0, 0);
-			obPlane->rotate(0.05, glm::vec3(0, 1, 0));
-		}
-		if (keyBoard->getKey((keyMap)key[2]) == true)
-		{
-			obPlane->translate(0, 0, -80);
-		}
-		if (keyBoard->getKey((keyMap)key[3]) == true)
-		{
-			obPlane->translate(0, 0, 80);
-		}
-		if (keyBoard->getKey((keyMap)key[4]) == true)
-		{
-			obPlane->translate(0, 50, 0);
-		}
-		if (keyBoard->getKey((keyMap)key[5]) == true)
-		{
-			obPlane->translate(0, -50, 0);
-		}
-		if (keyBoard->getKey((keyMap)key[6]) == true)
-		{
-			obPlane->rotate(-0.03, glm::vec3(1, 0, 0));
-		}
-		if (keyBoard->getKey((keyMap)key[7]) == true)
-		{
-			obPlane->rotate(0.03, glm::vec3(1, 0, 0));
-		}
-	}
-}
-void moveCamera() {
-	if (keyBoard->getKey((keyMap)key[1]) == true)
-	{
-		camera->moveCamera(20, 0);
-	}
-	if (keyBoard->getKey((keyMap)key[0]) == true)
-	{
-		camera->moveCamera(-20, 0);
-		//camera->rotateCamera(-0.05, 0);
-		//camera->moveCamera(-35, -2);
-	}
-	if (keyBoard->getKey((keyMap)key[2]) == true)
-	{
-		camera->moveCamera(0, -20);
-		//		cout << "222: " << camera->eye[0] << " " << camera->eye[1] << " " << camera->eye[2] << endl;
-	}
-	if (keyBoard->getKey((keyMap)key[3]) == true)
-	{
-		camera->moveCamera(0, 20);
-	}
-
-	if (keyBoard->getKey((keyMap)key[4]) == true)
-	{
-		camera->moveHCamera(10);
-	}
-	if (keyBoard->getKey((keyMap)key[5]) == true)
-	{
-		camera->moveHCamera(-10);
-	}
-}
-static void initKey(int type) {
-	if (type == 0) {
-		key[0] = 'd'; key[1] = 'a'; key[2] = 's'; key[3] = 'w';
-		key[4] = 'q'; key[5] = 'e'; key[6] = 'm'; key[7] = '.';
-	}
-	else {
-		key[0] = 'j'; key[1] = 'l'; key[2] = 'k'; key[3] = 'i';
-		key[4] = 'u'; key[5] = 'o'; key[6] = 'm'; key[7] = '.';
-	}
-}
 int count = 0;
 glm::vec3 eyeEnd;
 
@@ -468,24 +350,24 @@ static void smTimer(int id)
 				obPlane->translate(-50, 0, 0);
 				obPlane->rotate(0.05, glm::vec3(0, 1, 0));
 				obFly->translate(-50, 0, 0);
-				obFly->rotate(0.05, glm::vec3(0, -1, 0));
+				obFly->rotate(0.05, glm::vec3(0, 1, 0));
 			}
 			if (keyBoard->getKey((keyMap)'l') == true)
 			{
 				obPlane->translate(50, 0, 0);
 				obPlane->rotate(-0.05, glm::vec3(0, 1, 0));
 				obFly->translate(50, 0, 0);
-				obFly->rotate(-0.05, glm::vec3(0, -1, 0));
+				obFly->rotate(-0.05, glm::vec3(0, 1, 0));
 			}
 			if (keyBoard->getKey((keyMap)'k') == true)
 			{
 				obPlane->translate(0, 0, -80);
-				obFly->translate(0, 0, 80);
+				obFly->translate(0, 0, -80);
 			}
 			if (keyBoard->getKey((keyMap)'i') == true)
 			{
 				obPlane->translate(0, 0, 80);
-				obFly->translate(0, 0, -80);
+				obFly->translate(0, 0, 80);
 			}
 			if (keyBoard->getKey((keyMap)'u') == true)
 			{
