@@ -4,7 +4,7 @@ extern smShader *elementShader;
 extern smShader *texShader;
 extern smShader *shadowShader;
 extern smShader *paticleShader;
-extern Sphere *sphere;
+extern smShader * texParticleShader;
 
 void smRender::render(world & myworld,smCamera& camera)
 {
@@ -54,6 +54,10 @@ void smRender::render(world & myworld,smCamera& camera)
 		paticleShader->use();
 		paticleShader->setMat4("u_projection", projection);
 		paticleShader->setMat4("u_view", view);
+		texParticleShader->use();
+		texParticleShader->setMat4("u_projection", projection);
+		texParticleShader->setMat4("u_view", view);
+
 		//paticleShader->setMat4("u_lightMatrix", light.lightMatrix);
 
 		glActiveTexture(GL_TEXTURE0);

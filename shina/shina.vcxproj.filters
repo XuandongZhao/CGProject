@@ -71,5 +71,14 @@
     <ClInclude Include="lib\collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lib\rectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\rectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\obbCollision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
