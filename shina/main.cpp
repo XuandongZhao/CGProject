@@ -43,9 +43,7 @@ cloud testCloud;
 glm::vec3 cameraPosition(0.f, 50.f, 30.f);
 glm::vec3 cameraDir(0, 0, -30);
 
-float fireX, fireY=50, fireZ;
-<<<<<<< HEAD
-<<<<<<< HEAD
+float fireX, fireY = 50, fireZ;
 typedef struct
 {
 	int globaltimer;
@@ -56,12 +54,6 @@ typedef struct
 	bool launch;
 }GameProg;
 GameProg gameprog;
-=======
-
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 
 glm::vec3 initialColor(1.f, 0.996f, 0.3569f);
 glm::vec3 fadeColor(0.396f, 0.0824f, 0.04705f);
@@ -84,33 +76,21 @@ void initParticle(particle * m)
 	int random = rand() % 10000;
 	m->isDead = false;
 
-	float x = fireX + randNumber[random]*0.6 - 0.3;
+	float x = fireX + randNumber[random] * 0.6 - 0.3;
 	float y = fireY;
-	float z = fireZ + randNumber[(random*2)%10000]*0.6 - 0.3;
-<<<<<<< HEAD
-<<<<<<< HEAD
+	float z = fireZ + randNumber[(random * 2) % 10000] * 0.6 - 0.3;
 
 	float pos[3] = { x,y,z };
 
-=======
 
-	float pos[3] = { x,y,z };
-
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-
-	float pos[3] = { x,y,z };
-
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-
-	float speed[3] = { 0,randNumber[(random*3) % 10000]*3,0 };
+	float speed[3] = { 0,randNumber[(random * 3) % 10000] * 3,0 };
 	float aspeed[3] = { 0,-0.05,0 };
 	m->setPosition(pos[0], pos[1], pos[2]);
 	m->setSpeed(speed[0], speed[1], speed[2]);
 	m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
 
 	m->setAngle(randNumber[(random * 4) % 10000], randNumber[(random * 5) % 10000], randNumber[(random * 6) % 10000]);
-	(m->rec)->color = glm::vec4(initialColor,1.f);
+	(m->rec)->color = glm::vec4(initialColor, 1.f);
 
 
 	m->lifetime = randNumber[(random * 8) % 10000];
@@ -135,7 +115,7 @@ static void smInit()
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < 10000; i++)
 	{
-		randNumber[i]=rand() / (double(RAND_MAX));
+		randNumber[i] = rand() / (double(RAND_MAX));
 	}
 
 
@@ -158,8 +138,6 @@ static void smInit()
 unsigned int cnt = 0;
 std::vector<glm::vec3> posRe;
 glm::mat4 model;
-<<<<<<< HEAD
-<<<<<<< HEAD
 void caculate(glm::vec3 pos, double result[]) {
 	for (int j = 0; j < 4; j++) {
 		result[j] = 0;
@@ -170,68 +148,10 @@ void caculate(glm::vec3 pos, double result[]) {
 	for (int j = 0; j < 3; j++)
 		result[j] /= result[3];
 }
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 void testCollision(collosion& fly, int type) {
 	if (type == 0)
 		posRe = fly.top;
 	else posRe = fly.top2;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-
-	for (int i = 0; i < posRe.size(); i++) {
-		int last = 1;
-		glm::mat4 tem;
-		double result[4];
-		for (int j = 0; j < 4; j++) {
-			result[j] = 0;
-			for (int k = 0; k<3; k++)
-				result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
-			result[j] += ((double)(model[3][j])) * last;
-		}
-		for (int j = 0; j < 3; j++) {
-			if (type == 0)
-				fly.topR[i][j] = result[j] / result[3];
-			else fly.topR2[i][j] = result[j] / result[3];
-		}
-
-	}
-
-	if (type == 0)
-		fly.gen_obb_box(fly.topR, type);
-	else
-		fly.gen_obb_box(fly.topR2, type);
-}
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-
-	for (int i = 0; i < posRe.size(); i++) {
-		int last = 1;
-		glm::mat4 tem;
-		double result[4];
-		for (int j = 0; j < 4; j++) {
-			result[j] = 0;
-			for (int k = 0; k<3; k++)
-				result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
-			result[j] += ((double)(model[3][j])) * last;
-		}
-		for (int j = 0; j < 3; j++) {
-			if (type == 0)
-				fly.topR[i][j] = result[j] / result[3];
-			else fly.topR2[i][j] = result[j] / result[3];
-		}
-
-	}
-
-	if (type == 0)
-		fly.gen_obb_box(fly.topR, type);
-	else
-		fly.gen_obb_box(fly.topR2, type);
-}
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 
 	for (int i = 0; i < posRe.size(); i++) {
 		int last = 1;
@@ -279,89 +199,37 @@ static void dealEye() {
 
 int speed = 80;
 char key[8];
-bool isFirstView = false;
+bool isFirstView = true;
 glm::vec3 eyeStart;
 static void moveFly() {
 	obPlane->translate(0, 0, -speed);
 	obFly->translate(0, 0, -speed);
 	if (keyBoard->getKey((keyMap)key[0]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		obFly->translate(50, 0, 0);
 		obFly->rotate(-0.05, glm::vec3(0, 1, 0));
-=======
-		//camera->moveCamera(-5, 0);
-		fireX++;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveCamera(-5, 0);
-		fireX++;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 	if (keyBoard->getKey((keyMap)key[1]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		obFly->translate(-50, 0, 0);
 		obFly->rotate(0.05, glm::vec3(0, 1, 0));
-=======
-		//camera->moveCamera(5, 0);
-		fireX--;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveCamera(5, 0);
-		fireX--;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 	if (keyBoard->getKey((keyMap)key[2]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		//		obFly->translate(0, 0, -80);
 		speed -= 20;
-=======
-		//camera->moveCamera(0, -5);
-		fireZ++;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveCamera(0, -5);
-		fireZ++;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 	if (keyBoard->getKey((keyMap)key[3]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		//		obFly->translate(0, 0, 80);
 		speed += 20;
-=======
-		//camera->moveCamera(0, 5);
-		fireZ--;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveCamera(0, 5);
-		fireZ--;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 	if (keyBoard->getKey((keyMap)key[4]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		obFly->translate(0, 50, 0);
-=======
-		//camera->moveHCamera(10);
-		fireY+=0.1;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveHCamera(10);
-		fireY+=0.1;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 	if (keyBoard->getKey((keyMap)key[5]) == true)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		obFly->translate(0, -50, 0);
 	}
 	if (keyBoard->getKey((keyMap)key[6]) == true)
@@ -371,14 +239,6 @@ static void moveFly() {
 	if (keyBoard->getKey((keyMap)key[7]) == true)
 	{
 		obFly->rotate(0.03, glm::vec3(1, 0, 0));
-=======
-		//camera->moveHCamera(-10);
-		fireY-=0.1;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		//camera->moveHCamera(-10);
-		fireY-=0.1;
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	}
 
 
@@ -504,6 +364,8 @@ void cameramove()
 
 static void smTimer(int id)
 {
+	cout << "camera->x:" << (double)camera->eye[0] << " camera->y" << camera->eye[1] <<
+		" cameara->z" << camera->eye[2] << endl;
 	count++;
 	if (keyBoard->getKey((keyMap)'z') == true)
 	{
@@ -538,23 +400,17 @@ static void smTimer(int id)
 		isFirstView = true;
 		if (gameprog.globaltimer >= 0 && gameprog.globaltimer <= 200) {
 			obPlane->translate(0, 0, -80);
-			obFly->translate(0, 0, -80);
 		}
 		else if (gameprog.globaltimer <= 235 && gameprog.globaltimer > 200) {
 			obPlane->translate(0, 100, -100);
 			obPlane->rotate(-0.01, glm::vec3(-1, 0, 0));
-			obFly->translate(0, 100, -100);
-			obFly->rotate(-0.01, glm::vec3(-1, 0, 0));
 		}
 		else if (gameprog.globaltimer > 235 && gameprog.globaltimer <= 270) {
 			obPlane->translate(0, 0, -200);
 			obPlane->rotate(0.01, glm::vec3(-1, 0, 0));
-			obFly->translate(0, 0, -200);
-			obFly->rotate(0.01, glm::vec3(-1, 0, 0));
 		}
 		else if (gameprog.globaltimer > 270 && gameprog.globaltimer <= 350) {
-			obPlane->translate(0, 0, -200); 
-			obFly->translate(0, 0, -200);
+			obPlane->translate(0, 0, -200);
 		}
 		else if (gameprog.globaltimer > 350) {
 			gameprog.control = true;
@@ -655,7 +511,7 @@ static void smTimer(int id)
 		if (gameprog.globaltimer <= 400 && gameprog.globaltimer > 350) {
 			obPlane->translate(0, 100, -150);
 			obPlane->rotate(-0.01, glm::vec3(-1, 0, 0));
-		} 
+		}
 		else if (gameprog.globaltimer >= 400 && gameprog.globaltimer <= 550)
 		{
 			obPlane->translate(0, 0, -200);
@@ -675,46 +531,18 @@ static void smTimer(int id)
 	for (int i = 0; i < objV.size(); i++) {
 
 		if (fly.check_collision(objV[i]))
-			cout << "导弹碰撞了:" << i << endl;
+			cout << "feiji penghzuangle " << i << endl;
 		if (flyPC.check_collision(objV[i])
 			|| flyPC.check_collision(objV[i], 1)) {
-			cout << "飞机碰撞了:" << i << endl;
+			cout << "daodanpengzhuangle" << i << endl;
 		}
 		if (cameraEye.check_collision(objV[i])) {
-			cout << "相机碰撞建筑：" << i << endl;
+			cout << "xinagjipenghuznagle " << i << endl;
 		}
 	}
 	if (flyPC.check_collision(cameraEye)
 		|| flyPC.check_collision(cameraEye, 1)) {
-		cout << "相机碰撞飞机" << endl;
-	}
-	model = obFly->getModel();
-	testCollision(fly, 0);
-	model = obPlane->getModel();
-	testCollision(flyPC, 0);
-	testCollision(flyPC, 1);
-	for (int i = 0; i < objV.size(); i++) {
-
-		if (fly.check_collision(objV[i]))
-			cout << "导弹碰撞了:" << i << endl;
-		if (flyPC.check_collision(objV[i])
-			|| flyPC.check_collision(objV[i], 1)) {
-			cout << "飞机碰撞了:" << i << endl;
-		}
-	}
-	model = obFly->getModel();
-	testCollision(fly, 0);
-	model = obPlane->getModel();
-	testCollision(flyPC, 0);
-	testCollision(flyPC, 1);
-	for (int i = 0; i < objV.size(); i++) {
-
-		if (fly.check_collision(objV[i]))
-			cout << "导弹碰撞了:" << i << endl;
-		if (flyPC.check_collision(objV[i])
-			|| flyPC.check_collision(objV[i], 1)) {
-			cout << "飞机碰撞了:" << i << endl;
-		}
+		cout << "feiji penghzunag le" << endl;
 	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
@@ -731,70 +559,6 @@ static void smReshape(int w, int h) {
 }
 
 
-<<<<<<< HEAD
-=======
-std::vector<glm::vec3> posRe;
-glm::mat4 model;
-
-void testCollision(collosion& fly, int type) {
-	if(type == 0)
-		posRe = fly.top;
-	else posRe = fly.top2;
-
-	for (int i = 0; i < posRe.size(); i++) {
-		int last = 1;
-		glm::mat4 tem;
-		double result[4];
-		for (int j = 0; j < 4; j++) {
-			result[j] = 0;
-			for (int k = 0; k<3; k++)
-				result[j] += ((double)(model[k][j])) * (double)(posRe[i][k]);
-			result[j] += ((double)(model[3][j])) * last;
-		}
-		for (int j = 0; j < 3; j++) {
-			if(type == 0)
-				fly.topR[i][j] = result[j] / result[3];
-			else fly.topR2[i][j] = result[j] / result[3];
-		}
-
-	}
-
-	if(type == 0)
-		fly.gen_obb_box(fly.topR, type);
-	else
-		fly.gen_obb_box(fly.topR2, type);
-}
-
-DWORD WINAPI ThreadMethod(LPVOID lpParameter)//执行线程任务的函数
-{
-	Sleep(10000);
-	BOOL geifen = TRUE;
-	while (geifen)
-	{
-		model = obFly->getModel();
-		testCollision(fly, 0);
-		model = obPlane->getModel();
-		testCollision(flyPC, 0);
-		testCollision(flyPC, 1);
-		for (int i = 0; i < objV.size(); i++) {
-			cout << "the xyz of building" << i << " is = " << objV[i].a.center[0] << " " << objV[i].a.center[1] << " " << objV[i].a.center[2] << endl;
-			cout << "the xyz of fly is " << " " << flyPC.a.center[0] << " " << flyPC.a.center[1] << " " << flyPC.a.center[2] << endl;;
-			if (fly.check_collision(objV[i]))
-				cout << "导弹碰撞了:" << i << endl;
-			if (flyPC.check_collision(objV[i])
-				|| flyPC.check_collision(objV[i], 1)) {
-				cout << "飞机碰撞了:" << i << endl;
-			}
-		}
-		Sleep(10);
-
-	}
-	return 0;
-}
-<<<<<<< HEAD
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 void dealBox() {
 	char boxFileName[50];
 	strcpy(boxFileName, "city//tem//6//test6.obj");
@@ -823,55 +587,28 @@ void build() {
 
 	obMissile = new object();
 	obMissile->load("fly//flyD.obj");
-<<<<<<< HEAD
-<<<<<<< HEAD
 	obMissile->rotate(-2.36, glm::vec3(0, 1, 0));
 	obMissile->translate(550, 0, 1500);
-
-=======
-	obMissile->scale(0.05, 0.05, 0.05);
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-	obMissile->scale(0.05, 0.05, 0.05);
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	fly.setPos(obMissile->returnPos());
 	fly.gen_obb_box(obMissile->returnPos());
 
 	tmp.push_back(obFly);
 	fly.initTop();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-
-
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 	obPlane = new texture();
 	obPlane->load("fly//flyP.obj");
 	obPlane->rotate(-2.36, glm::vec3(0, 1, 0));
 	obPlane->translate(550, 0, 1500);
-	
+
 	flyPC.initTopP();
 	obPlane->scale(0.05, 0.05, 0.05);
 	tmp.push_back(obPlane);
 
 	dealBox();
 
-<<<<<<< HEAD
 	//testCloud.initParticle = initParticle;
 	//testCloud.isDead = isDead;
 
 	//testCloud.maxSize = 4000;
-=======
-	testCloud.initParticle = initParticle;
-	testCloud.isDead = isDead;
-
-	testCloud.maxSize = 4000;
-
-	testCloud.init();
-	tmp.push_back(&testCloud);
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 
 	//testCloud.init();
 	//tmp.push_back(&testCloud);
@@ -915,7 +652,7 @@ static void smKeyDown(unsigned char cAscii, int x, int y)
 {
 	static keyMap mykeys;
 	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i'
-		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.'||cAscii=='0'
+		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.' || cAscii == '0'
 		|| cAscii == 'z')
 	{
 		keyBoard->getKey((keyMap)cAscii) = true;
@@ -924,7 +661,7 @@ static void smKeyDown(unsigned char cAscii, int x, int y)
 static void smKeyUp(unsigned char cAscii, int x, int y)
 {
 	if (cAscii == 'a' || cAscii == 's' || cAscii == 'd' || cAscii == 'w' || cAscii == 'q' || cAscii == 'e' || cAscii == 'j' || cAscii == 'k' || cAscii == 'l' || cAscii == 'i'
-		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.'||cAscii == '0'
+		|| cAscii == 'f' || cAscii == 'g' || cAscii == 'h' || cAscii == 't' || cAscii == 'u' || cAscii == 'o' || cAscii == ' ' || cAscii == 'm' || cAscii == '.' || cAscii == '0'
 		|| cAscii == 'z')
 	{
 		keyBoard->getKey((keyMap)cAscii) = false;

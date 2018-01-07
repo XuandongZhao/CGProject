@@ -50,22 +50,10 @@ class rectangle {
 	}
 
 public:
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	glm::vec4 color;
 
-=======
-<<<<<<< HEAD
-=======
-	glm::vec4 color;
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-=======
-	glm::vec4 color;
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
+
 	vector<GLfloat> pos;
 	vector<GLfloat> coord;
 	glm::vec3 position=glm::vec3(0,0,0);
@@ -107,20 +95,7 @@ public:
 	}
 	void show()
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-=======
-		
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-=======
-		
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 		texParticleShader->use();
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
@@ -143,35 +118,11 @@ public:
 
 		texParticleShader->setInt("u_textureMap", 1);
 		texParticleShader->setMat4("u_modelMatrix", model);
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-
-=======
-<<<<<<< HEAD
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-=======
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
 		texParticleShader->setVec4("v_color", color);
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
-=======
->>>>>>> shina
->>>>>>> 6cc3446affa86ea8f8300d8d4d1eb4c1bada06f6
+
 	}
 
 	inline void loadIdentity()
