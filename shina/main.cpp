@@ -321,6 +321,7 @@ static void initKey(int type) {
 }
 int count = 0;
 glm::vec3 eyeEnd;
+
 void cameramove()
 {
 	if (keyBoard->getKey((keyMap)'d') == true)
@@ -364,8 +365,6 @@ void cameramove()
 
 static void smTimer(int id)
 {
-	cout << "camera->x:" << (double)camera->eye[0] << " camera->y" << camera->eye[1] <<
-		" cameara->z" << camera->eye[2] << endl;
 	count++;
 	if (keyBoard->getKey((keyMap)'z') == true)
 	{
@@ -400,17 +399,23 @@ static void smTimer(int id)
 		isFirstView = true;
 		if (gameprog.globaltimer >= 0 && gameprog.globaltimer <= 200) {
 			obPlane->translate(0, 0, -80);
+			obFly->translate(0, 0, -80);
 		}
 		else if (gameprog.globaltimer <= 235 && gameprog.globaltimer > 200) {
 			obPlane->translate(0, 100, -100);
 			obPlane->rotate(-0.01, glm::vec3(-1, 0, 0));
+			obFly->translate(0, 100, -100);
+			obFly->rotate(-0.01, glm::vec3(-1, 0, 0));
 		}
 		else if (gameprog.globaltimer > 235 && gameprog.globaltimer <= 270) {
 			obPlane->translate(0, 0, -200);
 			obPlane->rotate(0.01, glm::vec3(-1, 0, 0));
+			obFly->translate(0, 0, -200);
+			obFly->rotate(0.01, glm::vec3(-1, 0, 0));
 		}
 		else if (gameprog.globaltimer > 270 && gameprog.globaltimer <= 350) {
 			obPlane->translate(0, 0, -200);
+			obFly->translate(0, 0, -200);
 		}
 		else if (gameprog.globaltimer > 350) {
 			gameprog.control = true;
@@ -419,21 +424,21 @@ static void smTimer(int id)
 		gameprog.globaltimer++;
 	}
 	else if (gameprog.control) {
-		if (keyBoard->getKey((keyMap)'j') == true)
+		if (keyBoard->getKey((keyMap)'l') == true)
 		{
 			obFly->translate(-50, 0, 0);
 			obFly->rotate(0.05, glm::vec3(0, 1, 0));
 		}
-		if (keyBoard->getKey((keyMap)'l') == true)
+		if (keyBoard->getKey((keyMap)'j') == true)
 		{
 			obFly->translate(50, 0, 0);
 			obFly->rotate(-0.05, glm::vec3(0, 1, 0));
 		}
-		if (keyBoard->getKey((keyMap)'k') == true)
+		if (keyBoard->getKey((keyMap)'i') == true)
 		{
 			obFly->translate(0, 0, -80);
 		}
-		if (keyBoard->getKey((keyMap)'i') == true)
+		if (keyBoard->getKey((keyMap)'k') == true)
 		{
 			obFly->translate(0, 0, 80);
 		}
@@ -463,24 +468,24 @@ static void smTimer(int id)
 				obPlane->translate(-50, 0, 0);
 				obPlane->rotate(0.05, glm::vec3(0, 1, 0));
 				obFly->translate(-50, 0, 0);
-				obFly->rotate(0.05, glm::vec3(0, 1, 0));
+				obFly->rotate(0.05, glm::vec3(0, -1, 0));
 			}
 			if (keyBoard->getKey((keyMap)'l') == true)
 			{
 				obPlane->translate(50, 0, 0);
 				obPlane->rotate(-0.05, glm::vec3(0, 1, 0));
 				obFly->translate(50, 0, 0);
-				obFly->rotate(-0.05, glm::vec3(0, 1, 0));
+				obFly->rotate(-0.05, glm::vec3(0, -1, 0));
 			}
 			if (keyBoard->getKey((keyMap)'k') == true)
 			{
 				obPlane->translate(0, 0, -80);
-				obFly->translate(0, 0, -80);
+				obFly->translate(0, 0, 80);
 			}
 			if (keyBoard->getKey((keyMap)'i') == true)
 			{
 				obPlane->translate(0, 0, 80);
-				obFly->translate(0, 0, 80);
+				obFly->translate(0, 0, -80);
 			}
 			if (keyBoard->getKey((keyMap)'u') == true)
 			{
@@ -490,14 +495,17 @@ static void smTimer(int id)
 			if (keyBoard->getKey((keyMap)'o') == true)
 			{
 				obPlane->translate(0, -50, 0);
+				obFly->translate(0, 50, 0);
 			}
 			if (keyBoard->getKey((keyMap)'m') == true)
 			{
 				obPlane->rotate(0.03, glm::vec3(1, 0, 0));
+				obFly->rotate(0.03, glm::vec3(1, 0, 0));
 			}
 			if (keyBoard->getKey((keyMap)'.') == true)
 			{
 				obPlane->rotate(-0.03, glm::vec3(1, 0, 0));
+				obFly->rotate(-0.03, glm::vec3(1, 0, 0));
 			}
 		}
 		if (keyBoard->getKey((keyMap)' ') == true)
@@ -531,18 +539,18 @@ static void smTimer(int id)
 	for (int i = 0; i < objV.size(); i++) {
 
 		if (fly.check_collision(objV[i]))
-			cout << "feiji penghzuangle " << i << endl;
+			cout << "daodan pengzhuang:" << i << endl;
 		if (flyPC.check_collision(objV[i])
 			|| flyPC.check_collision(objV[i], 1)) {
-			cout << "daodanpengzhuangle" << i << endl;
+			cout << "feiji penghzuang" << i << endl;
 		}
 		if (cameraEye.check_collision(objV[i])) {
-			cout << "xinagjipenghuznagle " << i << endl;
+			cout << "xiangji pengzhuang" << i << endl;
 		}
 	}
 	if (flyPC.check_collision(cameraEye)
 		|| flyPC.check_collision(cameraEye, 1)) {
-		cout << "feiji penghzunag le" << endl;
+		cout << "xiangji pengzhuang feiji" << endl;
 	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
