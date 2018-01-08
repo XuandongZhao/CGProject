@@ -9,16 +9,15 @@
 #include "sphere.h"
 #include "rectangle.h"
 #include <atlimage.h>
-
-
-extern glm::vec3 initialColor;
-extern glm::vec3 fadeColor;
+#include "fluid.h"
 
 class texture;
 class object;
 class scene;
 
-class Bitmap {
+
+class Bitmap
+{
 public:
 	int sizeX, sizeY;
 	unsigned char *data;
@@ -652,14 +651,14 @@ public:
 class texture {
 private:
 	using vec3 = glm::vec3;
-	//澧炲姞浜嗕竴涓潗璐ㄧ被锛屾湁鏉愯川淇℃伅鍜屽浘鐗囦俊鎭?
+	//增加了一个材质类，有材质信息和图片信恿
 	class Material {
 	public:
 		GLuint texName;
-		std::string name;//鏉愯川鍚嶅瓧
-		glm::vec3 kd, ka, ks;//鏉愯川淇℃伅
-		Bitmap src;//鍥剧墖淇℃伅
-		bool is_src;//鏄惁鏈夊浘鐗囷紝鏈夊垯浣跨敤鍥剧墖鐢伙紝鍚﹀垯鐢ㄦ潗璐ㄧ敾
+		std::string name;//材质名字
+		glm::vec3 kd, ka, ks;//材质信息
+		Bitmap src;//图片信息
+		bool is_src;//是否有图片，有则使用图片画，否则用材质画
 		bool diy = false;
 
 		GLuint vao, svao;
@@ -689,7 +688,7 @@ private:
 
 		}
 
-		//杩欎釜鍑芥暟浠巘exture绫绘斁鍒癿aterial绫婚噷闈?
+		//这个函数从texture类放到material类里靿
 		bool pic(const char *fileName)
 		{
 			// load picture to bitmap
@@ -779,6 +778,7 @@ private:
 
 public:
 	bool diy = false;
+	bool fake = false;
 
 	glm::mat4 getModel() {
 		return model;
@@ -794,7 +794,7 @@ public:
 
 	texture* load(const char *filename);
 	void shadow();
-	void show();
+	void show(int lights);
 	void print()
 	{
 		for (size_t i = 0; i < group.size(); i++)
@@ -809,6 +809,11 @@ public:
 	inline void loadIdentity()
 	{
 		this->model = glm::mat4();
+	}
+	inline texture* setFake(bool fake)
+	{
+		this->fake = fake;
+		return this;
 	}
 
 	inline texture* translate(GLfloat x, GLfloat y, GLfloat z)
@@ -837,21 +842,24 @@ public:
 
 struct particle {
 
-	Sphere* sphere=nullptr;
-	texture*tex=nullptr;
-	rectangle*rec=nullptr;
+	texture*tex = nullptr;
+	rectangle*rec = nullptr;
+	glm::vec3 initialColor;
+	glm::vec3 fadeColor;
 
+	bool fade = false;
 
 	int which;
 	float fullLife;
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
-	float rx,ry,rz,wx, wy, wz, bx, by, bz;//r为旋转角度,w和b分别为角速度和角加速度
+	float rx, ry, rz, wx, wy, wz, bx, by, bz;//rΪѽתއ׈,wۍbؖҰΪއ̙׈ۍއݓ̙׈
 	bool isDead;
-	float xScale, yScale, zScale,xFactor,yFactor,zFactor;
+	float xScale, yScale, zScale, xFactor, yFactor, zFactor;
 
-	particle():x(0),y(0),z(0),vx(0),vy(0),vz(0),ax(0),ay(0),az(0),sizei(0),lifetime(0),deci(0),rx(0),ry(0),rz(0),wx(0),wy(0),wz(0),bx(0),by(0),bz(0),isDead(false),which(-1),sphere(nullptr),tex(nullptr),xScale(1),yScale(1),zScale(1),xFactor(1),yFactor(1),zFactor(1)
+	particle() :x(0), y(0), z(0), vx(0), vy(0), vz(0), ax(0), ay(0), az(0), sizei(0), lifetime(0), deci(0), rx(0), ry(0), rz(0), wx(0), wy(0), wz(0), bx(0), by(0), bz(0), isDead(false), which(-1), tex(nullptr), xScale(1), yScale(1), zScale(1), xFactor(1), yFactor(1), zFactor(1)
 	{
-
+		initialColor = glm::vec3(1.f, 1.f, 1.f);
+		fadeColor = glm::vec3(1.f, 1.f, 1.f);
 	}
 
 	inline void setCoor(float x, float y, float z)
@@ -928,11 +936,35 @@ struct particle {
 		xScale *= (xFactor);
 		yScale *= (yFactor);
 		zScale *= (zFactor);
-		
-		rec->color.r = interpolate<float>(lifetime/fullLife,initialColor.r,fadeColor.r);
-		rec->color.g = interpolate<float>(lifetime / fullLife, initialColor.g, fadeColor.g);
-		rec->color.b = interpolate<float>(lifetime / fullLife, initialColor.b, fadeColor.b);
-		rec->color.a -= 0.5*deci;
+
+		switch (which)
+		{
+		case IS_TEXTURE:
+		{
+			assert(tex != nullptr);
+			break;
+		}
+		case IS_RECTANGLE:
+		{
+			assert(rec != nullptr);
+			rec->color.r = interpolate<float>(lifetime / fullLife, initialColor.r, fadeColor.r);
+			rec->color.g = interpolate<float>(lifetime / fullLife, initialColor.g, fadeColor.g);
+			rec->color.b = interpolate<float>(lifetime / fullLife, initialColor.b, fadeColor.b);
+
+			if (fade)
+			{
+				rec->color.a -= 0.5*deci;
+			}
+			break;
+		}
+		default:
+		{
+			assert(0);
+		}
+
+		}
+
+
 
 		lifetime -= deci;
 		if (lifetime <= 0)
@@ -945,12 +977,6 @@ struct particle {
 	{
 		switch (which)
 		{
-		case IS_SPHERE:
-		{
-			assert(sphere != nullptr);
-			sphere->init();
-			break;
-		}
 		case IS_TEXTURE:
 		{
 			assert(tex != nullptr);
@@ -969,7 +995,7 @@ struct particle {
 		}
 	}
 
-	inline void show()
+	inline void show(int lights)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -977,19 +1003,6 @@ struct particle {
 		{
 			switch (which)
 			{
-			case IS_SPHERE:
-			{
-				assert(sphere != nullptr);
-				sphere->loadIdentity();
-				sphere->translate(x, y, z);
-				sphere->rotate(rx, glm::vec3(1, 0, 0));
-				sphere->rotate(ry, glm::vec3(0, 1, 0));
-				sphere->rotate(rz, glm::vec3(0, 0, 1));
-				
-				sphere->scale(xScale,yScale,zScale);
-				sphere->show();
-				break;
-			}
 			case IS_TEXTURE:
 			{
 				assert(tex != nullptr);
@@ -998,9 +1011,9 @@ struct particle {
 				tex->rotate(rx, glm::vec3(1, 0, 0));
 				tex->rotate(ry, glm::vec3(0, 1, 0));
 				tex->rotate(rz, glm::vec3(0, 0, 1));
-				
+
 				tex->scale(xScale, yScale, zScale);
-				tex->show();
+				tex->show(lights);
 				break;
 			}
 			case IS_RECTANGLE:
@@ -1011,7 +1024,7 @@ struct particle {
 				rec->rotate(rx, glm::vec3(1, 0, 0));
 				rec->rotate(ry, glm::vec3(0, 1, 0));
 				rec->rotate(rz, glm::vec3(0, 0, 1));
-				
+
 				rec->scale(xScale, yScale, zScale);
 
 				rec->show();
@@ -1038,8 +1051,10 @@ private:
 
 public:
 	int maxSize = -1;
-	void(*initParticle)(particle*) = nullptr;
-
+	int time = MAXINT;
+	const char* imag = "source//file.jpg";
+	//void(*initParticle)(particle*) = nullptr;
+	void(*initParticle)(particle* m, const char* name) = nullptr;
 	bool(*isDead)(particle*) = nullptr;
 
 	std::vector<particle*> particleCollection;
@@ -1056,27 +1071,27 @@ public:
 
 
 
-	void show()
+	void show(int lights)
 	{
-
+		time--;
 		for (auto & i : particleCollection)
 		{
 
 			i->update();
-			if (i->isDead)
+			if (i->isDead && time > 0)
 			{
-				initParticle(i);
+				initParticle(i, imag);
 			}
 			else if (isDead != nullptr)
 			{
 				if (isDead(i))
 				{
-					initParticle(i);
+					initParticle(i, imag);
 				}
 
 			}
-			
-			i->show();
+
+			i->show(lights);
 		}
 	}
 
@@ -1087,7 +1102,7 @@ public:
 		for (int i = 0; i < maxSize; i++)
 		{
 			particle* newParticle = new particle();
-			initParticle(newParticle);
+			initParticle(newParticle, imag);
 			newParticle->init();
 			particleCollection.push_back(newParticle);
 		}
@@ -1102,6 +1117,7 @@ private:
 	using objPtrVector = std::vector<object*>;
 	using texturePtrVector = std::vector<texture*>;
 	using cloudPtrVector = std::vector<cloud*>;
+	using fluidPtrVector = std::vector<Fluid*>;
 	std::string name;
 	bool active;
 
@@ -1111,6 +1127,7 @@ public:
 	objPtrVector objCollection;
 	texturePtrVector texCollection;
 	cloudPtrVector cloudCollection;
+	fluidPtrVector fluidCollection;
 
 	scene() :active(true)
 	{
@@ -1132,8 +1149,13 @@ public:
 		cloudCollection.push_back(e);
 		return this;
 	}
+	inline scene* push_back(Fluid*e)
+	{
+		fluidCollection.push_back(e);
+		return this;
+	}
 	void shadow();
-	void show(smLight* light);
+	void show(smLight* light,int lights);
 
 };
 
@@ -1148,6 +1170,7 @@ private:
 public:
 	scenePtrVector sceneCollection;
 	lightPtrVector lightCollection;
+
 	world(std::string tname) :name(tname) {}
 	virtual ~world() {}
 	void push_back(scene* e)

@@ -8,10 +8,14 @@ extern smShader * texParticleShader;
 
 void smRender::render(world & myworld,smCamera& camera)
 {
-	for (auto& light : myworld.getLights())
+	if (useShadow)
 	{
-		if (useShadow)
+		texShader->use();
+		texShader->setInt("u_lightNum", myworld.getLights().size());
+
+		for (auto& light : myworld.getLights())
 		{
+
 			//cout << "use shadow" << endl;
 			glm::mat4 lightProjection, lightView;
 			//glm::mat4 lightMatrix;
@@ -24,50 +28,77 @@ void smRender::render(world & myworld,smCamera& camera)
 			glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, light->frameHandle);
 			glClear(GL_DEPTH_BUFFER_BIT);
-			for (auto& s :myworld.getScenes())
+			for (auto& s : myworld.getScenes())
 				s->shadow();
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.f, 8096.0f);
-		glm::mat4 view = glm::lookAt(camera.eye, camera.eye + camera.dir, glm::vec3(0.0, 1.0, 0.0));
-		elementShader->use();
-		elementShader->setMat4("u_projection", projection);
-		elementShader->setMat4("u_view", view);
-		elementShader->setMat4("u_lightMatrix", light->lightMatrix);
-		elementShader->setVec3("u_eyePos", camera.eye);
-		elementShader->setVec3("u_lightPos", light->pos);
-		//cout << "posx:" << pos.x << " " << pos.y << " " << pos.z << endl;
-		elementShader->setVec3("u_lightDiff", light->diffuse);
-		elementShader->setVec3("u_lightAmb", light->ambient);
-		elementShader->setFloat("u_lightSpec", light->specular);
-		texShader->use();
-		texShader->setMat4("u_projection", projection);
-		texShader->setMat4("u_view", view);
-		texShader->setMat4("u_lightMatrix", light->lightMatrix);
-		texShader->setVec3("u_eyePos", camera.eye);
-		texShader->setVec3("u_lightPos", light->pos);
-		texShader->setVec3("u_lightDiff", light->diffuse);
-		texShader->setVec3("u_lightAmb", light->ambient);
-		texShader->setFloat("u_lightSpec", light->specular);
-		paticleShader->use();
-		paticleShader->setMat4("u_projection", projection);
-		paticleShader->setMat4("u_view", view);
-		texParticleShader->use();
-		texParticleShader->setMat4("u_projection", projection);
-		texParticleShader->setMat4("u_view", view);
 
-		//paticleShader->setMat4("u_lightMatrix", light.lightMatrix);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, light->textureHandle);
-		for (auto& s : myworld.getScenes()) 
-		{
-			s->show(light);
 		}
+
+	}
+
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.f, 8096.0f);
+	glm::mat4 view = glm::lookAt(camera.eye, camera.eye + camera.dir, glm::vec3(0.0, 1.0, 0.0));
+	elementShader->use();
+	elementShader->setMat4("u_projection", projection);
+	elementShader->setMat4("u_view", view);
+	elementShader->setVec3("u_eyePos", camera.eye);
+
+	for (int i = 0; i <  myworld.getLights().size(); i++) {
+		char tmp[64];
+		sprintf(tmp, "u_lightsMatrix[%d]", i);
+		elementShader->setMat4(tmp, myworld.getLights()[i]->lightMatrix);
+		sprintf(tmp, "u_lightInfo[%d].u_lightPos", i);
+		elementShader->setVec3(tmp, myworld.getLights()[i]->pos);
+		sprintf(tmp, "u_lightInfo[%d].u_lightDiff", i);
+		elementShader->setVec3(tmp, myworld.getLights()[i]->diffuse);
+		sprintf(tmp, "u_lightInfo[%d].u_lightAmb", i);
+		elementShader->setVec3(tmp, myworld.getLights()[i]->ambient);
+		sprintf(tmp, "u_lightInfo[%d].u_lightSpec", i);
+		elementShader->setFloat(tmp, myworld.getLights()[i]->specular);
 	}
 
 
+	texShader->use();
+	texShader->setMat4("u_projection", projection);
+	texShader->setMat4("u_view", view);
+	texShader->setVec3("u_eyePos", camera.eye);
+
+
+	for (int i = 0; i < myworld.getLights().size(); i++) {
+		char tmp[64];
+		sprintf(tmp, "u_lightsMatrix[%d]", i);
+		texShader->setMat4(tmp, myworld.getLights()[i]->lightMatrix);
+		sprintf(tmp, "u_lightInfo[%d].u_lightPos", i);
+		texShader->setVec3(tmp, myworld.getLights()[i]->pos);
+		sprintf(tmp, "u_lightInfo[%d].u_lightDiff", i);
+		texShader->setVec3(tmp, myworld.getLights()[i]->diffuse);
+		sprintf(tmp, "u_lightInfo[%d].u_lightAmb", i);
+		texShader->setVec3(tmp, myworld.getLights()[i]->ambient);
+		sprintf(tmp, "u_lightInfo[%d].u_lightSpec", i);
+		texShader->setFloat(tmp, myworld.getLights()[i]->specular);
+	}
+
+	paticleShader->use();
+	paticleShader->setMat4("u_projection", projection);
+	paticleShader->setMat4("u_view", view);
+	texParticleShader->use();
+	texParticleShader->setMat4("u_projection", projection);
+	texParticleShader->setMat4("u_view", view);
+
+
+	for (int i = 0; i < myworld.getLights().size(); i++) {
+		glActiveTexture(GL_TEXTURE1 + i);
+		glBindTexture(GL_TEXTURE_2D, myworld.getLights()[i]->textureHandle);
+	}
 	
+	for (auto& light : myworld.getLights())
+	{
+		for (auto& s : myworld.getScenes()) 
+		{
+			s->show(light, myworld.getLights().size());
+		}
+	}
 }

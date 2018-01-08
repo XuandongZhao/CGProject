@@ -120,6 +120,18 @@ T interpolate(float prop, T x, T y) {
 	return x*prop + y*(1 - prop);
 }
 
+inline void multiVec4(const glm::mat4 &a, const glm::vec4&b, glm::vec4 &ans)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		ans[i] = 0;
+		for (int j = 0; j < 4; j++)
+		{
+			ans[i] += (a[i][j] * b[j]);
+		}
+	}
+}
+
 
 
 #endif

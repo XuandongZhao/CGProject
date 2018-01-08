@@ -141,6 +141,8 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="fluid.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
@@ -151,6 +153,7 @@
     <ClInclude Include="lib\camera.h" />
     <ClInclude Include="lib\collision.h" />
     <ClInclude Include="lib\exception.h" />
+    <ClInclude Include="lib\fluid.h" />
     <ClInclude Include="lib\keyboard.h" />
     <ClInclude Include="lib\light.h" />
     <ClInclude Include="lib\main.h" />
@@ -160,6 +163,7 @@
     <ClInclude Include="lib\render.h" />
     <ClInclude Include="lib\shader.h" />
     <ClInclude Include="lib\sphere.h" />
+    <ClInclude Include="lib\VectorClasses.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

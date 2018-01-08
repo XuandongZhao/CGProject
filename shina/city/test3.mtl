@@ -207,9 +207,9 @@ map_Kd test3/_275.jpg
 
 newmtl _4
 Ka 0.000000 0.000000 0.000000
-Kd 0.333333 0.537255 0.545098
+Kd 1 1 1
 Ks 0.330000 0.330000 0.330000
-map_Kd test3/_4.jpg
+map_Kd test3/water.jpg
 
 newmtl _Gray6_2
 Ka 0.000000 0.000000 0.000000
