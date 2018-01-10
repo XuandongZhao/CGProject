@@ -7,7 +7,7 @@
 extern smShader * texParticleShader;
 
 class rectangle {
-	glm::mat4 model;
+	
 
 	class Bitmap {
 	public:
@@ -50,7 +50,7 @@ class rectangle {
 	}
 
 public:
-
+	glm::mat4 model;
 	glm::vec4 color;
 
 

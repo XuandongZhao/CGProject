@@ -1,4 +1,6 @@
 #pragma once
+#ifndef SHINA_LIB_FLUID_H
+#define SHINA_LIB_FLUID_H
 #include "VectorClasses.h"  
 #include "main.h"
 
@@ -13,6 +15,7 @@ private:
 	long            height; //高
 
 	Vector3D        *buffer[2]; //缓冲区
+	Vector3D		*normals,*tangent;
 	long            renderBuffer;  //当前渲染的缓冲区
 
 	int             *indices[3]; //索引
@@ -20,9 +23,10 @@ private:
 	float           k1, k2, k3; //多项式系数
 	float *coord,*pos,*normal;
 
-	GLuint vao, texName;
-	GLuint vboHandles[2],
-		positionBufferHandle, coordBufferHandle;
+	GLuint vao,svao, texName;
+	GLuint vboHandles[3],
+		positionBufferHandle, coordBufferHandle, normalBufferHandle;
+	GLuint spositionBufferHandle;
 	class Bitmap {
 	public:
 		int sizeX, sizeY;
@@ -56,8 +60,9 @@ public:
 	~Fluid();
 
 	void Evaluate(void);
-	void show();
+	void show(int lights);
 	void getData();
+	void shadow();
 	inline void update()
 	{
 		static int count = 0;
@@ -87,3 +92,5 @@ public:
 		this->model = glm::rotate(this->model, angel, axis);
 	}
 };
+
+#endif

@@ -649,7 +649,7 @@ public:
 };
 
 class texture {
-private:
+public:
 	using vec3 = glm::vec3;
 	//增加了一个材质类，有材质信息和图片信恿
 	class Material {
@@ -704,6 +704,7 @@ private:
 				cout << "Warning: load image failed!\nMaterial name is " << name << endl;
 				return false;
 			}
+			cout << "ffff: " << fileName << endl;
 			src.sizeX = img->GetWidth();
 			src.sizeY = img->GetHeight();
 			if (img->GetPitch() < 0)
@@ -773,10 +774,11 @@ private:
 			}
 		}
 	};
+
 	vector<Group> group;
 	glm::mat4 model;
 
-public:
+
 	bool diy = false;
 	bool fake = false;
 

@@ -3,6 +3,8 @@
 #include "lib/shader.h"
 
 extern smShader * texParticleShader;
+extern smShader *texShader;
+extern smShader *shadowShader;
 
 Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* name)
 {
@@ -15,8 +17,8 @@ Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* na
 	buffer[1] = new Vector3D[count];  //缓冲区2
 	renderBuffer = 0;  //渲染缓冲区
 
-					   //normal = new Vector3D[count]; //法线
-					   //tangent = new Vector3D[count]; //切线
+	normals = new Vector3D[count]; //法线
+	tangent = new Vector3D[count]; //切线
 	pos = new float[9 * 2 * (height - 1)*(width - 1)];
 	coord = new float[6 * 2 * (height - 1)*(width - 1)];
 	normal = new float[9 * 2 * (height - 1)*(width - 1)];
@@ -52,8 +54,8 @@ Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* na
 				else buffer[0][a].Set(d * i, y, -55.0F);
 			}
 			buffer[1][a] = buffer[0][a];
-			//	normal[a].Set(0.0F, 0.0F, 2.0F * d);
-			//	tangent[a].Set(2.0F * d, 0.0F, 0.0F);
+			normals[a].Set(0.0F, 0.0F, 2.0F * d);
+			tangent[a].Set(2.0F * d, 0.0F, 0.0F);
 			a++;
 		}
 	}
@@ -101,10 +103,13 @@ Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* na
 		}
 	}
 	glGenVertexArrays(1, &vao);
-	glGenBuffers(2, vboHandles);
+	glGenVertexArrays(1, &svao);
+	glGenBuffers(3, vboHandles);
 	positionBufferHandle = vboHandles[0];
 	coordBufferHandle = vboHandles[1];
+	normalBufferHandle = vboHandles[2];
 	glGenTextures(1, &texName);
+	glGenBuffers(1, &spositionBufferHandle);
 
 
 }
@@ -128,7 +133,7 @@ void Fluid::Evaluate(void)
 		//前一顶点位移
 		Vector3D *prev = buffer[1 - renderBuffer] + j * width;
 
-		// z(i,j,k+1) = k1 * z(i,j,k) + k2 * z(i,j,k-1) +
+		//z(i,j,k+1) = k1 * z(i,j,k) + k2 * z(i,j,k-1) +
 		//     k3 * (z(i+1,j,k) + z(i-1,j,k) + z(i,j+1,k) + z(i,j-1,k)
 
 		for (long i = 1; i < width - 1; i++)
@@ -141,10 +146,28 @@ void Fluid::Evaluate(void)
 
 	renderBuffer = 1 - renderBuffer;
 
+	for (long j = 1; j < height - 1; j++)
+	{
+		const Vector3D *next = buffer[renderBuffer] + j * width;
+		Vector3D *nrml = normals + j * width;
+		Vector3D *tang = tangent + j * width;
+
+		for (long i = 1; i < width - 1; i++)
+		{
+			nrml[i].x = next[i - 1].z - next[i + 1].z;
+			nrml[i].y = next[i - width].z - next[i + width].z;
+			tang[i].z = next[i + 1].z - next[i - 1].z;
+		}
+	}
+
 }
 void Fluid::getData()
 {
 	for (int i = 0; i < 2 * (height - 1)*(width - 1); i++) {
+		normal[i * 9] = normals[indices[0][i]].x;
+		normal[i * 9 + 1] = normals[indices[0][i]].y;
+		normal[i * 9 + 2] = normals[indices[0][i]].z;
+		
 		coord[i * 6] = texcoords[0][0][i];
 		coord[i * 6 + 1] = texcoords[0][1][i];
 
@@ -152,12 +175,20 @@ void Fluid::getData()
 		pos[i * 9 + 1] = buffer[renderBuffer][indices[0][i]].y;
 		pos[i * 9 + 2] = buffer[renderBuffer][indices[0][i]].z;
 
+		normal[i * 9 + 3] = normals[indices[1][i]].x;
+		normal[i * 9 + 4] = normals[indices[1][i]].y;
+		normal[i * 9 + 5] = normals[indices[1][i]].z;
+
 		coord[i * 6 + 2] = texcoords[1][0][i];
 		coord[i * 6 + 3] = texcoords[1][1][i];
 
 		pos[i * 9 + 3] = buffer[renderBuffer][indices[1][i]].x;
 		pos[i * 9 + 4] = buffer[renderBuffer][indices[1][i]].y;
 		pos[i * 9 + 5] = buffer[renderBuffer][indices[1][i]].z;
+
+		normal[i * 9 + 6] = normals[indices[2][i]].x;
+		normal[i * 9 + 7] = normals[indices[2][i]].y;
+		normal[i * 9 + 8] = normals[indices[2][i]].z;
 
 		coord[i * 6 + 4] = texcoords[2][0][i];
 		coord[i * 6 + 5] = texcoords[2][1][i];
@@ -169,9 +200,57 @@ void Fluid::getData()
 	}
 }
 
-
-void Fluid::show()
+void Fluid::shadow()
 {
+	shadowShader->use();
+	shadowShader->setMat4("u_modelMatrix", model);
+	glBindVertexArray(svao);
+	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, 9 * 2 * (height - 1)*(width - 1) * 4, pos, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+	glBindVertexArray(0);
+
+	glBindVertexArray(svao);
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * (height - 1)*(width - 1) * 4);
+}
+
+void Fluid::show(int lights)
+{
+	texShader->use();
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, 9 * 2 * (height - 1)*(width - 1) * 4, pos, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, coordBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * (height - 1)*(width - 1) * 4, coord, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, normalBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, 9 * 2 * (height - 1)*(width - 1) * 4, normal, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, src.sizeX, src.sizeY, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, src.data);
+	texShader->setInt("u_enLight", true);
+	texShader->setMat4("u_modelMatrix", model);
+	glm::mat4x4 inv = glm::transpose(glm::inverse(model));
+	texShader->setMat4("u_normalMatrix", inv);
+	for (int i = 0; i < lights; i++) {
+		char tmp[64];
+		sprintf(tmp, "u_shadowMap[%d]", i);
+		texShader->setInt(tmp, i + 1);
+	}
+	texShader->setInt("u_textureMap", 0);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * (height - 1)*(width - 1) * 4);
+	/*
 	texParticleShader->use();
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
@@ -198,6 +277,8 @@ void Fluid::show()
 	texParticleShader->setVec4("v_color", glm::vec4(1,1,1,1));
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * (height - 1)*(width - 1) * 4);
+
+	*/
 }
 
 

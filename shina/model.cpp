@@ -40,10 +40,6 @@ void texture::show(int lights) {
 
 	for (Group &graph : group)
 	{
-		if (graph.material.name == "_4")
-		{
-			continue;
-		}
 		if (graph.pos.size() == 0)	continue;
 
 		if (graph.material.is_src)
@@ -73,7 +69,7 @@ void texture::show(int lights) {
 			texShader->setInt("u_enLight", !fake);
 			texShader->setMat4("u_modelMatrix", model);
 			glm::mat4x4 inv = glm::transpose(glm::inverse(model));
-			elementShader->setMat4("u_normalMatrix", inv);
+			texShader->setMat4("u_normalMatrix", inv);
 			for (int i = 0; i < lights; i++) {
 				char tmp[64];
 				sprintf(tmp, "u_shadowMap[%d]", i);
@@ -545,6 +541,10 @@ void scene::shadow()
 	{
 		i->shadow();
 	}
+	for (auto & i : fluidCollection)
+	{
+		i->shadow();
+	}
 
 }
 
@@ -564,6 +564,6 @@ void scene::show(smLight * light,int lights)
 	}
 	for (auto & t : fluidCollection)
 	{
-		t->show();
+		t->show(lights);
 	}
 }
