@@ -44,6 +44,8 @@ Fluid *fuild;
 halfPlaneCross halfCollition;
 rectangle* withCamera;
 
+cubeBox*skyBox;
+
 
 glm::vec3 cameraPosition(0.f, 20.f, 0.f);
 glm::vec3 cameraDir(0, 0, -30);
@@ -163,7 +165,7 @@ static void smInit()
 
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 	texParticleShader = new smShader("files//rectangle.vert", "files//rectangle.frag");
-
+	skyBox = new cubeBox();
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
 unsigned int cnt = 0;
@@ -368,6 +370,16 @@ void dealBox() {
 
 void build() {
 	static scene tmp;
+
+	vector<string>path;
+	path.push_back("source//skybox//skyFront.obj");
+	path.push_back("source//skybox//skyBack.obj");
+	path.push_back("source//skybox//skyLeft.obj");
+	path.push_back("source//skybox//skyRight.obj");
+	path.push_back("source//skybox//skyTop.obj");
+	path.push_back("source//skybox//skyBottom.obj");
+	skyBox->init(path);
+	tmp.push_back(skyBox);
 
 	texture* city = new texture();
 

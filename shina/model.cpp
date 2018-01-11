@@ -550,6 +550,10 @@ void scene::shadow()
 
 void scene::show(smLight * light,int lights)
 {
+	if (skyBox)
+	{
+		skyBox->show(lights);
+	}
 	for (auto &e : objCollection) {
 		e->show();
 	}
@@ -566,4 +570,24 @@ void scene::show(smLight * light,int lights)
 	{
 		t->show(lights);
 	}
+}
+
+void cubeBox::show(int lights)
+{
+	for (int i = 0; i < 6; i++)
+	{
+		box[i]->show(lights);
+	}
+}
+void cubeBox::init(vector<string>&faces)
+{
+
+	assert(faces.size() == 6);
+	for (int i = 0; i < 6; i++)
+	{
+		box[i] = new texture();
+		box[i]->load(faces[i].c_str());
+		box[i]->setFake(true);
+	}
+
 }

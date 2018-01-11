@@ -1113,6 +1113,44 @@ public:
 
 };
 
+class cubeBox {
+private:
+
+
+
+	GLuint textureID;
+	class Bitmap {
+	public:
+		int sizeX, sizeY;
+		unsigned char *data;
+	}src[6];
+
+	void pic(const char *fileName, int i) {
+		CImage *img = new CImage;
+		if (!fileName) {
+			return;
+		}
+		HRESULT hr = img->Load(fileName);
+		if (!SUCCEEDED(hr)) {
+			return;
+		}
+		cout << fileName << endl;
+		src[i].sizeX = img->GetWidth();
+		src[i].sizeY = img->GetHeight();
+		if (img->GetPitch()<0)src[i].data = (unsigned char *)img->GetBits() + (img->GetPitch()*(img->GetHeight() - 1));
+		else src[i].data = (unsigned char *)img->GetBits();
+	}
+
+	texture* box[6];
+	glm::mat4 view;
+
+
+public:
+	cubeBox() {}
+	void init(vector<string>&faces);
+	void show(int lights);
+};
+
 
 class scene {
 private:
@@ -1126,6 +1164,7 @@ private:
 
 
 public:
+	cubeBox* skyBox = nullptr;
 	objPtrVector objCollection;
 	texturePtrVector texCollection;
 	cloudPtrVector cloudCollection;
@@ -1154,6 +1193,11 @@ public:
 	inline scene* push_back(Fluid*e)
 	{
 		fluidCollection.push_back(e);
+		return this;
+	}
+	inline scene* push_back(cubeBox*e)
+	{
+		skyBox = e;
 		return this;
 	}
 	void shadow();
