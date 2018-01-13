@@ -10,6 +10,7 @@
 #include "rectangle.h"
 #include <atlimage.h>
 #include "fluid.h"
+#include "fire.h"
 
 class texture;
 class object;
@@ -1169,6 +1170,7 @@ public:
 	texturePtrVector texCollection;
 	cloudPtrVector cloudCollection;
 	fluidPtrVector fluidCollection;
+	vector<fire*>fireCollection;
 
 	scene() :active(true)
 	{
@@ -1198,6 +1200,11 @@ public:
 	inline scene* push_back(cubeBox*e)
 	{
 		skyBox = e;
+		return this;
+	}
+	inline scene*push_back(fire*e)
+	{
+		fireCollection.push_back(e);
 		return this;
 	}
 	void shadow();
@@ -1236,6 +1243,269 @@ public:
 		return lightCollection;
 	}
 };
+
+
+class boundBox {
+	using vec3 = glm::vec3;
+public:
+	
+	class Material {
+	public:
+		std::string name;//材质名字
+		glm::vec3 kd, ka, ks;//材质信息
+		Bitmap src;
+		bool is_src;
+
+
+		Material()
+		{
+
+		}
+		~Material()
+		{
+
+		}
+
+	};
+	class Group {
+	public:
+		vector<float> pos;
+		vector<float> coord;
+		vector<float> color;
+		vector<float> normal;
+		Material material;
+		string group_name;
+		bool colorFilled = false;
+		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
+			pos.push_back(pos1);
+			pos.push_back(pos2);
+			pos.push_back(pos3);
+		}
+		void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
+			coord.push_back(coord1);
+			coord.push_back(coord2);
+		}
+		void pushNormal(float normal1, float normal2, float normal3) {
+			normal.push_back(normal1);
+			normal.push_back(normal2);
+			normal.push_back(normal3);
+		}
+	};
+	vector<Material>mtl;
+	vector<Group> group;
+	glm::mat4 model;
+
+	glm::mat4 getModel() {
+		return model;
+	}
+
+
+	
+
+	boundBox* load(const char *filename);
+	void print()
+	{
+		for (size_t i = 0; i < group.size(); i++)
+		{
+			cout << "group: " << i << endl;
+			cout << "v num: " << group[i].pos.size() / 3 << endl;
+			cout << "vt num: " << group[i].coord.size() / 2 << endl;
+			cout << "vn num: " << group[i].normal.size() / 3 << endl;
+			cout << "material name: " << group[i].material.name << endl;
+		}
+	}
+
+	boundBox(){}
+};
+
+class textureGroup {
+private:
+	using vec3 = glm::vec3;
+	//增加了一个材质类，有材质信息和图片信恿
+	class Material {
+	public:
+		GLuint texName;
+		std::string name;//材质名字
+		glm::vec3 kd, ka, ks;//材质信息
+		Bitmap src;//图片信息
+		bool is_src;//是否有图片，有则使用图片画，否则用材质画
+		bool diy = false;
+
+		GLuint vao, svao;
+		GLuint vboHandles[4],
+			positionBufferHandle, colorBufferHandle, normalBufferHandle;
+		GLuint spositionBufferHandle;
+
+		GLuint coordBufferHandle;
+
+		Material()
+		{
+			this->diy = false;
+			glGenVertexArrays(1, &vao);
+			glGenVertexArrays(1, &svao);
+			glGenBuffers(4, vboHandles);
+			positionBufferHandle = vboHandles[0];
+			colorBufferHandle = vboHandles[3];
+			coordBufferHandle = vboHandles[1];
+			normalBufferHandle = vboHandles[2];
+			glGenBuffers(1, &spositionBufferHandle);
+		}
+		~Material()
+		{
+			glDeleteVertexArrays(1, &vao);
+			glDeleteVertexArrays(1, &svao);
+			glDeleteBuffers(4, vboHandles);
+
+		}
+
+		//这个函数从textureGroup类放到material类里靿
+		bool pic(const char *fileName)
+		{
+			// load picture to bitmap
+			CImage *img = new CImage;
+			if (!fileName)
+			{
+				cout << "Warning: image open failed!\nMaterial name is " << name << endl;
+				return false;
+			}
+			HRESULT hr = img->Load(fileName);
+			if (!SUCCEEDED(hr))
+			{
+				cout << "Warning: load image failed!\nMaterial name is " << name << endl;
+				return false;
+			}
+			cout << fileName << endl;
+			src.sizeX = img->GetWidth();
+			src.sizeY = img->GetHeight();
+			if (img->GetPitch() < 0)
+			{
+				src.data = (unsigned char *)img->GetBits() + (img->GetPitch()*(img->GetHeight() - 1));
+			}
+			else
+			{
+				src.data = (unsigned char *)img->GetBits();
+			}
+			return true;
+		}
+	};
+	class Group {
+	public:
+		vector<float> pos;
+		vector<float> coord;
+		vector<float> color;
+		vector<float> normal;
+		Material material;
+		bool colorFilled = false;
+		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
+			pos.push_back(pos1);
+			pos.push_back(pos2);
+			pos.push_back(pos3);
+		}
+		void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
+			coord.push_back(coord1);
+			coord.push_back(coord2);
+		}
+		void pushNormal(float normal1, float normal2, float normal3) {
+			normal.push_back(normal1);
+			normal.push_back(normal2);
+			normal.push_back(normal3);
+		}
+		float *getPos() {
+			return toArray<float>(&pos);
+		}
+		float *getCoord() {
+			return toArray<float>(&coord);
+		}
+		float *getNormal() {
+			return toArray<float>(&normal);
+		}
+		float *getColor() {
+			return toArray<float>(&color);
+		}
+		void fillColor()
+		{
+			if (!colorFilled)
+			{
+				for (int i = 0; i < pos.size(); i++)
+				{
+					if (i % 3 == 0)
+					{
+						color.push_back(material.kd.r);
+					}
+					else if (i % 3 == 1)
+					{
+						color.push_back(material.kd.g);
+					}
+					else {
+						color.push_back(material.kd.b);
+					}
+				}
+				colorFilled = true;
+			}
+		}
+	};
+	vector<Group> group;
+	glm::mat4 model;
+
+public:
+	bool diy = false;
+	bool fake = false;
+	bool use = true;
+
+	glm::mat4 getModel() {
+		return model;
+	}
+
+
+	textureGroup(bool diy = false,
+		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
+		float s = 0) {
+
+		this->diy = diy;
+	}
+
+	textureGroup* load(const char *filename);
+	void shadow();
+	void show(int lights);
+	void print()
+	{
+		for (size_t i = 0; i < group.size(); i++)
+		{
+			cout << "group: " << i << endl;
+			cout << "v num: " << group[i].pos.size() / 3 << endl;
+			cout << "vt num: " << group[i].coord.size() / 2 << endl;
+			cout << "vn num: " << group[i].normal.size() / 3 << endl;
+			cout << "material name: " << group[i].material.name << endl;
+		}
+	}
+	inline void loadIdentity()
+	{
+		this->model = glm::mat4();
+	}
+	inline textureGroup* setFake(bool fake)
+	{
+		this->fake = fake;
+		return this;
+	}
+
+	inline textureGroup* translate(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::translate(this->model, vec3(x, y, z));
+		return this;
+	}
+	inline textureGroup* scale(GLfloat x, GLfloat y, GLfloat z)
+	{
+		this->model = glm::scale(this->model, vec3(x, y, z));
+		return this;
+	}
+	inline textureGroup* rotate(GLfloat angel, vec3 axis)
+	{
+		this->model = glm::rotate(this->model, angel, axis);
+		return this;
+	}
+
+};
+
 
 
 #endif

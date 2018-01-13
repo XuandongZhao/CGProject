@@ -142,6 +142,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="fire.cpp" />
     <ClCompile Include="fluid.cpp" />
     <ClCompile Include="halfCross.cpp" />
     <ClCompile Include="light.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="lib\camera.h" />
     <ClInclude Include="lib\collision.h" />
     <ClInclude Include="lib\exception.h" />
+    <ClInclude Include="lib\fire.h" />
     <ClInclude Include="lib\fluid.h" />
     <ClInclude Include="lib\halfCross.h" />
     <ClInclude Include="lib\keyboard.h" />

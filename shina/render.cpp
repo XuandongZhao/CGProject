@@ -5,6 +5,7 @@ extern smShader *texShader;
 extern smShader *shadowShader;
 extern smShader *paticleShader;
 extern smShader * texParticleShader;
+extern smShader* fireShader;
 
 void smRender::render(world & myworld,smCamera& camera)
 {
@@ -87,6 +88,9 @@ void smRender::render(world & myworld,smCamera& camera)
 	texParticleShader->use();
 	texParticleShader->setMat4("u_projection", projection);
 	texParticleShader->setMat4("u_view", view);
+	fireShader->use();
+	fireShader->setMat4("u_projection", projection);
+	fireShader->setMat4("u_view", view);
 
 
 	for (int i = 0; i < myworld.getLights().size(); i++) {

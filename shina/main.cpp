@@ -13,6 +13,10 @@
 #include "lib\halfCross.h"
 #include <iostream>
 
+#define __WAVE__
+#define __CITY__
+#define __SKY__
+
 smCamera*camera;
 smMouse* mouse;
 smKeyBoard* keyBoard;
@@ -28,6 +32,7 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 smShader * texParticleShader;
+smShader*fireShader;
 
 vector<collosion> objV;
 collosion fly;
@@ -43,6 +48,7 @@ cloud testCloud;
 Fluid *fuild;
 halfPlaneCross halfCollition;
 rectangle* withCamera;
+glm::mat4 *daoDanModel;
 
 cubeBox*skyBox;
 
@@ -87,18 +93,6 @@ void initParticle(particle * m, const char*name)
 	int random = rand() % 10000;
 	m->isDead = false;
 	glm::vec4 firePosition = (obFly->getModel())*glm::vec4(fireX + randNumber[random] * 200 - 100, fireY + randNumber[(random * 2) % 10000] * 200 - 100, fireZ, 1.f);
-	//firePosition = (obFly->getModel())[0] * firePosition;
-
-	//for (int i = 0; i < 4; i++)
-	//{
-	//	for (int j = 0; j < 4; j++)
-	//	{
-	//		cout << (obFly->getModel())[i][j]<<"***";
-	//	}
-	//	cout << endl;
-	//}
-
-
 	glm::vec4 fireVec = (obFly->getModel())*flyVec;
 	glm::vec4 yuan = (obFly->getModel())*glm::vec4(0, 0, 0, 1);
 	//multiVec4((obFly->getModel()), flyVec, fireVec);
@@ -143,8 +137,6 @@ void initParticle(particle * m, const char*name)
 
 static void smInit()
 {
-
-
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < 10000; i++)
 	{
@@ -165,6 +157,7 @@ static void smInit()
 
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 	texParticleShader = new smShader("files//rectangle.vert", "files//rectangle.frag");
+	fireShader = new smShader("files//fire.vert", "files//fire.frag", "files//fire.geo");
 	skyBox = new cubeBox();
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
@@ -241,41 +234,32 @@ void cameramove()
 {
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		camera->moveCamera(-40, 0);
-		withCamera->translate(40, 0, 0);
+		cout << "$$$$$" << endl;
+		camera->moveCamera(-10, 0);
 		
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
 
-		camera->moveCamera(40, 0);
-		withCamera->translate(-40, 0, 0);
+		camera->moveCamera(10, 0);
 	}
 	if (keyBoard->getKey((keyMap)'s') == true)
 	{
 
-		camera->moveCamera(0, -40);
-		withCamera->translate(0, 0, 40);
+		camera->moveCamera(0, -10);
 	}
 	if (keyBoard->getKey((keyMap)'w') == true)
 	{
-		camera->moveCamera(0, 40);
-		withCamera->translate(0, 0, -40);
+		camera->moveCamera(0, 10);
 	}
 
 	if (keyBoard->getKey((keyMap)'q') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		camera->moveHCamera(30);
-		withCamera->translate(0, 30, 0);
+		camera->moveHCamera(10);
 	}
 	if (keyBoard->getKey((keyMap)'e') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		camera->moveHCamera(-30);
-		withCamera->translate(0, -30, 0);
+		camera->moveHCamera(-10);
 	}
 
 	if (keyBoard->getKey((keyMap)'j') == true)
@@ -333,7 +317,11 @@ void cameramove()
 
 static void smTimer(int id)
 {
+#ifdef __WAVE__
 	fuild->update();
+#endif // __WAVE__
+
+	
 	cameramove();
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
@@ -343,7 +331,6 @@ static void smDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	render.render(myworld, *camera);
-	withCamera->show();
 	glutSwapBuffers();
 }
 static void smReshape(int w, int h) {
@@ -370,7 +357,7 @@ void dealBox() {
 
 void build() {
 	static scene tmp;
-
+#ifdef __SKY__
 	vector<string>path;
 	path.push_back("source//skybox//skyFront.obj");
 	path.push_back("source//skybox//skyBack.obj");
@@ -380,64 +367,58 @@ void build() {
 	path.push_back("source//skybox//skyBottom.obj");
 	skyBox->init(path);
 	tmp.push_back(skyBox);
+#endif // __SKY__
 
+#ifdef __CITY__
 	texture* city = new texture();
 
 	city->load("city//newshanghai//newshanghai.obj");
 	//city->load("city//lzj//shanghai.obj");
-	for (auto &i : city->group)
+	boundBox*cityBox1 = new boundBox();
+	boundBox*cityBox2 = new boundBox();
+	cityBox1->load("city//城市包围盒//城市包围盒//city_box1.obj");
+	cityBox2->load("city//城市包围盒//城市包围盒//CAD_BOX2.obj");
+	for (auto &i : cityBox1->group)
 	{
 		bool ok = false;
 		cout << i.material.name << endl;
 		cout << i.material.name.find("house") << endl;
-		if (i.material.name.find("house") == string::npos)
-		{
-			continue;
-		}
-
 		vector<glm::vec3>input;
 		for (int j = 0; j < i.pos.size(); j += 3)
 		{
-			input.push_back(glm::vec3(i.pos[j],i.pos[j+1], i.pos[j + 2]));
+			input.push_back(glm::vec3(i.pos[j], i.pos[j + 1], i.pos[j + 2]));
 			//cout << i.pos[j] << " " << i.pos[j + 1] << " " << i.pos[j + 2] << endl;
 		}
 		halfCollition.addConvexHull(input);
-
 	}
-
-	withCamera = new rectangle();
-	withCamera->fill("source//water.bmp");
-	vector<glm::vec3>testPosition;
-	testPosition.push_back(glm::vec3(-10, -10, -10));
-	testPosition.push_back(glm::vec3(-10, 10, -10));
-	testPosition.push_back(glm::vec3(10, 10, -10));
-	testPosition.push_back(glm::vec3(10, -10, -10));
-	testPosition.push_back(glm::vec3(-10, -10, 10));
-	testPosition.push_back(glm::vec3(-10, 10, 10));
-	testPosition.push_back(glm::vec3(10, 10, 10));
-	testPosition.push_back(glm::vec3(10, -10, 10));
-	//withCamera->scale(100,100,100);
-	
-
-
-
-
-
+	for (auto &i : cityBox2->group)
+	{
+		bool ok = false;
+		cout << i.material.name << endl;
+		cout << i.material.name.find("house") << endl;
+		vector<glm::vec3>input;
+		for (int j = 0; j < i.pos.size(); j += 3)
+		{
+			input.push_back(glm::vec3(i.pos[j], i.pos[j + 1], i.pos[j + 2]));
+			//cout << i.pos[j] << " " << i.pos[j + 1] << " " << i.pos[j + 2] << endl;
+		}
+		halfCollition.addConvexHull(input);
+	}
 	tmp.push_back(city);
 	obFly = new texture();
 	obFly->load("fly//flyD.obj");
 	obFly->rotate(-2.36, glm::vec3(0, 1, 0));
 	//obFly->translate(550, 0, 2000);
 	obFly->scale(0.05, 0.05, 0.05);
-	
+
 
 	obMissile = new object();
 	obMissile->load("fly//flyD.obj");
 	obMissile->rotate(-2.36, glm::vec3(0, 1, 0));
 	obMissile->translate(550, 0, 2000);
 	fly.setPos(obMissile->returnPos());
-	obb_box flyBox=fly.gen_obb_box(obMissile->returnPos());
-	vector<glm::vec3>pos=flyBox.getPosition();
+	obb_box flyBox = fly.gen_obb_box(obMissile->returnPos());
+	vector<glm::vec3>pos = flyBox.getPosition();
 	cout << "DaoDan" << endl;
 	for (int i = 0; i < 8; i++)
 	{
@@ -465,18 +446,53 @@ void build() {
 	gameprog.control = false;
 	gameprog.gameover = false;
 	gameprog.launch = false;
+#endif // __CITY__
 
-	testCloud.initParticle = initParticle;
+
+	
+
+
+	withCamera = new rectangle();
+	withCamera->fill("source//water.bmp");
+	//withCamera->scale(100,100,100);
+	
+
+
+
+
+#ifndef __CITY__
+	obFly = new texture();
+	obFly->load("fly//flyD.obj");
+	obFly->rotate(-2.36, glm::vec3(0, 1, 0));
+	//obFly->translate(550, 0, 2000);
+	obFly->scale(0.05, 0.05, 0.05);
+#endif // !__CITY__
+
+	
+	daoDanModel = &(obFly->model);
+	fire*fire_d = new fire(10000,(obFly->getModel()));
+	//fire_d->initRandom();
+	fire_d->flyVec = flyVec;
+	fire_d->useFade(initialColor, fadeColor);
+	fire_d->initFire("source//file.jpg",&fireX,&fireY,&fireZ);
+	
+	
+	tmp.push_back(fire_d);
+
+	/*testCloud.initParticle = initParticle;
 
 	testCloud.maxSize = 2000;
 	testCloud.init();
-	tmp.push_back(&testCloud);
+	tmp.push_back(&testCloud);*/
 
-
+#ifdef __WAVE__
 	fuild = new Fluid(100, 100, 200, 1, 40, 0, "source//water.bmp");
 	tmp.push_back(fuild);
 	fuild->translate(-3000, -60, 3000);
 	fuild->rotate(PI / 2, glm::vec3(-1, 0, 0));
+#endif // __WAVE__
+
+	
 
 	// sky
 	tmp.push_back((new texture())->load("source//skyFront.obj"));

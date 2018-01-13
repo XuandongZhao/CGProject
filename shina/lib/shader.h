@@ -10,7 +10,7 @@
 
 class smShader {
 public:
-	smShader();
+	smShader() {};
 	unsigned int shaderID;
 	void checkCompileErrors(GLuint normalShader, std::string type) {
 		GLint success;
@@ -32,24 +32,35 @@ public:
 	}
 
 public:
-	smShader(string vetexShaderFile, string fragmentShaderFile)
+	smShader(string vetexShaderFile, string fragmentShaderFile, string geoShaderFile = "")
 	{
 		std::string vetexFileContent;
 		std::string fragmentFileContent;
-		std::ifstream vetexStream(vetexShaderFile,std::ios::in);
-		std::ifstream fragmentStream(fragmentShaderFile,std::ios::in);
+		std::string geoFileContent;
+		std::ifstream vetexStream(vetexShaderFile, std::ios::in);
+		std::ifstream fragmentStream(fragmentShaderFile, std::ios::in);
 		try {
 			std::stringstream vetexBuffer;
 			std::stringstream fragmentBuffer;
+			std::stringstream geoBuffer;
 			vetexBuffer << vetexStream.rdbuf();
 			fragmentBuffer << fragmentStream.rdbuf();
 			vetexStream.close();
 			fragmentStream.close();
+			if (geoShaderFile != "")
+			{
+				std::ifstream geoStream(geoShaderFile, std::ios::in);
+				geoBuffer << geoStream.rdbuf();
+				geoStream.close();
+				geoFileContent = geoBuffer.str();
+				cout << "^^^^" << geoFileContent << endl;
+			}
+
 			vetexFileContent = vetexBuffer.str();
 			fragmentFileContent = fragmentBuffer.str();
 			const char* vetexCstr = vetexFileContent.c_str();
 			const char* fragmentCstr = fragmentFileContent.c_str();
-			unsigned int vetexID, fragmentID;
+			unsigned int vetexID, fragmentID, geoID;
 			//vetex shader
 			std::cout << vetexCstr << std::endl;
 			vetexID = glCreateShader(GL_VERTEX_SHADER);
@@ -61,14 +72,32 @@ public:
 			glShaderSource(fragmentID, 1, &(fragmentCstr), NULL);
 			glCompileShader(fragmentID);
 			checkCompileErrors(fragmentID, "FRAGMENT");
+			cout << "&&&&" << geoShaderFile << endl;
+			if (geoShaderFile != "")
+			{
+				geoID = glCreateShader(GL_GEOMETRY_SHADER);
+				const char* geoCstr = geoFileContent.c_str();
+				cout << geoCstr << endl;
+				glShaderSource(geoID, 1, &(geoCstr), NULL);
+				glCompileShader(geoID);
+				checkCompileErrors(fragmentID, "GEOMETRY");
+			}
 			//link
 			shaderID = glCreateProgram();
 			glAttachShader(shaderID, vetexID);
 			glAttachShader(shaderID, fragmentID);
+			if (geoShaderFile != "")
+			{
+				glAttachShader(shaderID, geoID);
+			}
 			glLinkProgram(shaderID);
 			checkCompileErrors(shaderID, "PROGRAM");
 			glDeleteShader(vetexID);
 			glDeleteShader(fragmentID);
+			if (geoShaderFile != "")
+			{
+				glDeleteShader(geoID);
+			}
 
 		}
 		catch (std::ifstream::failure &e)
