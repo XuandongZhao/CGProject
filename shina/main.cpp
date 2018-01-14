@@ -50,8 +50,8 @@ glm::vec3 cameraPosition(0.f, 20.f, 0.f);
 glm::vec3 cameraDir(0, 0, -30);
 
 const float fireX = 1.78550000000007, fireY = -0.0475999999999992, fireZ = -1.727499999999992;
-const glm::vec3 fire_l = glm::vec3(5.98739999999998,1.5888000000000027,- 4.579900000000009);
-const glm::vec3 fire_r = glm::vec3(4.572300000000041,1.5888000000000027,- 6.036599999999993);
+const glm::vec3 fire_l = glm::vec3(7.297400000000039,1.5888000000000027,- 5.379500000000007);
+const glm::vec3 fire_r = glm::vec3(5.965800000000058,1.5888000000000027,- 6.905599999999993);
 
 glm::mat4 *daoDanModel;
 GLfloat planeSpeed = 1;
@@ -179,47 +179,29 @@ void cameramove()
 	float a = 10;
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		int ans = halfCollition.calc();
 		camera->moveCamera(-a, 0);
-		withCamera->translate(a, 0, 0);
-		cout << ans << endl;
 
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
 		camera->moveCamera(a, 0);
-		withCamera->translate(-a, 0, 0);
 	}
 	if (keyBoard->getKey((keyMap)'s') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
 		camera->moveCamera(0, -a);
-		withCamera->translate(0, 0, a);
 	}
 	if (keyBoard->getKey((keyMap)'w') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
 		camera->moveCamera(0, a);
-		withCamera->translate(0, 0, -a);
 	}
 
 	if (keyBoard->getKey((keyMap)'q') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
 		camera->moveHCamera(a);
-		withCamera->translate(0, a, 0);
 	}
 	if (keyBoard->getKey((keyMap)'e') == true)
 	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
 		camera->moveHCamera(-a);
-		withCamera->translate(0, -a, 0);
 	}
 
 }
@@ -249,6 +231,7 @@ static void smTimer(int id)
 	fuild->update();
 	model = obFly->getModel();
 	testCollision(fly, 0);
+	halfCollition.calc();
 	model = obPlane->getModel();
 	testCollision(flyPC, 0);
 	testCollision(flyPC, 1);
@@ -548,10 +531,11 @@ void build() {
 	fly.setPos(obMissile->returnPos());
 	obb_box flyBox = fly.gen_obb_box(obMissile->returnPos());
 	vector<glm::vec3>pos = flyBox.getPosition();
+	halfCollition.addtestObject(0, pos, &(obFly->model));
 	tmp.push_back(obFly);
 
 	//d=fire with dao dan
-	fire* fire_d = new fire(1000, (obFly->model), 1,0.1);
+	fire* fire_d = new fire(10000, (obFly->model), 1,0.1);
 	daoDanModel = &(obFly->model);
 	fire_d->flyVec = flyVec;
 	fire_d->useFade(initialColor, fadeColor);
@@ -567,6 +551,7 @@ void build() {
 	obPlane->direct_scale(1);
 	//obPlane->rotate(-2.36, glm::vec3(0, 1, 0));
 	obPlane->translate(800, 24, 171);
+
 
 	flyPC.initTopP();
 	//obPlane->scale(0.05, 0.05, 0.05);

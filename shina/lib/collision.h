@@ -12,6 +12,22 @@ struct obb_box {
 	glm::vec3 center;//中心点
 	glm::vec3 half;//半长
 	glm::vec3 x_axis, y_axis, z_axis;//坐标轴
+
+	vector<glm::vec3>getPosition()
+	{
+		vector<glm::vec3>pos;
+		pos.resize(8);
+
+		pos[0] = -this->half.x * this->x_axis - this->half.y * this->y_axis - this->half.z * this->z_axis + center;
+		pos[1] = -this->half.x * this->x_axis - this->half.y * this->y_axis + this->half.z * this->z_axis + center;
+		pos[2] = -this->half.x * this->x_axis + this->half.y * this->y_axis - this->half.z * this->z_axis + center;
+		pos[3] = -this->half.x * this->x_axis + this->half.y * this->y_axis + this->half.z * this->z_axis + center;
+		pos[4] = this->half.x * this->x_axis - this->half.y * this->y_axis - this->half.z * this->z_axis + center;
+		pos[5] = this->half.x * this->x_axis - this->half.y * this->y_axis + this->half.z * this->z_axis + center;
+		pos[6] = this->half.x * this->x_axis + this->half.y * this->y_axis - this->half.z * this->z_axis + center;
+		pos[7] = this->half.x * this->x_axis + this->half.y * this->y_axis + this->half.z * this->z_axis + center;
+		return pos;
+	}
 };
 
 class collosion {

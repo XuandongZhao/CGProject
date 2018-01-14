@@ -15,16 +15,16 @@ void build_house(vec4 position)
 {    
     fColor = gs_in[0].color; // gs_in[0] since there's only one input vertex
 	
-    gl_Position = u_projection * u_view *(position + vec4(-0.51f, -0.51f, 0.0f, 0.0f));    // 1:bottom-left   
+    gl_Position = u_projection * u_view *(position + vec4(-0.11f, -0.11f, 0.0f, 0.0f));    // 1:bottom-left   
 	texcoord=vec2(0,0);
     EmitVertex();   
-    gl_Position = u_projection * u_view *(position + vec4( 0.51f, -0.51f, 0.0f, 0.0f));    // 2:bottom-right
+    gl_Position = u_projection * u_view *(position + vec4( 0.11f, -0.11f, 0.0f, 0.0f));    // 2:bottom-right
 	texcoord=vec2(1,0);
     EmitVertex();
-    gl_Position = u_projection * u_view *(position + vec4(-0.51f,  0.51f, 0.0f, 0.0f));    // 3:top-left
+    gl_Position = u_projection * u_view *(position + vec4(-0.11f,  0.11f, 0.0f, 0.0f));    // 3:top-left
 	texcoord=vec2(0,1);
     EmitVertex();
-    gl_Position = u_projection * u_view *(position + vec4( 0.51f,  0.51f, 0.0f, 0.0f));    // 4:top-right
+    gl_Position = u_projection * u_view *(position + vec4( 0.11f,  0.11f, 0.0f, 0.0f));    // 4:top-right
 	texcoord=vec2(1,1);
     EmitVertex();
     EndPrimitive();
