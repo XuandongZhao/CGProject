@@ -13,10 +13,6 @@
 #include "lib\halfCross.h"
 #include <iostream>
 
-#define __WAVE__
-#define __CITY__
-#define __SKY__
-
 smCamera*camera;
 smMouse* mouse;
 smKeyBoard* keyBoard;
@@ -32,7 +28,7 @@ smShader *texShader;
 smShader *shadowShader;
 smShader * paticleShader;
 smShader * texParticleShader;
-smShader*fireShader;
+smShader* fireShader;
 
 vector<collosion> objV;
 collosion fly;
@@ -44,19 +40,22 @@ texture *obFly;
 texture *obPlane;
 object * obMissile;
 
-cloud testCloud;
 Fluid *fuild;
+cubeBox*skyBox;
 halfPlaneCross halfCollition;
 rectangle* withCamera;
-glm::mat4 *daoDanModel;
-
-cubeBox*skyBox;
 
 
 glm::vec3 cameraPosition(0.f, 20.f, 0.f);
 glm::vec3 cameraDir(0, 0, -30);
 
-const float fireX = -3953.31, fireY = 731.094, fireZ = 8089.3;
+const float fireX = 1.78550000000007, fireY = -0.0475999999999992, fireZ = -1.727499999999992;
+const glm::vec3 fire_l = glm::vec3(5.98739999999998,1.5888000000000027,- 4.579900000000009);
+const glm::vec3 fire_r = glm::vec3(4.572300000000041,1.5888000000000027,- 6.036599999999993);
+
+glm::mat4 *daoDanModel;
+GLfloat planeSpeed = 1;
+GLfloat daoDanSpeed = 5;
 typedef struct
 {
 	int globaltimer;
@@ -72,71 +71,15 @@ glm::vec3 initialColor(1.f, 0.996f, 0.3569f);
 glm::vec3 fadeColor(0.396f, 0.0824f, 0.04705f);
 GLfloat randNumber[10000];
 
-const glm::vec4 flyVec(41.89, 25.342, -3017.63, 1.0);
+const glm::vec4 flyVec(-4.027699999999982, 0.3669000000000011, 3.903599999999983, 1.0);
 
-
-void initParticle(particle * m, const char*name)
-{
-	if (m->rec == nullptr)
-	{
-		m->rec = new rectangle();
-
-		m->rec->setShape(0.2, 0.6);
-		m->rec->fill(name);
-		m->which = IS_RECTANGLE;
-		m->initialColor = initialColor;
-		m->fadeColor = fadeColor;
-		//m->sphere = new Sphere(0.05, 45, glm::vec4(1.f, 0.f, 0.f, 1.f));
-		//m->which = IS_SPHERE;
-	}
-	//cout << "fuck" << endl;
-	int random = rand() % 10000;
-	m->isDead = false;
-	glm::vec4 firePosition = (obFly->getModel())*glm::vec4(fireX + randNumber[random] * 200 - 100, fireY + randNumber[(random * 2) % 10000] * 200 - 100, fireZ, 1.f);
-	glm::vec4 fireVec = (obFly->getModel())*flyVec;
-	glm::vec4 yuan = (obFly->getModel())*glm::vec4(0, 0, 0, 1);
-	//multiVec4((obFly->getModel()), flyVec, fireVec);
-	//cout << endl;
-	//cout << fireVec.x << " " << fireVec.y << " " << fireVec.z << " " << fireVec.w << endl;
-	//cout << yuan.x << " " << yuan.y << " " << yuan.z << " " << yuan.w << endl;
-	fireVec = yuan - fireVec;
-
-
-
-	fireVec /= sqrt(fireVec.x*fireVec.x + fireVec.y*fireVec.y + fireVec.z*fireVec.z);
-	fireVec *= (randNumber[(random * 4) % 10000] * 20);
-	//cout << fireVec.x << " " << fireVec.y << " " << fireVec.z << endl;
-
-	float x = firePosition.x;// +randNumber[random] * 200 - 100;
-	float y = firePosition.y;
-	float z = firePosition.z;// +randNumber[(random * 2) % 10000] * 0.6 - 0.3;
-
-	float pos[3] = { x,y,z };
-
-
-	//float speed[3] = { 0,0,randNumber[(random * 3) % 10000] * 10 };
-	float aspeed[3] = { 0,0,0 };
-	m->setPosition(pos[0], pos[1], pos[2]);
-	m->setSpeed(fireVec.x, fireVec.y, fireVec.z);
-	m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
-
-	m->setAngle(randNumber[(random * 4) % 10000] * 3, randNumber[(random * 5) % 10000] * 3, randNumber[(random * 6) % 10000] * 3);
-	(m->rec)->color = glm::vec4(initialColor, 1.f);
-
-
-	m->lifetime = randNumber[(random * 8) % 10000] * 3;
-	m->fullLife = m->lifetime;
-	m->deci = 0.05;
-
-}
-/*
-@return true for dead
-*/
 
 
 
 static void smInit()
 {
+
+
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < 10000; i++)
 	{
@@ -158,7 +101,8 @@ static void smInit()
 	paticleShader = new smShader("files//paticle.vert", "files//paticle.frag");
 	texParticleShader = new smShader("files//rectangle.vert", "files//rectangle.frag");
 	fireShader = new smShader("files//fire.vert", "files//fire.frag", "files//fire.geo");
-	skyBox = new cubeBox();
+
+
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
 unsigned int cnt = 0;
@@ -208,13 +152,13 @@ static void dealEye() {
 	int flag[3] = { 0 };
 	for (int i = 0; i < 2; i++) {
 		flag[0] = i - 1;
-		temV[0] = (double)(camera->eye[0]) + flag[0] * 40;
+		temV[0] = ((double)camera->eye[0]) + flag[0] * 10;
 		for (int j = 0; j < 2; j++) {
 			flag[1] = j - 1;
-			temV[1] = (double)(camera->eye[1]) + flag[1] * 40;
+			temV[1] = (double)(camera->eye[1]) + flag[1] * 10;
 			for (int k = 0; k < 2; k++) {
 				flag[2] = k - 1;
-				temV[2] = (double)(camera->eye[2]) + flag[2] * 40;
+				temV[2] = (double)(camera->eye[2]) + flag[2] * 10;
 				posEye.push_back(temV);
 			}
 		}
@@ -232,105 +176,284 @@ glm::vec3 eyeEnd;
 
 void cameramove()
 {
+	float a = 10;
 	if (keyBoard->getKey((keyMap)'d') == true)
 	{
-		cout << "$$$$$" << endl;
-		camera->moveCamera(-10, 0);
-		
+		int ans = halfCollition.calc();
+		camera->moveCamera(-a, 0);
+		withCamera->translate(a, 0, 0);
+		cout << ans << endl;
+
 	}
 	if (keyBoard->getKey((keyMap)'a') == true)
 	{
-
-		camera->moveCamera(10, 0);
+		int ans = halfCollition.calc();
+		cout << ans << endl;
+		camera->moveCamera(a, 0);
+		withCamera->translate(-a, 0, 0);
 	}
 	if (keyBoard->getKey((keyMap)'s') == true)
 	{
-
-		camera->moveCamera(0, -10);
+		int ans = halfCollition.calc();
+		cout << ans << endl;
+		camera->moveCamera(0, -a);
+		withCamera->translate(0, 0, a);
 	}
 	if (keyBoard->getKey((keyMap)'w') == true)
 	{
-		camera->moveCamera(0, 10);
+		int ans = halfCollition.calc();
+		cout << ans << endl;
+		camera->moveCamera(0, a);
+		withCamera->translate(0, 0, -a);
 	}
 
 	if (keyBoard->getKey((keyMap)'q') == true)
 	{
-		camera->moveHCamera(10);
+		int ans = halfCollition.calc();
+		cout << ans << endl;
+		camera->moveHCamera(a);
+		withCamera->translate(0, a, 0);
 	}
 	if (keyBoard->getKey((keyMap)'e') == true)
 	{
-		camera->moveHCamera(-10);
-	}
-
-	if (keyBoard->getKey((keyMap)'j') == true)
-	{
 		int ans = halfCollition.calc();
 		cout << ans << endl;
-		obFly->translate(-25, 0, 0);
-		obFly->rotate(0.02, glm::vec3(0, 1, 0));
-	}
-	if (keyBoard->getKey((keyMap)'l') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->translate(25, 0, 0);
-		obFly->rotate(-0.02, glm::vec3(0, 1, 0));
-	}
-	if (keyBoard->getKey((keyMap)'i') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->translate(0, 0, -70);
-	}
-	if (keyBoard->getKey((keyMap)'k') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->translate(0, 0, 70);
-	}
-	if (keyBoard->getKey((keyMap)'u') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->translate(0, 50, 0);
-	}
-	if (keyBoard->getKey((keyMap)'o') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->translate(0, -50, 0);
-	}
-	if (keyBoard->getKey((keyMap)'m') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->rotate(0.03, glm::vec3(1, 0, 0));
-	}
-	if (keyBoard->getKey((keyMap)'.') == true)
-	{
-		int ans = halfCollition.calc();
-		cout << ans << endl;
-		obFly->rotate(-0.03, glm::vec3(1, 0, 0));
+		camera->moveHCamera(-a);
+		withCamera->translate(0, -a, 0);
 	}
 
 }
 
+glm::vec3 getCenter(std::vector<glm::vec3> top) {
+	glm::vec3 center;
+	center[0] = 0;
+	center[1] = 0;
+	center[2] = 0;
+	for (int i = 0; i < 8; i++) {
+		center[0] += top[i][0];
+	}
+	center[0] /= 8;
+	for (int i = 0; i < 8; i++) {
+		center[1] += top[i][1];
+	}
+	center[1] /= 8;
+	for (int i = 0; i < 8; i++) {
+		center[2] += top[i][2];
+	}
+	center[2] /= 8;
+	return center;
+}
+
 static void smTimer(int id)
 {
-#ifdef __WAVE__
 	fuild->update();
-#endif // __WAVE__
+	model = obFly->getModel();
+	testCollision(fly, 0);
+	model = obPlane->getModel();
+	testCollision(flyPC, 0);
+	testCollision(flyPC, 1);
+	glm::vec3 flyC = getCenter(fly.topR);
+	glm::vec3 flyPCC = getCenter(flyPC.topR);
 
-	
-	cameramove();
+	if (gameprog.thebeginning) {
+		if (keyBoard->getKey((keyMap)'0') == true)
+		{
+			gameprog.takeoff = true;
+			gameprog.thebeginning = false;
+			isFirstView = true;
+		}
+	}
+	else if (gameprog.takeoff) {
+		isFirstView = true;
+		if (gameprog.globaltimer >= 0 && gameprog.globaltimer <= 25) {
+			obPlane->translate(-5, 0, 5);
+			obFly->translate(-5, 0, 5);
+		}
+		else if (gameprog.globaltimer <= 35 && gameprog.globaltimer > 25) {
+			obPlane->translate(-7, 4, 7);
+			obPlane->rotate(-0.01, glm::vec3(1, 0, 1));
+			obFly->translate(-7, 4, 7);
+			obFly->rotate(-0.01, glm::vec3(1, 0, 1));
+		}
+		else if (gameprog.globaltimer > 35 && gameprog.globaltimer <= 45) {
+			obPlane->translate(-7, 4, 7);
+			obPlane->rotate(0.01, glm::vec3(1, 0, 1));
+			obFly->translate(-7, 4, 7);
+			obFly->rotate(0.01, glm::vec3(1, 0, 1));
+		}
+		else if (gameprog.globaltimer > 45) {
+			gameprog.control = true;
+			gameprog.takeoff = false;
+		}
+		gameprog.globaltimer++;
+	}
+	else if (gameprog.control) {
+		obFly->translate(-planeSpeed, 0, planeSpeed);
+		if (keyBoard->getKey((keyMap)'j') == true)
+		{
+			obFly->rotate(0.05, glm::vec3(0, 1, 0));
+		}
+		if (keyBoard->getKey((keyMap)'l') == true)
+		{
+			obFly->rotate(-0.05, glm::vec3(0, 1, 0));
+		}
+		if (keyBoard->getKey((keyMap)'i') == true)
+		{
+			obFly->translate(-planeSpeed, 0, planeSpeed);
+		}
+		if (keyBoard->getKey((keyMap)'k') == true)
+		{
+			obFly->translate(planeSpeed, 0, -planeSpeed);
+		}
+		if (keyBoard->getKey((keyMap)'u') == true)
+		{
+			obFly->translate(0, planeSpeed, 0);
+		}
+		if (keyBoard->getKey((keyMap)'o') == true)
+		{
+			obFly->translate(0, -planeSpeed, 0);
+		}
+		if (keyBoard->getKey((keyMap)'m') == true)
+		{
+			obFly->rotate(0.03, glm::vec3(1, 0, 0));
+		}
+		if (keyBoard->getKey((keyMap)'.') == true)
+		{
+			obFly->rotate(-0.03, glm::vec3(1, 0, 0));
+		}
+		if (keyBoard->getKey((keyMap)'z') == true)
+		{
+			isFirstView = !isFirstView;
+		}
+		if (keyBoard->getKey((keyMap)' ') == true)
+		{
+			gameprog.launch = true;
+			gameprog.gameover = true;
+		}
+		if (!gameprog.launch) {
+			obPlane->translate(-planeSpeed, 0, planeSpeed);
+			if (keyBoard->getKey((keyMap)'j') == true)
+			{
+				obPlane->rotate(0.05, glm::vec3(0, 1, 0));
+			}
+			if (keyBoard->getKey((keyMap)'l') == true)
+			{
+				obPlane->rotate(-0.05, glm::vec3(0, 1, 0));
+			}
+			if (keyBoard->getKey((keyMap)'i') == true)
+			{
+				obPlane->translate(-planeSpeed, 0, planeSpeed);
+				//obFly->translate(-planeSpeed,0,planeSpeed);
+			}
+			if (keyBoard->getKey((keyMap)'k') == true)
+			{
+				obPlane->translate(planeSpeed, 0, -planeSpeed);
+			}
+			if (keyBoard->getKey((keyMap)'u') == true)
+			{
+				obPlane->translate(0, planeSpeed, 0);
+				//obFly->translate(0, planeSpeed, 0);
+			}
+			if (keyBoard->getKey((keyMap)'o') == true)
+			{
+				obPlane->translate(0, -planeSpeed, 0);
+				//obFly->translate(0, planeSpeed, 0);
+			}
+			if (keyBoard->getKey((keyMap)'m') == true)
+			{
+				obPlane->rotate(0.03, glm::vec3(1, 0, 0));
+				//obFly->rotate(0.03, glm::vec3(1, 0, 0));
+			}
+			if (keyBoard->getKey((keyMap)'.') == true)
+			{
+				obPlane->rotate(-0.03, glm::vec3(1, 0, 0));
+				//obFly->rotate(-0.03, glm::vec3(1, 0, 0));
+			}
+		}
+	}
+	if (gameprog.gameover)
+	{
+		if (gameprog.globaltimer <= 100 && gameprog.globaltimer > 45) {
+			obPlane->translate(-15, 4, 15);
+			obPlane->rotate(-0.01, glm::vec3(1, 0, 1));
+		}
+
+		//else if (gameprog.globaltimer >= 250 && gameprog.globaltimer <= 450)
+		//{
+		//	obPlane->translate(0, 0, -300);
+		//}
+		//else if (gameprog.globaltimer <= 500 && gameprog.globaltimer > 450) {
+		//	obPlane->translate(0, 100, -350);
+		//	obPlane->rotate(0.01, glm::vec3(-1, 0, 0));
+		//}
+		//else if (gameprog.globaltimer > 550)
+		//{
+		//	gameprog.gameover = false;
+		//}
+		gameprog.globaltimer++;
+	}
+	model = obFly->getModel();
+	testCollision(fly, 0);
+	model = obPlane->getModel();
+	testCollision(flyPC, 0);
+	testCollision(flyPC, 1);
+	dealEye();
+	cout << "x" << camera->eye[0] << " y" << camera->eye[1] << " zz" << camera->eye[2] << endl;
+	for (int i = 0; i < objV.size(); i++) {
+		if (fly.check_collision(objV[i]))
+			cout << "daodan pengzhuang:" << i << endl;
+		if (flyPC.check_collision(objV[i])
+			|| flyPC.check_collision(objV[i], 1)) {
+			cout << "feiji penghzuang" << i << endl;
+		}
+		if (cameraEye.check_collision(objV[i])) {
+			cout << "xiangji pengzhuang" << i << endl;
+		}
+	}
+	if (flyPC.check_collision(cameraEye)
+		|| flyPC.check_collision(cameraEye, 1)) {
+		cout << "xiangji pengzhuang feiji" << endl;
+		gameprog.takeoff = true;
+		gameprog.thebeginning = false;
+		isFirstView = true;
+	}
+	if (isFirstView) {
+		count++;
+		if (count == 1) {
+			camera->eye[0] = 40.14;//841.02;
+			camera->eye[1] = 26.23;//64.03;
+			camera->eye[2] = -40.44;//137.6;
+
+			eyeStart = camera->eye;
+			eyeEnd = eyeStart;
+			eyeEnd[2] += 100;
+			eyeEnd[0] -= 100;
+		}
+		double result[4] = { 0 };
+
+		model = obFly->getModel();
+		caculate(eyeStart, result);
+		camera->eye[0] = result[0];
+		camera->eye[1] = result[1];
+		camera->eye[2] = result[2];
+
+		caculate(eyeEnd, result);
+		camera->dir[0] = result[0] - camera->eye[0];
+		camera->dir[1] = result[1] - camera->eye[1];
+		camera->dir[2] = result[2] - camera->eye[2];
+	}
+	else {
+		cameramove();
+	}
 	glutTimerFunc(100, smTimer, id);
 	glutPostRedisplay();
 }
 
 static void smDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	render.render(myworld, *camera);
+	withCamera->show();
 	glutSwapBuffers();
 }
 static void smReshape(int w, int h) {
@@ -341,23 +464,24 @@ static void smReshape(int w, int h) {
 
 void dealBox() {
 	char boxFileName[50];
-	strcpy(boxFileName, "city//tem//6//test6.obj");
-	for (int i = 1; i <= 8; i++) {
+	strcpy(boxFileName, "city//building//test5.obj");
+	for (int i = 1; i <= 5; i++) {
 		object obj1;
-		boxFileName[11] = i + '0';
-		boxFileName[18] = i + '0';
+		boxFileName[20] = i + '0';
+		cout << boxFileName << endl;
+		//boxFileName[18] = i + '0';
 		obj1.load(boxFileName);
-		obj1.scale(0.05, 0.05, 0.05);
+		//		obj1.scale(20, 20, 20);
 		collosion temC;
 		temC.gen_obb_box(obj1.returnPos());
-		temC.div20();
+		//		temC.div20();
 		objV.push_back(temC);
 	}
 }
 
 void build() {
 	static scene tmp;
-#ifdef __SKY__
+	skyBox = new cubeBox();
 	vector<string>path;
 	path.push_back("source//skybox//skyFront.obj");
 	path.push_back("source//skybox//skyBack.obj");
@@ -367,22 +491,18 @@ void build() {
 	path.push_back("source//skybox//skyBottom.obj");
 	skyBox->init(path);
 	tmp.push_back(skyBox);
-#endif // __SKY__
 
-#ifdef __CITY__
 	texture* city = new texture();
 
 	city->load("city//newshanghai//newshanghai.obj");
 	//city->load("city//lzj//shanghai.obj");
 	boundBox*cityBox1 = new boundBox();
 	boundBox*cityBox2 = new boundBox();
-	cityBox1->load("city//城市包围盒//城市包围盒//city_box1.obj");
-	cityBox2->load("city//城市包围盒//城市包围盒//CAD_BOX2.obj");
+	cityBox1->load("city//cityaround//cityaround//city_box1.obj");
+	cityBox2->load("city//cityaround//cityaround//CAD_BOX2.obj");
 	for (auto &i : cityBox1->group)
 	{
 		bool ok = false;
-		cout << i.material.name << endl;
-		cout << i.material.name.find("house") << endl;
 		vector<glm::vec3>input;
 		for (int j = 0; j < i.pos.size(); j += 3)
 		{
@@ -394,8 +514,6 @@ void build() {
 	for (auto &i : cityBox2->group)
 	{
 		bool ok = false;
-		cout << i.material.name << endl;
-		cout << i.material.name.find("house") << endl;
 		vector<glm::vec3>input;
 		for (int j = 0; j < i.pos.size(); j += 3)
 		{
@@ -404,38 +522,67 @@ void build() {
 		}
 		halfCollition.addConvexHull(input);
 	}
+
+	withCamera = new rectangle();
+	withCamera->fill("source//water.bmp");
+
+
+
+
+
+
 	tmp.push_back(city);
 	obFly = new texture();
-	obFly->load("fly//flyD.obj");
-	obFly->rotate(-2.36, glm::vec3(0, 1, 0));
-	//obFly->translate(550, 0, 2000);
-	obFly->scale(0.05, 0.05, 0.05);
-
+	obFly->load("city//newmissile.obj");
+	obFly->direct_scale(1);
+	system("Pause");
+	obFly->translate(800, 21, 171);
+	
+	//obFly->scale(0.05, 0.05, 0.05);
+	//halfCollition.addtestObject(0, testPosition, &(withCamera->model));
 
 	obMissile = new object();
-	obMissile->load("fly//flyD.obj");
-	obMissile->rotate(-2.36, glm::vec3(0, 1, 0));
-	obMissile->translate(550, 0, 2000);
+	obMissile->load("city//newmissile.obj");
+	obMissile->direct_scale(1);
+	obMissile->translate(800, 21, 171);
 	fly.setPos(obMissile->returnPos());
 	obb_box flyBox = fly.gen_obb_box(obMissile->returnPos());
 	vector<glm::vec3>pos = flyBox.getPosition();
-	cout << "DaoDan" << endl;
-	for (int i = 0; i < 8; i++)
-	{
-		cout << pos[i].x << " " << pos[i].y << " " << pos[i].z << endl;
-	}
-	halfCollition.addtestObject(0, pos, &(obFly->model));
-
 	tmp.push_back(obFly);
+
+	//d=fire with dao dan
+	fire* fire_d = new fire(1000, (obFly->model), 1,0.1);
+	daoDanModel = &(obFly->model);
+	fire_d->flyVec = flyVec;
+	fire_d->useFade(initialColor, fadeColor);
+	fire_d->initFire("source//file.jpg", &fireX, &fireY, &fireZ);
+	tmp.push_back(fire_d);
+
+	
+
+
 	fly.initTop();
 	obPlane = new texture();
-	obPlane->load("fly//flyP.obj");
-	obPlane->rotate(-2.36, glm::vec3(0, 1, 0));
-	obPlane->translate(550, 0, 2000);
+	obPlane->load("city//newplane.obj");
+	obPlane->direct_scale(1);
+	//obPlane->rotate(-2.36, glm::vec3(0, 1, 0));
+	obPlane->translate(800, 24, 171);
 
 	flyPC.initTopP();
-	obPlane->scale(0.05, 0.05, 0.05);
+	//obPlane->scale(0.05, 0.05, 0.05);
 	tmp.push_back(obPlane);
+
+	fire* fire_p_l = new fire(10000, (obPlane->model), 1.5, 0.1);
+	fire_p_l->flyVec = glm::vec4(-19.718799999999987,- 0.1495999999999995,18.768,1);
+	fire_p_l->useFade(initialColor, fadeColor);
+	fire_p_l->initFire("source//file.jpg", &fire_l.x, &fire_l.y, &fire_l.z);
+	tmp.push_back(fire_p_l);
+
+	fire* fire_p_r = new fire(10000, (obPlane->model), 1.5, 0.1);
+	fire_p_r->flyVec = glm::vec4(-19.718799999999987, -0.1495999999999995, 18.768, 1);
+	fire_p_r->useFade(initialColor, fadeColor);
+	fire_p_r->initFire("source//file.jpg", &fire_r.x, &fire_r.y, &fire_r.z);
+	tmp.push_back(fire_p_r);
 
 	dealBox();
 
@@ -446,53 +593,12 @@ void build() {
 	gameprog.control = false;
 	gameprog.gameover = false;
 	gameprog.launch = false;
-#endif // __CITY__
 
 
-	
-
-
-	withCamera = new rectangle();
-	withCamera->fill("source//water.bmp");
-	//withCamera->scale(100,100,100);
-	
-
-
-
-
-#ifndef __CITY__
-	obFly = new texture();
-	obFly->load("fly//flyD.obj");
-	obFly->rotate(-2.36, glm::vec3(0, 1, 0));
-	//obFly->translate(550, 0, 2000);
-	obFly->scale(0.05, 0.05, 0.05);
-#endif // !__CITY__
-
-	
-	daoDanModel = &(obFly->model);
-	fire*fire_d = new fire(10000,(obFly->getModel()));
-	//fire_d->initRandom();
-	fire_d->flyVec = flyVec;
-	fire_d->useFade(initialColor, fadeColor);
-	fire_d->initFire("source//file.jpg",&fireX,&fireY,&fireZ);
-	
-	
-	tmp.push_back(fire_d);
-
-	/*testCloud.initParticle = initParticle;
-
-	testCloud.maxSize = 2000;
-	testCloud.init();
-	tmp.push_back(&testCloud);*/
-
-#ifdef __WAVE__
 	fuild = new Fluid(100, 100, 200, 1, 40, 0, "source//water.bmp");
 	tmp.push_back(fuild);
-	fuild->translate(-3000, -60, 3000);
+	fuild->translate(-3000, -70, 3000);
 	fuild->rotate(PI / 2, glm::vec3(-1, 0, 0));
-#endif // __WAVE__
-
-	
 
 	// sky
 	tmp.push_back((new texture())->load("source//skyFront.obj"));
@@ -511,7 +617,7 @@ static void smDrag(int x, int y) {
 	float getx;
 	float gety;
 	if (abs(-mouse->pre.x + float(x))<100 && abs(-mouse->pre.y + float(y))<100)
-		camera->rotateCamera((-mouse->pre.x + float(x)) / 40, (-mouse->pre.y + float(y)) / 40);
+		camera->rotateCamera((-mouse->pre.x + float(x)) / 400, (-mouse->pre.y + float(y)) / 400);
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
 }

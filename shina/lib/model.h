@@ -16,10 +16,13 @@ class texture;
 class object;
 class scene;
 
+//s2 is dest, s1 is src
+void copy_imag(const char* s1, const char* s2);
 
 class Bitmap
 {
 public:
+	string path;
 	int sizeX, sizeY;
 	unsigned char *data;
 };
@@ -146,7 +149,7 @@ public:
 	}
 
 
-	object& unitize(GLfloat scale)
+	void direct_scale(GLfloat scale)
 	{
 		GLuint  i;
 		GLfloat maxx, minx, maxy, miny, maxz, minz;
@@ -173,10 +176,6 @@ public:
 			if (minz > pos[i + 2])
 				minz = pos[i + 2];
 		}
-		cout << "******* unitize()  ********" << endl;
-		cout << "x: " << maxx << " " << minx << endl;
-		cout << "y: " << maxy << " " << miny << endl;
-		cout << "z: " << maxz << " " << minz << endl;
 
 		/* calculate model width, height, and depth */
 		w = maxx - minx;
@@ -203,9 +202,10 @@ public:
 			else
 				max = d;
 		}
-		/* calculate unitizing scale factor */
-		//scale = 0.98;
-
+		cout << "translate:" << endl;
+		cout << "x: " << cx << endl;
+		cout << "y: " << cy << endl;
+		cout << "z: " << cz << endl;
 		/* translate around center then scale */
 		for (i = 0; i < pos.size(); i += 3) {
 			//transform
@@ -217,8 +217,6 @@ public:
 			pos[i + 1] *= scale;
 			pos[i + 2] *= scale;
 		}
-
-		return *this;
 	}
 
 	object* load(const char *filename)
@@ -652,6 +650,7 @@ public:
 class texture {
 public:
 	using vec3 = glm::vec3;
+	bool hide = false;
 	//增加了一个材质类，有材质信息和图片信恿
 	class Material {
 	public:
@@ -692,6 +691,7 @@ public:
 		//这个函数从texture类放到material类里靿
 		bool pic(const char *fileName)
 		{
+			src.path = fileName;
 			// load picture to bitmap
 			CImage *img = new CImage;
 			if (!fileName)
@@ -727,6 +727,54 @@ public:
 		vector<float> normal;
 		Material material;
 		bool colorFilled = false;
+		void write(const char* name)
+		{
+			char* obj_name = new char[strlen(name) + 5];
+			char* mtl_name = new char[strlen(name) + 5];
+
+			strcpy(obj_name, name);
+			strcpy(mtl_name, name);
+
+			strcat(obj_name, ".obj");
+			strcat(mtl_name, ".mtl");
+
+			std::ofstream obj(obj_name);
+			std::ofstream mtl(mtl_name);
+			//obj
+			obj << "mtllib " << mtl_name << endl;
+			for (int i = 0; i < pos.size() / 3; i++)
+			{
+				obj << "v " << pos[3 * i] << " " << pos[3 * i + 1] << " " << pos[3 * i + 2] << endl;
+				obj << "vt " << coord[2 * i] << " " << coord[2 * i + 1] << endl;
+				obj << "vn " << normal[3 * i] << " " << normal[3 * i + 1] << " " << normal[3 * i + 2] << endl;
+			}
+			obj << "usemtl Default" << endl;
+			for (int i = 1; i < pos.size() / 3 + 1; i += 3)
+			{
+				obj << "f " << i << "/" << i << "/" << i << " " << i + 1 << "/" << i + 1 << "/" << i + 1 << " " << i + 2 << "/" << i + 2 << "/" << i + 2 << endl;
+			}
+
+			obj.flush();
+			//mtl
+			mtl << "newmtl Default" << endl;
+			mtl << "Ka " << material.ka.r << " " << material.ka.g << " " << material.ka.b << endl;
+			mtl << "Kd " << material.kd.r << " " << material.kd.g << " " << material.kd.b << endl;
+			mtl << "Ks " << material.ks.r << " " << material.ks.g << " " << material.ks.b << endl;
+			if (material.is_src)
+			{
+				int index = material.src.path.find_last_of(".");
+				string type = material.src.path.substr(index);
+				string image_name = name + type;
+				cout << image_name << endl;
+
+				copy_imag(material.src.path.c_str(), image_name.c_str());
+				mtl << "map_Kd " << image_name << endl;
+			}
+			mtl.flush();
+			mtl.close();
+			obj.close();
+			cout << "write " << name << " finished!\n";
+		}
 		void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
 			pos.push_back(pos1);
 			pos.push_back(pos2);
@@ -798,6 +846,20 @@ public:
 	texture* load(const char *filename);
 	void shadow();
 	void show(int lights);
+	void direct_scale(float scale);
+	void direct_translate(float x, float y, float z);
+	void write(const char* name)
+	{
+		for (int i = 0; i < group.size(); i++)
+		{
+			string tmp = name;
+			tmp += "_";
+			std::stringstream newstr;
+			newstr << i;
+			tmp += newstr.str();
+			group[i].write(tmp.c_str());
+		}
+	}
 	void print()
 	{
 		for (size_t i = 0; i < group.size(); i++)
@@ -851,7 +913,7 @@ struct particle {
 	glm::vec3 fadeColor;
 
 	bool fade = false;
-
+	int draw_time;
 	int which;
 	float fullLife;
 	float x, y, z, vx, vy, vz, ax, ay, az, sizei, lifetime, deci;
@@ -859,7 +921,7 @@ struct particle {
 	bool isDead;
 	float xScale, yScale, zScale, xFactor, yFactor, zFactor;
 
-	particle() :x(0), y(0), z(0), vx(0), vy(0), vz(0), ax(0), ay(0), az(0), sizei(0), lifetime(0), deci(0), rx(0), ry(0), rz(0), wx(0), wy(0), wz(0), bx(0), by(0), bz(0), isDead(false), which(-1), tex(nullptr), xScale(1), yScale(1), zScale(1), xFactor(1), yFactor(1), zFactor(1)
+	particle() :x(0), y(0), z(0), vx(0), vy(0), vz(0), ax(0), ay(0), az(0), sizei(0), lifetime(0), deci(0), rx(0), ry(0), rz(0), wx(0), wy(0), wz(0), bx(0), by(0), bz(0), isDead(false), which(-1), tex(nullptr), xScale(1), yScale(1), zScale(1), xFactor(1), yFactor(1), zFactor(1), draw_time(0)
 	{
 		initialColor = glm::vec3(1.f, 1.f, 1.f);
 		fadeColor = glm::vec3(1.f, 1.f, 1.f);
@@ -970,7 +1032,7 @@ struct particle {
 
 
 		lifetime -= deci;
-		if (lifetime <= 0)
+		if (lifetime < 0)
 		{
 			isDead = true;
 		}
@@ -1000,8 +1062,6 @@ struct particle {
 
 	inline void show(int lights)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		if (!isDead)
 		{
 			switch (which)
@@ -1014,7 +1074,6 @@ struct particle {
 				tex->rotate(rx, glm::vec3(1, 0, 0));
 				tex->rotate(ry, glm::vec3(0, 1, 0));
 				tex->rotate(rz, glm::vec3(0, 0, 1));
-
 				tex->scale(xScale, yScale, zScale);
 				tex->show(lights);
 				break;
@@ -1022,6 +1081,8 @@ struct particle {
 			case IS_RECTANGLE:
 			{
 				assert(rec != nullptr);
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 				rec->loadIdentity();
 				rec->translate(x, y, z);
 				rec->rotate(rx, glm::vec3(1, 0, 0));
@@ -1031,6 +1092,8 @@ struct particle {
 				rec->scale(xScale, yScale, zScale);
 
 				rec->show();
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glDisable(GL_BLEND);
 				break;
 			}
 			default:
@@ -1041,8 +1104,8 @@ struct particle {
 			}
 
 		}
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable(GL_BLEND);
+
+
 	}
 
 };
@@ -1061,6 +1124,7 @@ public:
 	bool(*isDead)(particle*) = nullptr;
 
 	std::vector<particle*> particleCollection;
+
 	cloud()
 	{
 
@@ -1081,7 +1145,8 @@ public:
 		{
 
 			i->update();
-			if (i->isDead && time > 0)
+			//cout << i->lifetime<<endl;
+			if (i->isDead && time > 0 && initParticle != NULL)
 			{
 				initParticle(i, imag);
 			}
@@ -1095,6 +1160,39 @@ public:
 			}
 
 			i->show(lights);
+		}
+	}
+
+	void tex2cloud(texture *tex)
+	{
+		int j = 0;
+		for (int i = 0; i < tex->group.size(); i++, j++)
+		{
+			if (tex->group[i].material.name == "_0131_Silver_1")
+			{
+				j--;
+				continue;
+			}
+
+			particleCollection.push_back(new particle());
+			particleCollection[j]->which = IS_TEXTURE;
+			particleCollection[j]->tex = new texture();
+			particleCollection[j]->tex->group.push_back(tex->group[i]);
+			particleCollection[j]->isDead = false;
+			particleCollection[j]->lifetime = 30;
+			particleCollection[j]->deci = 1;
+			particleCollection[j]->tex->hide = true;
+		}
+		maxSize = j;
+		cout << "texture to cloud finished!\n";
+	}
+
+	void hit_happen()
+	{
+		for (int i = 0; i < maxSize; i++)
+		{
+			particleCollection[i]->isDead = true;
+			particleCollection[i]->tex->hide = false;
 		}
 	}
 
@@ -1172,6 +1270,7 @@ public:
 	fluidPtrVector fluidCollection;
 	vector<fire*>fireCollection;
 
+
 	scene() :active(true)
 	{
 
@@ -1208,7 +1307,7 @@ public:
 		return this;
 	}
 	void shadow();
-	void show(smLight* light,int lights);
+	void show(smLight* light, int lights);
 
 };
 
@@ -1248,7 +1347,7 @@ public:
 class boundBox {
 	using vec3 = glm::vec3;
 public:
-	
+
 	class Material {
 	public:
 		std::string name;//材质名字
@@ -1300,7 +1399,7 @@ public:
 	}
 
 
-	
+
 
 	boundBox* load(const char *filename);
 	void print()
@@ -1315,7 +1414,7 @@ public:
 		}
 	}
 
-	boundBox(){}
+	boundBox() {}
 };
 
 class textureGroup {

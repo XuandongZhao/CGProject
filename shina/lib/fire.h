@@ -46,12 +46,12 @@ class fire {
 	{
 		//cout << "iiii" << endl;
 		int random = rand() % (5000);
-		glm::vec4 firePosition = (*daoDanModel)*glm::vec4(*fireX + randNumber[random] * 200 - 100, *fireY + randNumber[(random * 2) % 10000] * 200 - 100, *fireZ, 1.f);
-		glm::vec4 fireVec = (*daoDanModel)*flyVec;
-		glm::vec4 yuan = (*daoDanModel)*glm::vec4(0, 0, 0, 1);
+		glm::vec4 firePosition = (*model)*glm::vec4(*fireX + randNumber[random] * radius - radius/2, *fireY + randNumber[(random * 2) % 10000] * radius - radius/2, *fireZ, 1.f);
+		glm::vec4 fireVec = (*model)*flyVec;
+		glm::vec4 yuan = (*model)*glm::vec4(0, 0, 0, 1);
 		fireVec = yuan - fireVec;
 		fireVec /= sqrt(fireVec.x*fireVec.x + fireVec.y*fireVec.y + fireVec.z*fireVec.z);
-		fireVec *= (randNumber[(random * 4) % 10000] * 20);
+		fireVec *= (randNumber[(random * 4) % 10000] * 1);
 
 		pos[index * 7] =  firePosition.x;
 		pos[index * 7 + 1] =  firePosition.y;
@@ -61,8 +61,8 @@ class fire {
 		pos[index * 7 + 5] =  initialColor.b;
 		pos[index * 7 + 6] = 1;
 
-		particles[index].lifeTime =  particles[index].fullLife = randNumber[(random * 8) % 10000] * 3;
-		particles[index].decrease = 0.1;
+		particles[index].lifeTime =  particles[index].fullLife = randNumber[(random * 8) % 10000] * length;
+		particles[index].decrease = 0.01;
 		particles[index].vx = fireVec.x;
 		particles[index].vy = fireVec.y;
 		particles[index].vz = fireVec.z;
@@ -92,11 +92,17 @@ public:
 	glm::vec4 flyVec;
 	glm::vec3 initialColor;
 	glm::vec3 fadeColor;
+	GLfloat radius;
+	GLfloat length;
+	glm::mat4 *model;
 
-	fire(int cnt,glm::mat4 &model)
+	fire(int cnt,glm::mat4 &model,GLfloat radius,GLfloat length)
 	{
 		assert(cnt > 0 && cnt < MAX_CNT);
 		this->cnt = cnt;
+		this->radius = radius;
+		this->length = length;
+		this->model = &model;
 		pos = new GLfloat[7 * (cnt)];
 		particles = new rec[cnt];
 	}

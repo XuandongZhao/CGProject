@@ -68,7 +68,7 @@ bool _hPCompLines(const line & x, const line& y)
 {
 	return x.k < y.k || x.k == y.k && crs(x.v, y.p - x.p)<0;
 }
-bool halfPlaneCross::calc()
+int halfPlaneCross::calc()
 {
 	vector<Point>input;
 	vector<Point>output;
@@ -161,12 +161,12 @@ bool halfPlaneCross::calc()
 			cout << "area" << ans << endl;
 			if (ans > 0)
 			{
-				return true;
+				return i+1;
 			}
 		}
 		
 	}
 
-	return false;
+	return 0;
 	
 }

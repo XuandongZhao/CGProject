@@ -38,6 +38,8 @@ void texture::shadow() {
 
 void texture::show(int lights) {
 
+	if (hide)
+		return;
 	for (Group &graph : group)
 	{
 		if (graph.pos.size() == 0)	continue;
@@ -118,6 +120,100 @@ void texture::show(int lights) {
 
 
 }
+
+void texture::direct_scale(float scale)
+{
+	int  i, j;
+	float maxx, minx, maxy, miny, maxz, minz;
+	float cx, cy, cz, w, h, d;
+	/* get the max/mins */
+	maxx = minx = this->group[0].pos[0];
+	maxy = miny = this->group[0].pos[1];
+	maxz = minz = this->group[0].pos[2];
+	//cout << this->group.size() << endl;
+	for (i = 0; i < this->group.size(); i++)
+	{
+		//cout <<i<<": "<<this->group[i].pos.size();
+		for (j = 0; j < this->group[i].pos.size(); j += 3)
+		{
+			if (maxx <  this->group[i].pos[j + 0])
+				maxx = this->group[i].pos[j + 0];
+			if (minx >  this->group[i].pos[j + 0])
+				minx = this->group[i].pos[j + 0];
+
+			if (maxy <  this->group[i].pos[j + 1])
+				maxy = this->group[i].pos[j + 1];
+			if (miny >  this->group[i].pos[j + 1])
+				miny = this->group[i].pos[j + 1];
+
+			if (maxz <  this->group[i].pos[j + 2])
+				maxz = this->group[i].pos[j + 2];
+			if (minz >  this->group[i].pos[j + 2])
+				minz = this->group[i].pos[j + 2];
+		}
+	}
+	/* calculate model width, height, and depth */
+	w = maxx - minx;
+	h = maxy - miny;
+	d = maxz - minz;
+
+	/* calculate center of the model */
+	cx = (maxx + minx) / 2.0;
+	cy = (maxy + miny) / 2.0;
+	cz = (maxz + minz) / 2.0;
+
+	GLfloat max;
+	if (w > h)
+	{
+		if (w > d)
+			max = w;
+		else
+			max = d;
+	}
+	else
+	{
+		if (h > d)
+			max = h;
+		else
+			max = d;
+	}
+	cout << "translate:" << endl;
+	cout << "x: " << cx << endl;
+	cout << "y: " << cy << endl;
+	cout << "z: " << cz << endl;
+	/* translate around center then scale */
+	for (i = 0; i < this->group.size(); i++)
+	{
+		for (j = 0; j < this->group[i].pos.size(); j += 3)
+		{
+			//transform
+			this->group[i].pos[j + 0] -= cx;
+			this->group[i].pos[j + 1] -= cy;
+			this->group[i].pos[j + 2] -= cz;
+			//scale
+			this->group[i].pos[j + 0] *= scale;
+			this->group[i].pos[j + 1] *= scale;
+			this->group[i].pos[j + 2] *= scale;
+		}
+	}
+
+}
+void texture::direct_translate(float x, float y, float z)
+{
+	int  i, j;
+	for (i = 0; i < this->group.size(); i++)
+	{
+		for (j = 0; j < this->group[i].pos.size(); j += 3)
+		{
+			//transform
+			this->group[i].pos[j + 0] += x;
+			this->group[i].pos[j + 1] += y;
+			this->group[i].pos[j + 2] += z;
+		}
+	}
+
+}
+
 texture* texture::load(const char*filename)
 {
 	FILE* file = fopen(filename, "r");
@@ -296,7 +392,7 @@ texture* texture::load(const char*filename)
 				glm::vec3 norm(edge2.y *edge1.z - edge1.y*edge2.z,
 					edge2.z*edge1.x - edge1.z*edge2.x,
 					edge2.x*edge1.y - edge1.x*edge2.y);
-				
+
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
 				this->group[active].pushNormal(norm.x, norm.y, norm.z);
@@ -402,8 +498,8 @@ texture* texture::load(const char*filename)
 		{
 			std::ifstream min;
 			string path = string(filename);
-			unsigned int tmp = path.find_last_of('/');
-			for (unsigned int i = path.length() - 1; i > tmp; i--)
+			int tmp = path.find_last_of('/');
+			for (int i = path.length() - 1; i > tmp; i--)
 				path.pop_back();
 			fscanf(file, "%s", buf);
 			string s(buf);
@@ -439,7 +535,6 @@ texture* texture::load(const char*filename)
 				}
 				else if (s == "map_Kd") {
 					min >> s;
-					//cout << s << endl;
 					bool success;
 					abs_path = relative_path + s;
 					success = group[group.size() - 1].material.pic(abs_path.c_str());
@@ -479,6 +574,7 @@ texture* texture::load(const char*filename)
 	//print();
 	return this;
 }
+
 
 
 
@@ -551,7 +647,7 @@ void scene::shadow()
 
 }
 
-void scene::show(smLight * light,int lights)
+void scene::show(smLight * light, int lights)
 {
 	if (skyBox)
 	{
@@ -577,6 +673,7 @@ void scene::show(smLight * light,int lights)
 	{
 		t->show();
 	}
+
 }
 
 void cubeBox::show(int lights)
@@ -1454,3 +1551,34 @@ textureGroup* textureGroup::load(const char*filename)
 }
 
 
+void copy_imag(const char* s1, const char* s2)
+{
+	FILE * file1, *file2;
+	//使用二进制模式打开文件   
+	file1 = fopen(s1, "rb"); // rb 表示读   
+	file2 = fopen(s2, "wb"); // wb 表示写   
+	if (!file1)
+	{
+		printf("文件%s打开失败！", s1);
+		return;
+	}
+	char c;
+	int index = 0;
+	fseek(file1, 0, SEEK_END);        //将源文件定位到文件尾   
+	int length = ftell(file1);      //获取当前位置，即文件大小（按字节算）   
+									//printf("%d\n",length);        //此处可输出字节数，以进行验证   
+	if (!length)
+		return;
+	while (!fseek(file1, index, SEEK_SET)) //循环定位文件，向后移动一个字节   
+	{
+		fread(&c, 1, 1, file1);            //从源文件读取一个字节的内容到 中间变量 c   
+		fwrite(&c, 1, 1, file2);           //将这个字节的内容写入目标文件   
+		if (index == length - 1)         //如果已经读到文件尾，则跳出循环   
+		{
+			break;
+		}
+		index++;                        //往后推进一个字节   
+	}
+	fclose(file1);                      //关闭源文件   
+	fclose(file2);                      //关闭目标文件   
+}

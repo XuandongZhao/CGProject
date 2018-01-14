@@ -174,7 +174,7 @@ bool collosion::check_collision(collosion obj2, int type) {
 	else a = this->a2;
 	glm::vec3 T = a.center - b.center;
 	glm::vec3 axis[15];
-	//?¨´???¨¢
+	//?§Ú©È???§Ú§Ó
 	axis[0] = a.x_axis;
 	axis[1] = a.y_axis;
 	axis[2] = a.z_axis;

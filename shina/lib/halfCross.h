@@ -63,7 +63,7 @@ public:
 		testObjects[id].modelPtr = model;
 		testObjects[id].valid = true;
 	}
-	bool calc();
+	int calc();
 };
 
 
