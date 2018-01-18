@@ -29,7 +29,7 @@ class fire {
 	}
 
 
-	enum{MAX_CNT=100000};
+	enum { MAX_CNT = 100000 };
 	struct rec {
 		GLfloat vx, vy, vz;
 		GLfloat fullLife;
@@ -46,22 +46,22 @@ class fire {
 	{
 		//cout << "iiii" << endl;
 		int random = rand() % (5000);
-		glm::vec4 firePosition = (*model)*glm::vec4(*fireX + randNumber[random] * radius - radius/2, *fireY + randNumber[(random * 2) % 10000] * radius - radius/2, *fireZ, 1.f);
+		glm::vec4 firePosition = (*model)*glm::vec4(*fireX + randNumber[random] * radius - radius / 2, *fireY + randNumber[(random * 2) % 10000] * radius - radius / 2, *fireZ, 1.f);
 		glm::vec4 fireVec = (*model)*flyVec;
 		glm::vec4 yuan = (*model)*glm::vec4(0, 0, 0, 1);
 		fireVec = yuan - fireVec;
 		fireVec /= sqrt(fireVec.x*fireVec.x + fireVec.y*fireVec.y + fireVec.z*fireVec.z);
 		fireVec *= (randNumber[(random * 4) % 10000] * 1);
 
-		pos[index * 7] =  firePosition.x;
-		pos[index * 7 + 1] =  firePosition.y;
-		pos[index * 7 + 2] =  firePosition.z;
-		pos[index * 7 + 3] =  initialColor.r;
-		pos[index * 7 + 4] =  initialColor.g;
-		pos[index * 7 + 5] =  initialColor.b;
+		pos[index * 7] = firePosition.x;
+		pos[index * 7 + 1] = firePosition.y;
+		pos[index * 7 + 2] = firePosition.z;
+		pos[index * 7 + 3] = initialColor.r;
+		pos[index * 7 + 4] = initialColor.g;
+		pos[index * 7 + 5] = initialColor.b;
 		pos[index * 7 + 6] = 1;
 
-		particles[index].lifeTime =  particles[index].fullLife = randNumber[(random * 8) % 10000] * length;
+		particles[index].lifeTime = particles[index].fullLife = randNumber[(random * 8) % 10000] * length;
 		particles[index].decrease = 0.01;
 		particles[index].vx = fireVec.x;
 		particles[index].vy = fireVec.y;
@@ -80,13 +80,13 @@ class fire {
 			pos[i * 7 + 5] = interpolate<float>(particles[i].lifeTime / particles[i].fullLife, initialColor.b, fadeColor.b);
 			pos[i * 7 + 6] -= particles[i].decrease;
 			particles[i].lifeTime -= particles[i].decrease;
-			if (particles[i].lifeTime < 0||pos[i*7+6]<=0)
+			if (particles[i].lifeTime < 0 || pos[i * 7 + 6] <= 0)
 			{
 				initFireParticle(i);
 			}
 		}
 	}
-	
+
 
 public:
 	glm::vec4 flyVec;
@@ -95,8 +95,9 @@ public:
 	GLfloat radius;
 	GLfloat length;
 	glm::mat4 *model;
+	bool hide = false;
 
-	fire(int cnt,glm::mat4 &model,GLfloat radius,GLfloat length)
+	fire(int cnt, glm::mat4 &model, GLfloat radius, GLfloat length)
 	{
 		assert(cnt > 0 && cnt < MAX_CNT);
 		this->cnt = cnt;
@@ -111,9 +112,9 @@ public:
 		this->initialColor = initialColor;
 		this->fadeColor = fadeColor;
 	}
-	void initFire(string fireJPG,const float*fireX,const float *fireY,const float *fireZ)
+	void initFire(string fireJPG, const float*fireX, const float *fireY, const float *fireZ)
 	{
-		this->fireX =(GLfloat*) fireX;
+		this->fireX = (GLfloat*)fireX;
 		this->fireY = (GLfloat*)fireY;
 		this->fireZ = (GLfloat*)fireZ;
 		for (int i = 0; i < cnt; i++)
@@ -126,14 +127,14 @@ public:
 		glGenTextures(1, &texName);
 	}
 	void show();
-	
+
 	/*void initRandom()
 	{
-		srand((unsigned int)time(NULL));
-		for (int i = 0; i < MAX_CNT; i++)
-		{
-			randNumber[i] = rand() / (double(RAND_MAX));
-		}
+	srand((unsigned int)time(NULL));
+	for (int i = 0; i < MAX_CNT; i++)
+	{
+	randNumber[i] = rand() / (double(RAND_MAX));
+	}
 	}*/
 
 };

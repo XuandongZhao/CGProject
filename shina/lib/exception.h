@@ -8,7 +8,7 @@ class basicExcept {
 private:
 	std::string exceptWord;
 public:
-	basicExcept(){}
+	basicExcept() {}
 	basicExcept(std::string exceptWord)
 	{
 		this->exceptWord = exceptWord;
@@ -20,7 +20,7 @@ public:
 	}
 };
 class SLIOException :public basicExcept {
-public :
+public:
 	SLIOException(std::string exceptWord)
 	{
 		basicExcept(exception);

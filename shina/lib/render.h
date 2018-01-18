@@ -10,10 +10,7 @@ private:
 	bool useShadow;
 
 public :
-	smRender(bool shadow = true) :useShadow(shadow)
-	{
-
-	}
+	smRender(bool shadow = true) :useShadow(shadow) {}
 	void render(world & myworld, smCamera & camera);
 
 };

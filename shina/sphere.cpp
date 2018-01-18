@@ -5,10 +5,10 @@
 
 extern smShader * paticleShader;
 
-Sphere::Sphere(GLfloat _radius = 1.f, GLfloat _step = 2.f,glm::vec4& _color=glm::vec4(1.0f,0.f,0.f,1.0f)) :
-	radius(_radius),step(_step),color(_color)
+Sphere::Sphere(GLfloat _radius = 1.f, GLfloat _step = 2.f, glm::vec4& _color = glm::vec4(1.0f, 0.f, 0.f, 1.0f)) :
+	radius(_radius), step(_step), color(_color)
 {
-	
+
 }
 
 void Sphere::init()
@@ -34,11 +34,6 @@ void Sphere::init()
 
 	}
 
-
-
-
-
-	
 }
 
 void Sphere::show()
@@ -46,7 +41,7 @@ void Sphere::show()
 	//cout << "1" <<pos.size()/3<< endl;
 	//cout << "&&&" << vao << " " << vbo << endl;
 	paticleShader->use();
-	
+
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(vao);
 
@@ -60,6 +55,5 @@ void Sphere::show()
 	paticleShader->setMat4("u_modelMatrix", model);
 
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, pos.size()/3);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, pos.size() / 3);
 }
-

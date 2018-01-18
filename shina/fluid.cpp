@@ -70,13 +70,13 @@ Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* na
 			indices[1][a] = t + 1;
 			indices[2][a] = t + n;
 
-			texcoords[0][0][a] = i*w;
-			texcoords[0][1][a] = j*h;
+			texcoords[0][0][a] = i * w;
+			texcoords[0][1][a] = j * h;
 
 			texcoords[1][0][a] = (i + 1)*w;
-			texcoords[1][1][a] = j*h;
+			texcoords[1][1][a] = j * h;
 
-			texcoords[2][0][a] = i*w;
+			texcoords[2][0][a] = i * w;
 			texcoords[2][1][a] = (j + 1)*h;
 
 			a++;
@@ -90,13 +90,13 @@ Fluid::Fluid(long n, long m, float d, float t, float c, float mu, const char* na
 			indices[1][a] = t - 1;
 			indices[2][a] = t - n;
 
-			texcoords[0][0][a] = i*w;
-			texcoords[0][1][a] = j*h;
+			texcoords[0][0][a] = i * w;
+			texcoords[0][1][a] = j * h;
 
 			texcoords[1][0][a] = (i - 1)*w;
-			texcoords[1][1][a] = j*h;
+			texcoords[1][1][a] = j * h;
 
-			texcoords[2][0][a] = i*w;
+			texcoords[2][0][a] = i * w;
 			texcoords[2][1][a] = (j - 1)*h;
 
 			a++;
@@ -167,7 +167,7 @@ void Fluid::getData()
 		normal[i * 9] = normals[indices[0][i]].x;
 		normal[i * 9 + 1] = normals[indices[0][i]].y;
 		normal[i * 9 + 2] = normals[indices[0][i]].z;
-		
+
 		coord[i * 6] = texcoords[0][0][i];
 		coord[i * 6 + 1] = texcoords[0][1][i];
 

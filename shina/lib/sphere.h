@@ -10,10 +10,10 @@ public:
 	bool useTexture = false;
 
 
-	Sphere(GLfloat radius, GLfloat _step,glm::vec4& color);
+	Sphere(GLfloat radius, GLfloat _step, glm::vec4& color);
 	~Sphere()
 	{
-		
+
 	}
 
 	void init();
@@ -48,7 +48,7 @@ public:
 	{
 		this->model = glm::rotate(this->model, angel, axis);
 	}
-	
+
 
 private:
 	GLuint vao, vbo;
@@ -58,7 +58,7 @@ private:
 	glm::vec4 color;
 
 	glm::mat4 model;
-	
+
 	GLfloat *getPos() {
 		return toArray<GLfloat>(&pos);
 	}
@@ -67,7 +67,7 @@ private:
 		pos.push_back(pos2);
 		pos.push_back(pos3);
 	}
-	
+
 };
 
 #endif // SPHERE_H

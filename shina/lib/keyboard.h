@@ -4,7 +4,7 @@
 #include "main.h"
 /** key map declare
 * use ascii
-* 
+*
 */
 enum keyMap {
 
@@ -15,10 +15,10 @@ enum keyMap {
 }ss;
 class smKeyBoard {
 private:
-	enum{KEY_NUMER=1000};
+	enum { KEY_NUMER = 1000 };
 	bool keys[KEY_NUMER];
-	
-	
+
+
 public:
 	smKeyBoard()
 	{

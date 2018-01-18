@@ -39,7 +39,11 @@ void texture::shadow() {
 void texture::show(int lights) {
 
 	if (hide)
+	{
 		return;
+	}
+
+
 	for (Group &graph : group)
 	{
 		if (graph.pos.size() == 0)	continue;

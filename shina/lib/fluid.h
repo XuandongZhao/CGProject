@@ -15,15 +15,15 @@ private:
 	long            height; //高
 
 	Vector3D        *buffer[2]; //缓冲区
-	Vector3D		*normals,*tangent;
+	Vector3D		*normals, *tangent;
 	long            renderBuffer;  //当前渲染的缓冲区
 
 	int             *indices[3]; //索引
-	float       *texcoords[3][2]; //纹理坐标
+	float			*texcoords[3][2]; //纹理坐标
 	float           k1, k2, k3; //多项式系数
-	float *coord,*pos,*normal;
+	float			*coord, *pos, *normal;
 
-	GLuint vao,svao, texName;
+	GLuint vao, svao, texName;
 	GLuint vboHandles[3],
 		positionBufferHandle, coordBufferHandle, normalBufferHandle;
 	GLuint spositionBufferHandle;
@@ -66,13 +66,13 @@ public:
 	inline void update()
 	{
 		static int count = 0;
-		count|=1;
-		if (count &1) {
+		count |= 1;
+		if (count & 1) {
 			count &= 0;
 			Evaluate();
 			getData();
 		}
-		
+
 	}
 	inline void loadIdentity()
 	{

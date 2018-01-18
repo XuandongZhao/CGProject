@@ -12,8 +12,8 @@ newmtl dimian_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\sat_obj_road_5.png
-	map_Kd text\sat_obj_road_5.png
+	map_Ka text\sat_obj_road_5_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\sat_obj_road_5_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl dimian_2
 	Ns 10.0000
@@ -26,8 +26,8 @@ newmtl dimian_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\sat_obj_road_5.png
-	map_Kd text\sat_obj_road_5.png
+	map_Ka text\sat_obj_road_5_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\sat_obj_road_5_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl m_water
 	Ns 10.0000
@@ -40,8 +40,8 @@ newmtl m_water
 	Kd 0.6706 0.6706 0.6706
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\water.png
-	map_Kd text\water.png
+	map_Ka text\water_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\water_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl luya_0
 	Ns 10.0000
@@ -54,8 +54,8 @@ newmtl luya_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\luya.png
-	map_Kd text\luya.png
+	map_Ka text\luya_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\luya_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl dimian_4
 	Ns 10.0000
@@ -68,8 +68,8 @@ newmtl dimian_4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\test_flagstone_01.png
-	map_Kd text\test_flagstone_01.png
+	map_Ka text\test_flagstone_01_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\test_flagstone_01_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl tree_1_0
 	Ns 10.0000
@@ -82,9 +82,9 @@ newmtl tree_1_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shu_1.png
-	map_Kd text\shu_1.png
-	map_d text\shu_1.png
+	map_Ka text\shu_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shu_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\shu_1_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl tree_2_1
 	Ns 10.0000
@@ -97,9 +97,9 @@ newmtl tree_2_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shu_3.png
-	map_Kd text\shu_3.png
-	map_d text\shu_3.png
+	map_Ka text\shu_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shu_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\shu_3_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl tree_2_0
 	Ns 10.0000
@@ -112,9 +112,9 @@ newmtl tree_2_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shu000.png
-	map_Kd text\shu000.png
-	map_d text\shu000.png
+	map_Ka text\shu000_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shu000_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\shu000_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl tree_3_0
 	Ns 10.0000
@@ -127,8 +127,8 @@ newmtl tree_3_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shumm_002.png
-	map_Kd text\shumm_002.png
+	map_Ka text\shumm_002_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shumm_002_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl shangdian_1
 	Ns 10.0000
@@ -141,8 +141,8 @@ newmtl shangdian_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shangdian_1.png
-	map_Kd text\shangdian_1.png
+	map_Ka text\shangdian_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shangdian_1_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl shangdian_0
 	Ns 10.0000
@@ -155,8 +155,8 @@ newmtl shangdian_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shangdian_2.png
-	map_Kd text\shangdian_2.png
+	map_Ka text\shangdian_2_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shangdian_2_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl shangdian_4
 	Ns 10.0000
@@ -169,8 +169,8 @@ newmtl shangdian_4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shangdian_01.png
-	map_Kd text\shangdian_01.png
+	map_Ka text\shangdian_01_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shangdian_01_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl shangdian_2
 	Ns 10.0000
@@ -183,8 +183,8 @@ newmtl shangdian_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shangdian_3.png
-	map_Kd text\shangdian_3.png
+	map_Ka text\shangdian_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shangdian_3_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl orig_orig_dyn_obj_hotairballoon
 	Ns 10.0000
@@ -197,8 +197,8 @@ newmtl orig_orig_dyn_obj_hotairballoon
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\dyn_obj_hotairballoon.png
-	map_Kd text\dyn_obj_hotairballoon.png
+	map_Ka text\dyn_obj_hotairballoon_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\dyn_obj_hotairballoon_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl wire_196088225
 	Ns 32.0000
@@ -223,8 +223,8 @@ newmtl house_8
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_8.png
-	map_Kd text\house_8.png
+	map_Ka text\house_8_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_8_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_13
 	Ns 10.0000
@@ -237,8 +237,8 @@ newmtl house_13
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_13.png
-	map_Kd text\house_13.png
+	map_Ka text\house_13_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_13_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl orig_baked_sat_obj_building_2
 	Ns 10.0000
@@ -251,8 +251,8 @@ newmtl orig_baked_sat_obj_building_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.5880 0.5880 0.5880
-	map_Ka text\sat_obj_building_2.png
-	map_Kd text\sat_obj_building_2.png
+	map_Ka text\sat_obj_building_2_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\sat_obj_building_2_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_11
 	Ns 10.0000
@@ -265,8 +265,8 @@ newmtl house_11
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_11.png
-	map_Kd text\house_11.png
+	map_Ka text\house_11_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_11_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl sat_obj_ptreefar
 	Ns 10.0000
@@ -279,9 +279,9 @@ newmtl sat_obj_ptreefar
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\ptree.png
-	map_Kd text\ptree.png
-	map_d text\ptree.png
+	map_Ka text\ptree_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\ptree_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\ptree_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_5
 	Ns 10.0000
@@ -294,8 +294,8 @@ newmtl house_5
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_5.png
-	map_Kd text\house_5.png
+	map_Ka text\house_5_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_5_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl under_water
 	Ns 10.0000
@@ -308,8 +308,8 @@ newmtl under_water
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\under_water.png
-	map_Kd text\under_water.png
+	map_Ka text\under_water_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\under_water_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_1
 	Ns 10.0000
@@ -322,8 +322,8 @@ newmtl house_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_1.png
-	map_Kd text\house_1.png
+	map_Ka text\house_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_1_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_2
 	Ns 10.0000
@@ -336,8 +336,8 @@ newmtl house_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_2.png
-	map_Kd text\house_2.png
+	map_Ka text\house_2_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_2_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_3
 	Ns 10.0000
@@ -350,8 +350,8 @@ newmtl house_3
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_3.png
-	map_Kd text\house_3.png
+	map_Ka text\house_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_3_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_4
 	Ns 10.0000
@@ -364,8 +364,8 @@ newmtl house_4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_4.png
-	map_Kd text\house_4.png
+	map_Ka text\house_4_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_4_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_6
 	Ns 10.0000
@@ -378,8 +378,8 @@ newmtl house_6
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_6.png
-	map_Kd text\house_6.png
+	map_Ka text\house_6_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_6_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_7
 	Ns 10.0000
@@ -392,8 +392,8 @@ newmtl house_7
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_7.png
-	map_Kd text\house_7.png
+	map_Ka text\house_7_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_7_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_9
 	Ns 10.0000
@@ -406,8 +406,8 @@ newmtl house_9
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_9.png
-	map_Kd text\house_9.png
+	map_Ka text\house_9_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_9_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_10
 	Ns 10.0000
@@ -420,8 +420,8 @@ newmtl house_10
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_10.png
-	map_Kd text\house_10.png
+	map_Ka text\house_10_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_10_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_12
 	Ns 10.0000
@@ -434,8 +434,8 @@ newmtl house_12
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_12.png
-	map_Kd text\house_12.png
+	map_Ka text\house_12_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_12_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_14
 	Ns 10.0000
@@ -448,8 +448,8 @@ newmtl house_14
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_14.png
-	map_Kd text\house_14.png
+	map_Ka text\house_14_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_14_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_15
 	Ns 10.0000
@@ -462,8 +462,8 @@ newmtl house_15
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_15.png
-	map_Kd text\house_15.png
+	map_Ka text\house_15_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_15_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_16
 	Ns 10.0000
@@ -476,8 +476,8 @@ newmtl house_16
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_16.png
-	map_Kd text\house_16.png
+	map_Ka text\house_16_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_16_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_17
 	Ns 10.0000
@@ -490,8 +490,8 @@ newmtl house_17
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_17.png
-	map_Kd text\house_17.png
+	map_Ka text\house_17_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_17_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_18
 	Ns 10.0000
@@ -504,8 +504,8 @@ newmtl house_18
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_18.png
-	map_Kd text\house_18.png
+	map_Ka text\house_18_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_18_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_21
 	Ns 10.0000
@@ -518,8 +518,8 @@ newmtl house_21
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_19.png
-	map_Kd text\house_19.png
+	map_Ka text\house_19_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_19_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl house_20
 	Ns 10.0000
@@ -532,8 +532,8 @@ newmtl house_20
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\house_20.png
-	map_Kd text\house_20.png
+	map_Ka text\house_20_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\house_20_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl orig_shuiguo
 	Ns 10.0000
@@ -546,9 +546,9 @@ newmtl orig_shuiguo
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\shuiguo.png
-	map_Kd text\shuiguo.png
-	map_d text\shuiguo.png
+	map_Ka text\shuiguo_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\shuiguo_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\shuiguo_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_1
 	Ns 10.0000
@@ -561,9 +561,9 @@ newmtl daoju_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoju_1.png
-	map_Kd text\daoju_1.png
-	map_d text\daoju_1.png
+	map_Ka text\daoju_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoju_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\daoju_1_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_6
 	Ns 10.0000
@@ -576,9 +576,9 @@ newmtl daoju_6
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoju_6.png
-	map_Kd text\daoju_6.png
-	map_d text\daoju_6.png
+	map_Ka text\daoju_6_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoju_6_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\daoju_6_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_4
 	Ns 10.0000
@@ -591,9 +591,9 @@ newmtl daoju_4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoju_4.png
-	map_Kd text\daoju_4.png
-	map_d text\daoju_4.png
+	map_Ka text\daoju_4_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoju_4_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\daoju_4_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_2
 	Ns 10.0000
@@ -606,8 +606,8 @@ newmtl daoju_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\guanggao_tiejia.png
-	map_Kd text\guanggao_tiejia.png
+	map_Ka text\guanggao_tiejia_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\guanggao_tiejia_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_7
 	Ns 10.0000
@@ -620,8 +620,8 @@ newmtl daoju_7
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daguanggao.png
-	map_Kd text\daguanggao.png
+	map_Ka text\daguanggao_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daguanggao_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_3
 	Ns 10.0000
@@ -634,9 +634,9 @@ newmtl daoju_3
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoju_3.png
-	map_Kd text\daoju_3.png
-	map_d text\daoju_3.png
+	map_Ka text\daoju_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoju_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\daoju_3_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl daoju_5
 	Ns 10.0000
@@ -649,9 +649,9 @@ newmtl daoju_5
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoju_5.png
-	map_Kd text\daoju_5.png
-	map_d text\daoju_5.png
+	map_Ka text\daoju_5_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoju_5_íøÄ¿Ñ¹Ëõ.jpg
+	map_d text\daoju_5_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl wire_177088027
 	Ns 32.0000
@@ -676,8 +676,8 @@ newmtl 19___Default
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\daoxiangjiantou_0.png
-	map_Kd text\daoxiangjiantou_0.png
+	map_Ka text\daoxiangjiantou_0_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\daoxiangjiantou_0_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl road_3
 	Ns 10.0000
@@ -690,8 +690,8 @@ newmtl road_3
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\road_2.png
-	map_Kd text\road_2.png
+	map_Ka text\road_2_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\road_2_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl road_1
 	Ns 10.0000
@@ -704,8 +704,8 @@ newmtl road_1
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\road_3.png
-	map_Kd text\road_3.png
+	map_Ka text\road_3_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\road_3_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl road_0
 	Ns 10.0000
@@ -718,8 +718,8 @@ newmtl road_0
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\test_road_4.png
-	map_Kd text\test_road_4.png
+	map_Ka text\test_road_4_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\test_road_4_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl road_2
 	Ns 10.0000
@@ -732,8 +732,8 @@ newmtl road_2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\road_1.png
-	map_Kd text\road_1.png
+	map_Ka text\road_1_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\road_1_íøÄ¿Ñ¹Ëõ.jpg
 
 newmtl road_4
 	Ns 10.0000
@@ -746,5 +746,5 @@ newmtl road_4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka text\sat_obj_road_4.png
-	map_Kd text\sat_obj_road_4.png
+	map_Ka text\sat_obj_road_4_íøÄ¿Ñ¹Ëõ.jpg
+	map_Kd text\sat_obj_road_4_íøÄ¿Ñ¹Ëõ.jpg

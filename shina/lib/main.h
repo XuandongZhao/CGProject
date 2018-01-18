@@ -117,7 +117,7 @@ T max(T x, T y) {
 
 template <typename T>
 T interpolate(float prop, T x, T y) {
-	return x*prop + y*(1 - prop);
+	return x * prop + y * (1 - prop);
 }
 
 inline void multiVec4(const glm::mat4 &a, const glm::vec4&b, glm::vec4 &ans)
@@ -134,7 +134,7 @@ inline void multiVec4(const glm::mat4 &a, const glm::vec4&b, glm::vec4 &ans)
 //半平面交要用 别动
 struct Point {
 	double x, y;
-	Point(double dx=0,double dy=0):x(dx),y(dy){}
+	Point(double dx = 0, double dy = 0) :x(dx), y(dy) {}
 	friend Point operator - (const Point & u, const Point & v)
 	{
 		return Point(u.x - v.x, u.y - v.y);
@@ -144,7 +144,5 @@ struct line {
 	Point p, v;
 	double k;
 };
-
-
 
 #endif

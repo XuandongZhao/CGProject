@@ -7,7 +7,7 @@
 extern smShader * texParticleShader;
 
 class rectangle {
-	
+
 
 	class Bitmap {
 	public:
@@ -56,10 +56,10 @@ public:
 
 	vector<GLfloat> pos;
 	vector<GLfloat> coord;
-	glm::vec3 position=glm::vec3(0,0,0);
+	glm::vec3 position = glm::vec3(0, 0, 0);
 	float a, b;
 
-	rectangle(){}
+	rectangle() {}
 
 	void setShape(float a, float b)
 	{

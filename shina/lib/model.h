@@ -16,6 +16,10 @@ class texture;
 class object;
 class scene;
 
+extern float explo_x;
+extern float explo_y;
+extern float explo_z;
+
 //s2 is dest, s1 is src
 void copy_imag(const char* s1, const char* s2);
 
@@ -981,22 +985,22 @@ struct particle {
 	}
 	inline void update()
 	{
-		x += vx*deci;
-		y += vy*deci;
-		z += vz*deci;
-		vx += ax*deci;
-		vy += ay*deci;
-		vz += az*deci;
-		rx += wx*deci;
-		ry += wy*deci;
-		rz += wz*deci;
+		x += vx * deci;
+		y += vy * deci;
+		z += vz * deci;
+		vx += ax * deci;
+		vy += ay * deci;
+		vz += az * deci;
+		rx += wx * deci;
+		ry += wy * deci;
+		rz += wz * deci;
 
-		rx += wx*deci;
-		ry += wy*deci;
-		rz += wz*deci;
-		wx += bx*deci;
-		wy += by*deci;
-		wz += bz*deci;
+		rx += wx * deci;
+		ry += wy * deci;
+		rz += wz * deci;
+		wx += bx * deci;
+		wy += by * deci;
+		wz += bz * deci;
 
 		xScale *= (xFactor);
 		yScale *= (yFactor);
@@ -1120,8 +1124,35 @@ public:
 	int time = MAXINT;
 	const char* imag = "source//file.jpg";
 	//void(*initParticle)(particle*) = nullptr;
-	void(*initParticle)(particle* m, const char* name) = nullptr;
+	//void(*initParticle)(particle* m, const char* name) = nullptr;
 	bool(*isDead)(particle*) = nullptr;
+	void initParticle(particle *m, const char* name)
+	{
+
+		if (m->draw_time == 1)
+		{
+			return;
+		}
+		m->tex->hide = false;
+		m->draw_time++;
+		int random = rand() % 10000;
+		m->isDead = false;
+		float aspeed[3] = { 0,-30,0 };
+		float x = explo_x;
+		float y = explo_y;
+		float z = explo_z;
+		m->setPosition(x, y, z);
+		//m->setPosition(0,200,-400);
+		cout << "explox" << explo_x << endl;
+		cout << "exploy" << explo_y << endl;
+		cout << "exploz" << explo_z << endl;
+		m->setSpeed(1.f * rand() / RAND_MAX * 200 - 100, -1.f * rand() / RAND_MAX * 100, -1.f * rand() / RAND_MAX * 150);
+		m->setAccerator(aspeed[0], aspeed[1], aspeed[2]);
+		//m->setAngle();
+		m->lifetime = random * 2;
+		m->fullLife = m->lifetime;
+		m->deci = 0.05;
+	}
 
 	std::vector<particle*> particleCollection;
 
@@ -1140,13 +1171,13 @@ public:
 
 	void show(int lights)
 	{
+
 		time--;
 		for (auto & i : particleCollection)
 		{
 
 			i->update();
-			//cout << i->lifetime<<endl;
-			if (i->isDead && time > 0 && initParticle != NULL)
+			if (i->isDead && time > 0)
 			{
 				initParticle(i, imag);
 			}
@@ -1168,21 +1199,23 @@ public:
 		int j = 0;
 		for (int i = 0; i < tex->group.size(); i++, j++)
 		{
+			/*
 			if (tex->group[i].material.name == "_0131_Silver_1")
 			{
-				j--;
-				continue;
+			j--;
+			continue;
 			}
+			*/
 
 			particleCollection.push_back(new particle());
 			particleCollection[j]->which = IS_TEXTURE;
 			particleCollection[j]->tex = new texture();
 			particleCollection[j]->tex->group.push_back(tex->group[i]);
 			particleCollection[j]->isDead = false;
-			particleCollection[j]->lifetime = 30;
-			particleCollection[j]->deci = 1;
-			particleCollection[j]->tex->hide = true;
+			particleCollection[j]->tex->hide = false;
+
 		}
+		//time = 30;
 		maxSize = j;
 		cout << "texture to cloud finished!\n";
 	}
@@ -1263,7 +1296,7 @@ private:
 
 
 public:
-	cubeBox* skyBox = nullptr;
+	cubeBox * skyBox = nullptr;
 	objPtrVector objCollection;
 	texturePtrVector texCollection;
 	cloudPtrVector cloudCollection;
@@ -1340,6 +1373,10 @@ public:
 	lightPtrVector& getLights()
 	{
 		return lightCollection;
+	}
+	void popLight()
+	{
+		lightCollection.pop_back();
 	}
 };
 

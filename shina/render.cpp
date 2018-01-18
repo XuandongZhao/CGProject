@@ -7,7 +7,7 @@ extern smShader *paticleShader;
 extern smShader * texParticleShader;
 extern smShader* fireShader;
 
-void smRender::render(world & myworld,smCamera& camera)
+void smRender::render(world & myworld, smCamera& camera)
 {
 	if (useShadow)
 	{
@@ -47,7 +47,7 @@ void smRender::render(world & myworld,smCamera& camera)
 	elementShader->setMat4("u_view", view);
 	elementShader->setVec3("u_eyePos", camera.eye);
 
-	for (int i = 0; i <  myworld.getLights().size(); i++) {
+	for (int i = 0; i < myworld.getLights().size(); i++) {
 		char tmp[64];
 		sprintf(tmp, "u_lightsMatrix[%d]", i);
 		elementShader->setMat4(tmp, myworld.getLights()[i]->lightMatrix);
@@ -97,10 +97,10 @@ void smRender::render(world & myworld,smCamera& camera)
 		glActiveTexture(GL_TEXTURE1 + i);
 		glBindTexture(GL_TEXTURE_2D, myworld.getLights()[i]->textureHandle);
 	}
-	
+
 	for (auto& light : myworld.getLights())
 	{
-		for (auto& s : myworld.getScenes()) 
+		for (auto& s : myworld.getScenes())
 		{
 			s->show(light, myworld.getLights().size());
 		}

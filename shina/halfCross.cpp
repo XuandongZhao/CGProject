@@ -57,7 +57,7 @@ double crs(Point u, Point v) { return u.x*v.y - u.y*v.x; }
 
 Point itr(line x, line y) {
 	double t = crs(y.v, x.p - y.p) / crs(x.v, y.v);
-	x.p.x += t*x.v.x; x.p.y += t*x.v.y; return x.p;
+	x.p.x += t * x.v.x; x.p.y += t * x.v.y; return x.p;
 }
 
 bool check(line x, line y, line t) {
@@ -79,20 +79,19 @@ int halfPlaneCross::calc()
 		output.clear();
 		vector<line>ll;
 		ll.push_back(line());
-		cout << "test object" << endl;
 		double height = 0x3f3f3f3f3f3f3f3f;
 		for (int j = 0; j < 8; j++)
 		{
-			glm::vec4 tmp = (*testObjects[i].modelPtr)*glm::vec4(testObjects[i].data[j],1.f);
-			input.push_back(Point(tmp.x,tmp.z));
+			glm::vec4 tmp = (*testObjects[i].modelPtr)*glm::vec4(testObjects[i].data[j], 1.f);
+			input.push_back(Point(tmp.x, tmp.z));
 			height = min(height, (double)tmp.y);
-			cout << tmp.x << " " << tmp.z << endl;
+			//cout << tmp.x << " " << tmp.z << endl;
 		}
 		graham_scan(input, output);
-		for (int j = 0; j < output.size(); j++)
+		/*for (int j = 0; j < output.size(); j++)
 		{
-			cout << output[j].x << " "<<output[j].y<<endl;
-		}
+		cout << output[j].x << " "<<output[j].y<<endl;
+		}*/
 		for (int j = 0; j < output.size(); j++)
 		{
 			line tmp;
@@ -113,15 +112,15 @@ int halfPlaneCross::calc()
 				l.push_back(solids[j].data[k]);
 			}
 			//cout << l.size() << endl;
-			sort(l.begin()+1, l.end(), ::_hPCompLines);
+			sort(l.begin() + 1, l.end(), ::_hPCompLines);
 			/*for (int k = 1; k < l.size(); k++)
 			{
-				cout << l[k].k <<" "<<l[k].p.x<<" "<<l[k].p.y<<" "<<l[k].v.x<< l[k].v.y<< endl;
+			cout << l[k].k <<" "<<l[k].p.x<<" "<<l[k].p.y<<" "<<l[k].v.x<< l[k].v.y<< endl;
 			}
 			cout << "&&&&" << endl;*/
 
 			int cc = 1;
-			for (int k = 2;k < l.size(); k++)
+			for (int k = 2; k < l.size(); k++)
 				if (l[k].k != l[cc].k) l[++cc] = l[k];
 
 			int head = 1, tail = 2; q[1] = l[1]; q[2] = l[2];
@@ -133,7 +132,7 @@ int halfPlaneCross::calc()
 			/*cout << "OOOOOOOOOOOOO" << endl;
 			for (int k = head; k < tail; k++)
 			{
-				cout << q[k].k << " " << q[k].p.x << " " << q[k].p.y << " " << q[k].v.x << " " << q[k].v.y << endl;
+			cout << q[k].k << " " << q[k].p.x << " " << q[k].p.y << " " << q[k].v.x << " " << q[k].v.y << endl;
 			}
 			cout << "TTTTTTTTTTTTT" << endl;*/
 			while (head<tail && check(q[tail - 1], q[tail], q[head])) tail--;
@@ -141,7 +140,7 @@ int halfPlaneCross::calc()
 			/*cout << "OOOOOOOOOOOOO" << endl;
 			for (int k = head; k < tail; k++)
 			{
-				cout << q[k].k << " " << q[k].p.x << " " << q[k].p.y << " " << q[k].v.x <<" "<< q[k].v.y << endl;
+			cout << q[k].k << " " << q[k].p.x << " " << q[k].p.y << " " << q[k].v.x <<" "<< q[k].v.y << endl;
 			}
 			cout << "TTTTTTTTTTTTT" << endl;
 			*/
@@ -153,20 +152,20 @@ int halfPlaneCross::calc()
 			/*cout << "$$$$$$$$$$$$$" << endl;
 			for (int k = 1; k <= n+1; k++)
 			{
-				cout << p[k].x << " " << p[k].y << endl;
+			cout << p[k].x << " " << p[k].y << endl;
 			}
 			cout << "^^^^^^^^^^^^^^" << endl;*/
 
 			for (int k = 1; k <= n; k++) ans += crs(p[k], p[k + 1]);
-			cout << "area" << ans << endl;
+			//cout << "area" << ans << endl;
 			if (ans > 0)
 			{
-				return i+1;
+				return i + 1;
 			}
 		}
-		
+
 	}
 
 	return 0;
-	
+
 }

@@ -5,6 +5,11 @@ extern smShader* fireShader;
 
 void fire::show()
 {
+	update();
+	if (hide)
+	{
+		return;
+	}
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
@@ -12,7 +17,7 @@ void fire::show()
 	fireShader->use();
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cnt*6, pos, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cnt * 6, pos, GL_STREAM_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), 0);
 	glEnableVertexAttribArray(1);
@@ -28,7 +33,5 @@ void fire::show()
 	glDrawArrays(GL_POINTS, 0, cnt);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
-
-	update();
 
 }

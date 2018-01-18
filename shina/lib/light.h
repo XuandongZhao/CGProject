@@ -18,11 +18,11 @@ public:
 	glm::mat4 lightMatrix;
 
 
-public :
+public:
 	vec3 diffuse, ambient;
 	GLfloat specular;
-	smLight(GLuint id,vec3 position=vec3(0,0,0),vec3 diff= vec3(0, 0, 0),vec3 amb= vec3(0, 0, 0),GLfloat spe= 0):
-		lightId(id),pos(position),diffuse(diff),ambient(amb),specular(spe)
+	smLight(GLuint id, vec3 position = vec3(0, 0, 0), vec3 diff = vec3(0, 0, 0), vec3 amb = vec3(0, 0, 0), GLfloat spe = 0) :
+		lightId(id), pos(position), diffuse(diff), ambient(amb), specular(spe)
 	{
 		glGenFramebuffers(1, &frameHandle);
 		glGenTextures(1, &textureHandle);
