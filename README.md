@@ -1,6 +1,7 @@
 # CGProject
 
-Project on Computer Graphics. Simulate aircraft flying in the city and projecting missiles for bombing. 
+Project on Computer Graphics. 
+Simulate aircraft flying in the city and projecting missiles for bombing. 
 
 ## Highlight
 
